@@ -46,6 +46,4 @@ public class CommonResponseDto<T> {
                 .error(error) // 에러 정보 설정
                 .build();
     }
-
-
 }
