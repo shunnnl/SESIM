@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # from api import train, predict, upload
 
 app = FastAPI(
-    title="Sesiem",
-    description="Client Sesiem Server",
+    title="Sesim",
+    description="Client Sesim Server",
     version="1.0.0",
 )
 
