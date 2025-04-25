@@ -1,20 +1,29 @@
 package com.backend.sesim.global.security.filter;
 
 import com.backend.sesim.global.security.config.SecurityPath;
+import com.backend.sesim.global.security.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -30,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
         log.info("[JwtAuthenticationFilter] 요청 시작: {} {}", method, uri);
 
-        //1. 요청 헤더에서 JWT 토큰 추출(추후 개발)
+        //1. 요청 헤더에서 JWT 토큰 추출
         String token = resolveToken(request);
         log.info("[JwtAuthenticationFilter] 토큰 추출 결과: {}", token != null ? "토큰 있음" : "토큰 없음");
 
@@ -54,6 +63,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jsonResponse = "{\"success\":false,\"data\":null,\"error\":{\"code\":\"TOKEN_NOT_FOUND\",\"message\":\"인증 토큰이 필요합니다\",\"status\":401}}";
             response.getWriter().write(jsonResponse);
             return; // 여기서 필터 체인 종료
+        }
+
+        // 2. 토큰이 유효한 경우 인증 정보 설정
+        try {
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                log.info("[JwtAuthenticationFilter] 토큰 유효성 검증 성공");
+
+                //토큰에서 사용자 id, email, address 가져와서 Authentication 객체 생성
+                Long userId = jwtTokenProvider.getUserId(token);
+                String nickname = jwtTokenProvider.getNickName(token);
+                String email = jwtTokenProvider.getEmail(token);
+                log.info("[JwtAuthenticationFilter] 토큰에서 추출한 정보 - userId: {}, email: {}, nickname: {}", userId, email, nickname);
+
+                // 사용자 권한 설정 (일반적으로 DB에서 가져오지만, 여기서는 간단히 구현)
+                List<SimpleGrantedAuthority> authorities =
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+
+                // 사용자 인증 객체 생성 및 SecurityContext에 설정
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        email,
+                        token,                 // securityUtil에서 추출힘
+                        authorities            // 권한 목록
+                );
+
+                // Spring Security의 SecurityContext에 인증 정보 저장
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("[JwtAuthenticationFilter] 인증 정보 설정 완료");
+
+                // 추가 정보를 요청 속성에 저장하여 컨트롤러에서 사용할 수 있게 함
+                request.setAttribute("nickname", nickname);
+                request.setAttribute("userId", userId);
+                request.setAttribute("userEmail", email);
+            } else if (token != null) {
+                log.warn("[JwtAuthenticationFilter] 토큰 유효성 검증 실패: {}", token);
+            }
+        } catch (Exception e) {
+            //토큰 검증 실패 처리 로직
+            log.error("[JwtAuthenticationFilter] 토큰 처리 중 예외 발생: {}", e.getMessage(), e);
+            SecurityContextHolder.clearContext();
         }
 
         // 다음 필터로 요청 전달

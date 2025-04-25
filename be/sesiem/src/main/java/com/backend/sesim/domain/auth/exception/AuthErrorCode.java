@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum AuthErrorCode implements ErrorCode {
-    USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다.");
+    USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
+    EMAIL_ALREADY_EXISTS(400, "이미 사용 중인 이메일입니다.");
+
 
     private final int status;
     private final String message;
