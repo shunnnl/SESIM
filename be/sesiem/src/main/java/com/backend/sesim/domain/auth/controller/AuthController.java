@@ -1,6 +1,8 @@
 package com.backend.sesim.domain.auth.controller;
 
 import com.backend.sesim.domain.auth.service.AuthService;
+import com.backend.sesim.facade.auth.dto.request.LoginRequest;
+import com.backend.sesim.facade.auth.dto.request.LoginResponse;
 import com.backend.sesim.facade.auth.dto.request.SignUpRequest;
 import com.backend.sesim.global.dto.CommonResponseDto;
 import com.backend.sesim.global.security.dto.Token;
@@ -30,10 +32,15 @@ public class AuthController {
     @Operation(summary = "회원가입", description = "회원가입을 처리합니다.")
     @PostMapping("/signUp")
     public CommonResponseDto signUp(@RequestBody SignUpRequest request) {
-        log.info("회원가입 요청 수신: {}", request);  // 전체 객체 로깅
-        log.info("회원가입 요청 수신: {}", request.getEmail());
         authService.signUp(request);
         return CommonResponseDto.ok();
+    }
+
+
+    @Operation(summary = "로그인", description = "로그인을 처리합니다.")
+    @PostMapping("/login")
+    public CommonResponseDto<LoginResponse> singUp(@RequestBody LoginRequest request) {
+        return CommonResponseDto.ok(authService.login(request));
     }
 
 }
