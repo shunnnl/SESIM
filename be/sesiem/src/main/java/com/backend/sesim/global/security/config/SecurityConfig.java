@@ -1,6 +1,6 @@
-package com.backend.sesiem.global.security.config;
+package com.backend.sesim.global.security.config;
 
-import com.backend.sesiem.global.security.filter.JwtAuthenticationFilter;
+import com.backend.sesim.global.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

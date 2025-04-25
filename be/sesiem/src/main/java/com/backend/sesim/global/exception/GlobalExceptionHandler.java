@@ -1,7 +1,7 @@
-package com.backend.sesiem.global.exception;
+package com.backend.sesim.global.exception;
 
-import com.backend.sesiem.global.dto.CommonResponseDto;
-import com.backend.sesiem.global.dto.ErrorResponse;
+import com.backend.sesim.global.dto.CommonResponseDto;
+import com.backend.sesim.global.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

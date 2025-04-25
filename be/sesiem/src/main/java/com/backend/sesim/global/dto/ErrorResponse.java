@@ -1,6 +1,6 @@
-package com.backend.sesiem.global.dto;
+package com.backend.sesim.global.dto;
 
-import com.backend.sesiem.global.exception.ErrorCode;
+import com.backend.sesim.global.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.backend.sesiem.global.dto;
+package com.backend.sesim.global.dto;
 
 import lombok.Builder;
 import lombok.Getter;

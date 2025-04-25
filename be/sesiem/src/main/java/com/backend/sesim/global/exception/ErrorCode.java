@@ -1,4 +1,4 @@
-package com.backend.sesiem.global.exception;
+package com.backend.sesim.global.exception;
 
 public interface ErrorCode {
     String code();

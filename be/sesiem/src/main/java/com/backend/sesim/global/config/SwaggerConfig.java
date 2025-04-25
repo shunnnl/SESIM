@@ -1,4 +1,4 @@
-package com.backend.sesiem.global.config;
+package com.backend.sesim.global.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

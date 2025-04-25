@@ -1,4 +1,4 @@
-package com.backend.sesiem.global.security.config;
+package com.backend.sesim.global.security.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

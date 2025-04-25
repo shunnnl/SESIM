@@ -1,4 +1,4 @@
-package com.backend.sesiem.global.entity;
+package com.backend.sesim.global.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

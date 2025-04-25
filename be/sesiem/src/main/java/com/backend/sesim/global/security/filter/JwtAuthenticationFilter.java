@@ -1,6 +1,6 @@
-package com.backend.sesiem.global.security.filter;
+package com.backend.sesim.global.security.filter;
 
-import com.backend.sesiem.global.security.config.SecurityPath;
+import com.backend.sesim.global.security.config.SecurityPath;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
