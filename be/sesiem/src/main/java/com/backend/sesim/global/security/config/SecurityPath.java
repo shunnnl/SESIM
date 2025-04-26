@@ -27,7 +27,7 @@ public enum SecurityPath {
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;
 
-    //SecurityPath enum에 정의된 모든 공개 경로를 String 배열로 변환해주는 메서드
+    //SecurityPath enum에 정의된 모든 공개 경로를 String 배열로 변환해주는lll 메서드
     public static String[] getAllPublicPaths() {
         return java.util.Arrays.stream(values())
                 .map(SecurityPath::getPath)

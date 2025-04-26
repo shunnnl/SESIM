@@ -34,6 +34,10 @@ public class Users extends TimeStampEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
     // 사용자 탈퇴 메서드
     public void delete() {
         this.deletedAt = LocalDateTime.now();

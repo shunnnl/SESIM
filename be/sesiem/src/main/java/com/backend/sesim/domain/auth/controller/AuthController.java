@@ -28,6 +28,7 @@ import java.security.SignatureException;
 public class AuthController {
 
     private final AuthService authService;
+    private final SecurityUtils securityUtils;
 
     @Operation(summary = "회원가입", description = "회원가입을 처리합니다.")
     @PostMapping("/signUp")
@@ -41,6 +42,16 @@ public class AuthController {
     @PostMapping("/login")
     public CommonResponseDto<LoginResponse> singUp(@RequestBody LoginRequest request) {
         return CommonResponseDto.ok(authService.login(request));
+    }
+
+
+    @Operation(summary = "로그아웃", description = "로그아웃을 처리합니다.")
+    @PostMapping("/logout")
+    public CommonResponseDto logout() {
+        //현재 로그인한 사용자의 id 가져오기
+        Long id = securityUtils.getCurrentUsersId();
+        authService.logout(id);
+        return CommonResponseDto.ok();
     }
 
 }

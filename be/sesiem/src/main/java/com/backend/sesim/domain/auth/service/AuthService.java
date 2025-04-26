@@ -10,16 +10,11 @@ import com.backend.sesim.facade.auth.dto.request.SignUpRequest;
 import com.backend.sesim.global.exception.GlobalException;
 import com.backend.sesim.global.security.dto.Token;
 import com.backend.sesim.global.security.jwt.JwtTokenProvider;
-import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +63,13 @@ public class AuthService {
     }
 
 
+    public void logout(Long id) {
+        Users users = usersRepository.findById(id)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        invalidateRefreshToken(users);
+        log.info("로그아웃 완료", users.getEmail());
+    }
     private void validateSignupRequest(SignUpRequest request) {
         // 이메일과 일치하면서 탈퇴하지 않은 사용자가 있는지 확인
         boolean hasActiveUser = usersRepository.existsByEmailAndDeletedAtIsNull(request.getEmail());
@@ -99,4 +101,9 @@ public class AuthService {
         return user;
     }
 
+    private void invalidateRefreshToken(Users users) {
+        // 사용자의 리프레시 토큰 필드를 null로 설정
+        users.updateRefreshToken(null);
+        usersRepository.save(users);
+    }
 }
