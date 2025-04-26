@@ -54,15 +54,7 @@ public class AuthService {
         //1. 사용자 검증
         Users users = validateLoginRequest(request);
 
-        //2. 비밀번호 검증
-        if (!passwordEncoder.matches(request.getPassword(), users.getPassword())) {
-            log.warn("비밀번호 불일치", users.getPassword());
-            throw new GlobalException(AuthErrorCode.INVALID_PASSWORD);
-        }
-
-        log.info("로그인 성공", users.getEmail());
-
-        // 3. JWT 토큰 생성
+        // 2. JWT 토큰 생성
         Token token = jwtTokenProvider.generateToken(users);
 
         return LoginResponse.builder()
