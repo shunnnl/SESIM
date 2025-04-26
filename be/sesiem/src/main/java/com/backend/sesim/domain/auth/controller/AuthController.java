@@ -3,6 +3,7 @@ package com.backend.sesim.domain.auth.controller;
 import com.backend.sesim.domain.auth.service.AuthService;
 import com.backend.sesim.facade.auth.dto.request.LoginRequest;
 import com.backend.sesim.facade.auth.dto.request.LoginResponse;
+import com.backend.sesim.facade.auth.dto.request.RefreshTokenRequest;
 import com.backend.sesim.facade.auth.dto.request.SignUpRequest;
 import com.backend.sesim.global.dto.CommonResponseDto;
 import com.backend.sesim.global.security.dto.Token;
@@ -29,6 +30,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final SecurityUtils securityUtils;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "회원가입", description = "회원가입을 처리합니다.")
     @PostMapping("/signUp")
@@ -52,6 +54,13 @@ public class AuthController {
         Long id = securityUtils.getCurrentUsersId();
         authService.logout(id);
         return CommonResponseDto.ok();
+    }
+
+    @Operation(summary = "리프레쉬", description = "리프레쉬 토큰을 처리합니다.")
+    @PostMapping("/refresh")
+    public CommonResponseDto refreshToken(@RequestBody RefreshTokenRequest request) throws SignatureException {
+        Token newToken = jwtTokenProvider.refreshAccessToken(request.getRefreshToken());
+        return CommonResponseDto.ok(newToken);
     }
 
 }
