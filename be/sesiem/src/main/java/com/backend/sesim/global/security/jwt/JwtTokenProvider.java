@@ -47,6 +47,10 @@ public class JwtTokenProvider {
 
         LocalDateTime now = LocalDateTime.now();
 
+        // 3. Refresh Token DB에 저장
+        users.updateRefreshToken(refreshToken);
+        usersRepository.save(users);
+
         //현재시간
         //액세스 토큰 만료일을 알아보기 쉽게 3600000 -> 1시간
         long accessTokenExpiresInHours = accessTokenExpiresIn / 3600000;

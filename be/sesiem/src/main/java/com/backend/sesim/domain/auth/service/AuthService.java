@@ -1,6 +1,5 @@
 package com.backend.sesim.domain.auth.service;
 
-
 import com.backend.sesim.domain.auth.exception.AuthErrorCode;
 import com.backend.sesim.domain.user.entity.Users;
 import com.backend.sesim.domain.user.repository.UsersRepository;
@@ -62,7 +61,6 @@ public class AuthService {
                 .build();
     }
 
-
     public void logout(Long id) {
         Users users = usersRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
@@ -70,6 +68,7 @@ public class AuthService {
         invalidateRefreshToken(users);
         log.info("로그아웃 완료", users.getEmail());
     }
+
     private void validateSignupRequest(SignUpRequest request) {
         // 이메일과 일치하면서 탈퇴하지 않은 사용자가 있는지 확인
         boolean hasActiveUser = usersRepository.existsByEmailAndDeletedAtIsNull(request.getEmail());
@@ -80,7 +79,6 @@ public class AuthService {
         // 활성 사용자가 없으면 회원가입 가능 (새 이메일이거나 탈퇴한 사용자의 이메일)
     }
 
-    // 로그인 검증 메서드
     private Users validateLoginRequest(LoginRequest request) {
         // 이메일로 사용자 조회
         Users user = usersRepository.findByEmail(request.getEmail())
