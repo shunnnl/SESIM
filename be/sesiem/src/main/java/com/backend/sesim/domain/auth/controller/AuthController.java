@@ -33,7 +33,7 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "회원가입", description = "회원가입을 처리합니다.")
-    @PostMapping("/signUp")
+    @PostMapping("/signup")
     public CommonResponseDto signUp(@RequestBody SignUpRequest request) {
         authService.signUp(request);
         return CommonResponseDto.ok();
