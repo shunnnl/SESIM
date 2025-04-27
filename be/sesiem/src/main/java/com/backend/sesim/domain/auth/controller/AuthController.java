@@ -1,10 +1,10 @@
 package com.backend.sesim.domain.auth.controller;
 
+import com.backend.sesim.domain.auth.dto.request.LoginRequest;
+import com.backend.sesim.domain.auth.dto.request.LoginResponse;
+import com.backend.sesim.domain.auth.dto.request.RefreshTokenRequest;
+import com.backend.sesim.domain.auth.dto.request.SignUpRequest;
 import com.backend.sesim.domain.auth.service.AuthService;
-import com.backend.sesim.facade.auth.dto.request.LoginRequest;
-import com.backend.sesim.facade.auth.dto.request.LoginResponse;
-import com.backend.sesim.facade.auth.dto.request.RefreshTokenRequest;
-import com.backend.sesim.facade.auth.dto.request.SignUpRequest;
 import com.backend.sesim.global.dto.CommonResponseDto;
 import com.backend.sesim.global.security.dto.Token;
 import com.backend.sesim.global.security.jwt.JwtTokenProvider;
@@ -22,7 +22,7 @@ import java.security.SignatureException;
 
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "회원 컨트롤러", description = "로그인, 회원가입, 사용자 인증토큰 발급 등 회원정보를 관리하는 컨트롤러")
 @Slf4j

@@ -1,8 +1,8 @@
 package com.backend.sesim.global.security.jwt;
 
 import com.backend.sesim.domain.auth.exception.AuthErrorCode;
-import com.backend.sesim.domain.user.entity.Users;
-import com.backend.sesim.domain.user.repository.UsersRepository;
+import com.backend.sesim.domain.user.entity.User;
+import com.backend.sesim.domain.user.repository.UserRepository;
 import com.backend.sesim.global.exception.GlobalException;
 import com.backend.sesim.global.security.dto.Token;
 import com.backend.sesim.global.security.exception.JwtErrorCode;
@@ -26,7 +26,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
-    private final UsersRepository usersRepository;
+    private final UserRepository usersRepository;
 
     /**
      * JWT 토큰 생성 메서드 (Access Token + Refresh Token)
@@ -35,7 +35,7 @@ public class JwtTokenProvider {
      * @return 액세스 토큰과 리프레시 토큰을 포함한 Token 객체
      */
     //유저가 로그인 시에 user 객체만 넘겨주면 3개의 반환 타입을 넘겨준다.
-    public Token generateToken(Users users) {
+    public Token generateToken(User users) {
         // JwtProperties에서 만료 시간 가져오기
         long accessTokenExpiresIn = jwtProperties.getExpirationTime();
         long refreshTokenExpiresIn = jwtProperties.getRefreshExpirationTime();
@@ -76,7 +76,7 @@ public class JwtTokenProvider {
      * @param expirationTime 만료 시간(밀리초)
      * @return 생성된 액세스 토큰
      */
-    private String generateAccessToken(Users users, long expirationTime) {
+    private String generateAccessToken(User users, long expirationTime) {
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
@@ -112,7 +112,7 @@ public class JwtTokenProvider {
         Long userId = Long.parseLong(claims.getSubject());
 
         // 5. 사용자 조회 (서비스나 레포지토리 주입 필요)
-        Users users = usersRepository.findById(userId)
+        User users = usersRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
         // 6. 저장된 리프레시 토큰과 일치하는지 확인
@@ -133,7 +133,7 @@ public class JwtTokenProvider {
      * @param expirationTime 만료 시간(밀리초)
      * @return 생성된 리프레시 토큰
      */
-    private String generateRefreshToken(Users users, long expirationTime) {
+    private String generateRefreshToken(User users, long expirationTime) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
 

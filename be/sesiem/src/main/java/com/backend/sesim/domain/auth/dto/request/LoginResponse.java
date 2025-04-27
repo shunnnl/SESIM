@@ -1,8 +1,9 @@
-package com.backend.sesim.facade.auth.dto.request;
+package com.backend.sesim.domain.auth.dto.request;
 
 import com.backend.sesim.global.security.dto.Token;
 import lombok.Builder;
 import lombok.Getter;
+
 import java.time.LocalDateTime;
 
 @Getter

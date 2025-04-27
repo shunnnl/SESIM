@@ -1,11 +1,11 @@
 package com.backend.sesim.domain.auth.service;
 
+import com.backend.sesim.domain.auth.dto.request.LoginResponse;
 import com.backend.sesim.domain.auth.exception.AuthErrorCode;
-import com.backend.sesim.domain.user.entity.Users;
-import com.backend.sesim.domain.user.repository.UsersRepository;
-import com.backend.sesim.facade.auth.dto.request.LoginRequest;
-import com.backend.sesim.facade.auth.dto.request.LoginResponse;
-import com.backend.sesim.facade.auth.dto.request.SignUpRequest;
+import com.backend.sesim.domain.user.entity.User;
+import com.backend.sesim.domain.user.repository.UserRepository;
+import com.backend.sesim.domain.auth.dto.request.LoginRequest;
+import com.backend.sesim.domain.auth.dto.request.SignUpRequest;
 import com.backend.sesim.global.exception.GlobalException;
 import com.backend.sesim.global.security.dto.Token;
 import com.backend.sesim.global.security.jwt.JwtTokenProvider;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService {
 
-    private final UsersRepository usersRepository;
+    private final UserRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -32,7 +32,7 @@ public class AuthService {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         //3. User 엔터티 생성
-        Users users = Users.builder()
+        User users = User.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .nickname(request.getNickname())
@@ -46,7 +46,7 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
         //1. 사용자 검증
-        Users users = validateLoginRequest(request);
+        User users = validateLoginRequest(request);
 
         // 2. JWT 토큰 생성
         Token token = jwtTokenProvider.generateToken(users);
@@ -62,7 +62,7 @@ public class AuthService {
     }
 
     public void logout(Long id) {
-        Users users = usersRepository.findById(id)
+        User users = usersRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
         invalidateRefreshToken(users);
@@ -79,9 +79,9 @@ public class AuthService {
         // 활성 사용자가 없으면 회원가입 가능 (새 이메일이거나 탈퇴한 사용자의 이메일)
     }
 
-    private Users validateLoginRequest(LoginRequest request) {
+    private User validateLoginRequest(LoginRequest request) {
         // 이메일로 사용자 조회
-        Users user = usersRepository.findByEmail(request.getEmail())
+        User user = usersRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
 
         // 탈퇴 여부 확인
@@ -99,7 +99,7 @@ public class AuthService {
         return user;
     }
 
-    private void invalidateRefreshToken(Users users) {
+    private void invalidateRefreshToken(User users) {
         // 사용자의 리프레시 토큰 필드를 null로 설정
         users.updateRefreshToken(null);
         usersRepository.save(users);
