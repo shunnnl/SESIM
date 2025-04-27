@@ -45,7 +45,7 @@ public class MailService {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setFrom(senderEmail);
+        helper.setFrom("Sesim 고객센터 <" + senderEmail + ">");
         helper.setTo(mail);
         helper.setSubject("Sesim 이메일 인증");
 
