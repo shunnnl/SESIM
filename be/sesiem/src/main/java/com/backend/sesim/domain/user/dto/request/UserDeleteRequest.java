@@ -1,4 +1,4 @@
-package com.backend.sesim.facade.user.dto.request;
+package com.backend.sesim.domain.user.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

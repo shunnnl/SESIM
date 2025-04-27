@@ -1,11 +1,11 @@
 package com.backend.sesim.domain.auth.service;
 
+import com.backend.sesim.domain.auth.dto.request.LoginResponse;
 import com.backend.sesim.domain.auth.exception.AuthErrorCode;
 import com.backend.sesim.domain.user.entity.User;
 import com.backend.sesim.domain.user.repository.UserRepository;
-import com.backend.sesim.facade.auth.dto.request.LoginRequest;
-import com.backend.sesim.facade.auth.dto.request.LoginResponse;
-import com.backend.sesim.facade.auth.dto.request.SignUpRequest;
+import com.backend.sesim.domain.auth.dto.request.LoginRequest;
+import com.backend.sesim.domain.auth.dto.request.SignUpRequest;
 import com.backend.sesim.global.exception.GlobalException;
 import com.backend.sesim.global.security.dto.Token;
 import com.backend.sesim.global.security.jwt.JwtTokenProvider;

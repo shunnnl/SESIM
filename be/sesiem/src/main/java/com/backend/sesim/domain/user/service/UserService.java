@@ -1,11 +1,11 @@
 package com.backend.sesim.domain.user.service;
 
 import com.backend.sesim.domain.auth.exception.AuthErrorCode;
+import com.backend.sesim.domain.user.dto.request.UserDeleteRequest;
+import com.backend.sesim.domain.user.dto.response.CurrentUserResponse;
 import com.backend.sesim.domain.user.entity.User;
 import com.backend.sesim.domain.user.exception.UserErrorCode;
 import com.backend.sesim.domain.user.repository.UserRepository;
-import com.backend.sesim.facade.user.dto.request.UserDeleteRequest;
-import com.backend.sesim.facade.user.dto.response.CurrentUserResponse;
 import com.backend.sesim.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

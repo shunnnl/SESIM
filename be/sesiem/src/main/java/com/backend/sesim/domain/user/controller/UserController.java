@@ -1,8 +1,8 @@
 package com.backend.sesim.domain.user.controller;
 
+import com.backend.sesim.domain.user.dto.request.UserDeleteRequest;
+import com.backend.sesim.domain.user.dto.response.CurrentUserResponse;
 import com.backend.sesim.domain.user.service.UserService;
-import com.backend.sesim.facade.user.dto.request.UserDeleteRequest;
-import com.backend.sesim.facade.user.dto.response.CurrentUserResponse;
 import com.backend.sesim.global.dto.CommonResponseDto;
 import com.backend.sesim.global.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;

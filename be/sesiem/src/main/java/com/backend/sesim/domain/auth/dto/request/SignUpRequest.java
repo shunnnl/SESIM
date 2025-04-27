@@ -1,10 +1,7 @@
-package com.backend.sesim.facade.auth.dto.request;
+package com.backend.sesim.domain.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
-import java.util.Date;
 
 @Builder
 @AllArgsConstructor

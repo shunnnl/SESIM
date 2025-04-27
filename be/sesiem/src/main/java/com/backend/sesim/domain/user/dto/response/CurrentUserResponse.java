@@ -1,8 +1,9 @@
-package com.backend.sesim.facade.user.dto.response;
+package com.backend.sesim.domain.user.dto.response;
 
-import java.util.Date;
-import java.util.List;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder

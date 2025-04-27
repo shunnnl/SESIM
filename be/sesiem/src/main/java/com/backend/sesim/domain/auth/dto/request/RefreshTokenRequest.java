@@ -1,4 +1,4 @@
-package com.backend.sesim.facade.auth.dto.request;
+package com.backend.sesim.domain.auth.dto.request;
 
 import lombok.Data;
 import lombok.Getter;
