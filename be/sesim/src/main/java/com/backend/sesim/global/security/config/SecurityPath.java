@@ -21,7 +21,7 @@ public enum SecurityPath {
     SWAGGER_UI_HTML("/api/swagger-ui.html"),
 
     // Auth 관련 경로
-    SIGNUP("/api/auth/signUp"),
+    SIGNUP("/api/auth/signup"),
     LOGIN("/api/auth/login"),
 
     // Mail 관련 경로

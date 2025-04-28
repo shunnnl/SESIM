@@ -27,8 +27,8 @@ public class SwaggerConfig {
                 .components(new Components().addSecuritySchemes("bearerAuth", jwtScheme))
                 .security(java.util.List.of(securityRequirement))
                 .info(new Info()
-                        .title("sesiem API")
-                        .description("sesiem 서비스의 API 문서")
+                        .title("sesim API")
+                        .description("sesim 서비스의 API 문서")
                         .version("1.0.0"));
     }
 }
