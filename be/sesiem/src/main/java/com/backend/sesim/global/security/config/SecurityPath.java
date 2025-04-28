@@ -22,7 +22,11 @@ public enum SecurityPath {
 
     // Auth 관련 경로
     SIGNUP("/api/auth/signUp"),
-    LOGIN("/api/auth/login");
+    LOGIN("/api/auth/login"),
+
+    // Mail 관련 경로
+    SEND_CODE("/api/mail/send-code"),
+    VERIFY("/api/mail/verify");
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;
