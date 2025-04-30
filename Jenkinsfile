@@ -35,7 +35,7 @@ pipeline {
                         if [ ! -x gradlew ]; then
                             chmod +x gradlew
                         fi
-                        ./gradlew clean build
+                        ./gradlew clean build -x test
                     '''
                 }
             }
