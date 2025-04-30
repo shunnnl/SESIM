@@ -50,50 +50,51 @@ pipeline {
                         string(credentialsId: 'JWT_SECRET', variable: 'JWT_SECRET')
                     ]) {
                         sh '''
-                            set -e
+                            echo 'Docker 이미지 빌드 중...'
                             docker build -t ${DOCKER_IMAGE_NAME} .
                             docker save ${DOCKER_IMAGE_NAME} > backend_image.tar
 
                             ##################################
-                            echo "🚀 배포 대상: ${BE_SERVER_1}"
+                            echo "🚀 BE_SERVER_1 배포 시작: ${BE_SERVER_1}"
                             ##################################
                             ssh -i ${DEPLOY_KEY_1} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_1} "rm -f ${APP_DIR}/backend_image.tar"
                             scp -i ${DEPLOY_KEY_1} -o StrictHostKeyChecking=no backend_image.tar ubuntu@${BE_SERVER_1}:${APP_DIR}
-                            ssh -i ${DEPLOY_KEY_1} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_1} << 'EOF'
-                                docker stop ${DOCKER_CONTAINER_NAME} || true
-                                docker rm ${DOCKER_CONTAINER_NAME} || true
-                                docker rmi -f ${DOCKER_IMAGE_NAME} || true
-                                docker load < ${APP_DIR}/backend_image.tar
-                                docker run -d --name ${DOCKER_CONTAINER_NAME} -p 8080:8080 \
-                                -e DB_URL=jdbc:mysql://${BE_SERVER_1}:6033/sesim \
-                                -e DB_USERNAME=sesim \
-                                -e DB_PASSWORD=$DB_PASSWORD \
-                                -e MAIL_USERNAME=siyun2072@gmail.com \
-                                -e MAIL_PASSWORD=$MAIL_PASSWORD \
-                                -e JWT_SECRET=$JWT_SECRET \
-                                ${DOCKER_IMAGE_NAME}
-                            EOF
+                            ssh -i ${DEPLOY_KEY_1} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_1} "
+                                docker stop '${DOCKER_CONTAINER_NAME}' || true
+                                docker rm '${DOCKER_CONTAINER_NAME}' || true
+                                docker rmi -f '${DOCKER_IMAGE_NAME}' || true
+                                docker load < '${APP_DIR}/backend_image.tar'
+                                docker run -d --name '${DOCKER_CONTAINER_NAME}' -p 8080:8080 \
+                                -e DB_URL='jdbc:mysql://${BE_SERVER_1}:6033/sesim' \
+                                -e DB_USERNAME='sesim' \
+                                -e DB_PASSWORD='${DB_PASSWORD}' \
+                                -e MAIL_USERNAME='siyun2072@gmail.com' \
+                                -e MAIL_PASSWORD='${MAIL_PASSWORD}' \
+                                -e JWT_SECRET='${JWT_SECRET}' \
+                                '${DOCKER_IMAGE_NAME}'
+                            "
                             
                             ##################################
-                            echo "🚀 배포 대상: ${BE_SERVER_2}"
+                            echo "🚀 BE_SERVER_2 배포 시작: ${BE_SERVER_2}"
                             ##################################
                             ssh -i ${DEPLOY_KEY_2} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_2} "rm -f ${APP_DIR}/backend_image.tar"
                             scp -i ${DEPLOY_KEY_2} -o StrictHostKeyChecking=no backend_image.tar ubuntu@${BE_SERVER_2}:${APP_DIR}
-                            ssh -i ${DEPLOY_KEY_2} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_2} << 'EOF'
-                                docker stop ${DOCKER_CONTAINER_NAME} || true
-                                docker rm ${DOCKER_CONTAINER_NAME} || true
-                                docker rmi -f ${DOCKER_IMAGE_NAME} || true
-                                docker load < ${APP_DIR}/backend_image.tar
-                                docker run -d --name ${DOCKER_CONTAINER_NAME} -p 8080:8080 \
-                                -e DB_URL=jdbc:mysql://${BE_SERVER_2}:6033/sesim \
-                                -e DB_USERNAME=sesim \
-                                -e DB_PASSWORD=$DB_PASSWORD \
-                                -e MAIL_USERNAME=siyun2072@gmail.com \
-                                -e MAIL_PASSWORD=$MAIL_PASSWORD \
-                                -e JWT_SECRET=$JWT_SECRET \
-                                ${DOCKER_IMAGE_NAME}
-                            EOF
+                            ssh -i ${DEPLOY_KEY_2} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_2} "
+                                docker stop '${DOCKER_CONTAINER_NAME}' || true
+                                docker rm '${DOCKER_CONTAINER_NAME}' || true
+                                docker rmi -f '${DOCKER_IMAGE_NAME}' || true
+                                docker load < '${APP_DIR}/backend_image.tar'
+                                docker run -d --name '${DOCKER_CONTAINER_NAME}' -p 8080:8080 \
+                                -e DB_URL='jdbc:mysql://${BE_SERVER_2}:6033/sesim' \
+                                -e DB_USERNAME='sesim' \
+                                -e DB_PASSWORD='${DB_PASSWORD}' \
+                                -e MAIL_USERNAME='siyun2072@gmail.com' \
+                                -e MAIL_PASSWORD='${MAIL_PASSWORD}' \
+                                -e JWT_SECRET='${JWT_SECRET}' \
+                                '${DOCKER_IMAGE_NAME}'
+                            "
 
+                            echo "🧹 로컬 tar 파일 삭제"
                             rm -f backend_image.tar
                         '''
                     }
