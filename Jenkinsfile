@@ -59,7 +59,7 @@ pipeline {
                             ##################################
                             ssh -i ${DEPLOY_KEY_1} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_1} "rm -f ${APP_DIR}/backend_image.tar"
                             scp -i ${DEPLOY_KEY_1} -o StrictHostKeyChecking=no backend_image.tar ubuntu@${BE_SERVER_1}:${APP_DIR}
-                            ssh -i ${DEPLOY_KEY_1} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_1} << EOF
+                            ssh -i ${DEPLOY_KEY_1} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_1} << 'EOF'
                                 docker stop ${DOCKER_CONTAINER_NAME} || true
                                 docker rm ${DOCKER_CONTAINER_NAME} || true
                                 docker rmi -f ${DOCKER_IMAGE_NAME} || true
@@ -79,7 +79,7 @@ pipeline {
                             ##################################
                             ssh -i ${DEPLOY_KEY_2} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_2} "rm -f ${APP_DIR}/backend_image.tar"
                             scp -i ${DEPLOY_KEY_2} -o StrictHostKeyChecking=no backend_image.tar ubuntu@${BE_SERVER_2}:${APP_DIR}
-                            ssh -i ${DEPLOY_KEY_2} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_2} << EOF
+                            ssh -i ${DEPLOY_KEY_2} -o StrictHostKeyChecking=no ubuntu@${BE_SERVER_2} << 'EOF'
                                 docker stop ${DOCKER_CONTAINER_NAME} || true
                                 docker rm ${DOCKER_CONTAINER_NAME} || true
                                 docker rmi -f ${DOCKER_IMAGE_NAME} || true
