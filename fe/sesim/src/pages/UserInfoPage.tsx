@@ -13,12 +13,10 @@ const InfoField = ({ label, value }: { label: string; value: string }) => (
 export const UserInfoPage = () => {
   return (
     <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black">
-      {/* 사이드바 */}
       <div className="mr-12">
         <Sidebar />
       </div>
 
-      {/* 콘텐츠 영역 */}
       <div className="flex flex-col flex-1 p-6 justify-between mt-4">
         <div>
           <h1 className="text-2xl font-semibold flex items-center gap-2 mt-3 mb-12">
@@ -30,8 +28,7 @@ export const UserInfoPage = () => {
           <InfoField label="이메일" value="ssafy@gmail.com" />
         </div>
 
-        {/* 하단 버튼 */}
-        <div className="w- mt-6 self-end">
+        <div className="w- mt-6 ml-72">
           <button className="px-4 py-2 border border-white text-white rounded-full bg-transparent hover:bg-white hover:text-gray-900 transition-colors duration-200">
             회원 탈퇴
           </button>
