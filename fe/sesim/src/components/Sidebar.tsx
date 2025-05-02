@@ -38,9 +38,9 @@ export const Sidebar: React.FC = () => {
                     프로젝트
                 </NavLink>
 
-                <NavLink to="/help" className={getNavLinkClass}>
+                <NavLink to="/keyinfo" className={getNavLinkClass}>
                     <FaKey className="text-sm text-gray-400" />
-                    키발급
+                    키 정보
                 </NavLink>
             </nav>
         </div>
