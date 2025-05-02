@@ -7,7 +7,7 @@ pipeline {
     FE_SERVER_2 = '13.124.60.56'
     DEPLOY_PATH = '/home/ubuntu/sesim'
     FE_PROJECT_DIR = 'fe/sesim'
-    FE_PROJECT_DIR_PATH = '/jenkins-data/workspace/sesim-frontend-deploy/fe/sesim'
+    FE_PROJECT_DIR_PATH = '/var/jenkins_home/workspace/sesim-frontend-deploy/fe/sesim'
   }
 
   options {
