@@ -9,6 +9,9 @@ export default {
       backgroundImage: {
         'cyber-security': "url('/src/assets/images/cyber-security-bg.jpg')",
       },
+      fontFamily: {
+        sans: ['Pretendard', 'system-ui', 'sans-serif'],
+      },
     },
   },
   plugins: [],
