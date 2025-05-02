@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { login } from "../../services/authService";
 import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 
 interface LoginModalProps {
@@ -11,6 +12,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     const [password, setPassword] = useState("");
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
+    const [loginErrorMessage, setLoginErrorMessage] = useState("");
 
     const [showPassword, setShowPassword] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
@@ -22,6 +24,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         setPassword("");
         setEmailError("");
         setPasswordError("");
+        setLoginErrorMessage("");
+        setShowPassword(false);
         onClose();
     };
 
@@ -48,13 +52,23 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     };
 
 
-    const handleLoginSubmit = (e: React.FormEvent) => {
+    const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const isValid = validateLoginForm();
 
         if (isValid) {
-            // TODO: 로그인 API
+            try {
+                const data = await login({ email, password });
+
+                if (data.success) {
+                    handleClose();
+                } else {
+                    setLoginErrorMessage("로그인 정보를 다시 확인해주세요.");
+                }
+            } catch (error) {
+                console.error("로그인 실패:", error);
+            }
         }
     };
 
@@ -190,7 +204,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         </form>
 
                         {/* 회원가입 버튼 */}
-                        <div className="flex justify-end">
+                        <div className="flex justify-between">
+                            <p className={`font-['Pretendard'] text-red-500 text-xs mt-1 hidden: ${loginErrorMessage ? false : true}`}>{loginErrorMessage}</p>
                             <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
                                 아직 회원이 아니신가요?{"  "}
                                 <a className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer">
