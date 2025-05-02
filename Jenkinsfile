@@ -40,9 +40,9 @@ pipeline {
     stage('Deploy to Frontend Servers') {
       steps {
         sh '''
-          scp -i ${DEPLOY_KEY} -o StrictHostKeyChecking=no -r ${FE_PROJECT_DIR_PATH}/dist/* ubuntu@${FE_SERVER_1}:${DEPLOY_PATH}
+          scp -i ${DEPLOY_KEY} -o StrictHostKeyChecking=no -r ${FE_PROJECT_DIR_PATH}/dist/* ubuntu@${FE_SERVER_1}:${DEPLOY_PATH}/dist
 
-          scp -i ${DEPLOY_KEY} -o StrictHostKeyChecking=no -r ${FE_PROJECT_DIR_PATH}/dist/* ubuntu@${FE_SERVER_2}:${DEPLOY_PATH}
+          scp -i ${DEPLOY_KEY} -o StrictHostKeyChecking=no -r ${FE_PROJECT_DIR_PATH}/dist/* ubuntu@${FE_SERVER_2}:${DEPLOY_PATH}/dist
 
           echo "✅ 프론트 배포 완료!"
         '''
