@@ -76,11 +76,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
     return (
         <div
-            className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 ${isOpen ? 'opacity-100 animate-fadeIn' : 'opacity-0 animate-fadeOut'}`}
+            className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}
             onClick={handleClose}
         >
             <div
-                className={`relative w-[90%] sm:w-[80%] md:w-[60%] lg:w-[35%] max-h-[750px] rounded-[30px] transform transition-all duration-300 ${isOpen ? 'opacity-100 translate-y-0 animate-slideIn' : 'opacity-0 translate-y-4 animate-slideOut'}`}
+                className={`relative w-[90%] sm:w-[80%] md:w-[60%] lg:w-[35%] max-h-[750px] rounded-[30px] transform transition-all duration-300 ${isOpen ? "opacity-100 translate-y-0 animate-slideIn" : "opacity-0 translate-y-4 animate-slideOut"}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div
@@ -105,7 +105,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                             <div className="relative group">
                                 <label
                                     className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300
-                                        ${isEmailFocused || email ? 'top-[-10px] opacity-100' : 'top-[50%] translate-y-[-50%] opacity-0'}`}
+                                        ${isEmailFocused || email ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
                                 >
                                     이메일
                                 </label>
@@ -134,7 +134,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                             <div className="relative group">
                                 <label
                                     className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300
-                                        ${isPasswordFocused || password ? 'top-[-10px] opacity-100' : 'top-[50%] translate-y-[-50%] opacity-0'}`}
+                                        ${isPasswordFocused || password ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
                                 >
                                     비밀번호
                                 </label>
