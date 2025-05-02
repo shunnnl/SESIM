@@ -1,34 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { Navbar } from './components/Navbar'
+import { HomePage } from './pages/HomePage'
+import { AboutPage } from './pages/AboutPage'
+import { AiModelPage } from './pages/AiModelPage'
+import { DocsPage } from './pages/DocsPage'
+import { ModelInferenceServicePage } from './pages/ModelInferenceServicePage'
 
-function App() {
-  const [count, setCount] = useState(0)
+// 레이아웃 컴포넌트를 따로 분리
+const Layout = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className={`${isHomePage ? 'bg-cyber-security bg-cover bg-center bg-no-repeat min-h-screen' : ''}`}>
+      <Navbar />
+      <main className="w-full px-4 sm:px-6 md:px-8 lg:px-[178px] max-w-[1564px] mx-auto">
+        <Routes>
+          <Route path="/" element={<HomePage />}  />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/ai-model" element={<AiModelPage />} />
+          <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
+          <Route path="/docs" element={<DocsPage />} />
+        </Routes>
+      </main>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Layout />
+    </BrowserRouter>
   )
 }
 
