@@ -16,6 +16,7 @@ app = FastAPI(
     title="Sesim",
     description="Client Sesim Server",
     version="1.0.0",
+    root_path="/api",
     lifespan=lifespan,
 )
 
