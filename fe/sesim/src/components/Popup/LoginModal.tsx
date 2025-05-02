@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { EyeIcon, EyeSlashIcon } from "../common/Icon";
+import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 
 interface LoginModalProps {
     isOpen: boolean;
