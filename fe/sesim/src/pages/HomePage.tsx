@@ -1,8 +1,10 @@
+import { DetailButton } from "../components/Navbar/DetailButton";
+
 export const HomePage: React.FC = () => {
     return (
         <div className="flex flex-col gap-[72px] text-white h-screen justify-center">
             <div className="flex flex-col gap-[24px] text-white">
-                <p className="text-4xl font-bold">
+                <p className="text-5xl font-bold">
                     민감한 데이터를 지키는
                     <br />
                     가장 신뢰할 수 있는 AI 보안 솔루션
@@ -15,11 +17,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             <div>
-                <button>
-                    <p className="text-white text-xl font-bold">
-                        자세히보기
-                    </p>
-                </button>
+                <DetailButton />
             </div>
         </div>
 

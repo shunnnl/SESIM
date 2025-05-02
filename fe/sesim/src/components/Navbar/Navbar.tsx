@@ -1,15 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { SesimLogo } from './SesimLogo';
 
-export const Navbar: React.FC = () => {
+const NavbarMenu: React.FC = () => {
     return (
-        <nav className="navbar flex justify-between items-center py-[16px] px-[178px] border-b-2 border-white/24 text-white">
-            <div className="sesim-logo">
-                <Link to="/">
-                    SESIM
-                </Link>
-            </div>
-            <div className="nav-menu flex gap-[60px]">
+        <>
+            <div className="nav-menu flex gap-[60px] text-[18px] text-white">
                 <Link to="/">
                     홈
                 </Link>
@@ -26,8 +22,20 @@ export const Navbar: React.FC = () => {
                     Docs
                 </Link>
             </div>
+        </>
+    );
+};
+
+export const Navbar: React.FC = () => {
+    return (
+        <nav className="sticky top-0 z-50 flex justify-between items-center h-[96px] px-[178px] border-b-2 border-white/24">
+            <div className="flex items-center gap-[120px]">
+                <SesimLogo />
+                <NavbarMenu />
+            </div>
+            
             <div className="login-signup">
-                <button>로그인</button>
+                <button className="text-white text-[18px]">로그인</button>
             </div>
         </nav>
     );
