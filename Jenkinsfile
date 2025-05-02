@@ -7,6 +7,7 @@ pipeline {
     FE_SERVER_2 = '13.124.60.56'
     DEPLOY_PATH = '/home/ubuntu/sesim'
     FE_PROJECT_DIR = 'fe/sesim'
+    FE_PROJECT_DIR_PATH = '/jenkins-data/workspace/sesim-frontend-deploy/${FE_PROJECT_DIR}'
   }
 
   options {
@@ -39,9 +40,9 @@ pipeline {
     stage('Deploy to Frontend Servers') {
       steps {
         sh '''
-          scp -i ${DEPLOY_KEY} -o StrictHostKeyChecking=no -r ${FE_PROJECT_DIR}/dist/* ubuntu@${FE_SERVER_1}:${DEPLOY_PATH}
+          scp -i ${DEPLOY_KEY} -o StrictHostKeyChecking=no -r ${FE_PROJECT_DIR_PATH}/dist/* ubuntu@${FE_SERVER_1}:${DEPLOY_PATH}
 
-          scp -i ${DEPLOY_KEY} -o StrictHostKeyChecking=no -r ${FE_PROJECT_DIR}/dist/* ubuntu@${FE_SERVER_2}:${DEPLOY_PATH}
+          scp -i ${DEPLOY_KEY} -o StrictHostKeyChecking=no -r ${FE_PROJECT_DIR_PATH}/dist/* ubuntu@${FE_SERVER_2}:${DEPLOY_PATH}
 
           echo "✅ 프론트 배포 완료!"
         '''
