@@ -1,10 +1,11 @@
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { HomePage } from './pages/HomePage'
-import { DocsPage } from './pages/DocsPage'
-import { Navbar } from './components/Navbar'
-import { AboutPage } from './pages/AboutPage'
-import { AiModelPage } from './pages/AiModelPage'
-import { ModelInferenceServicePage } from './pages/ModelInferenceServicePage'
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { HomePage } from './pages/HomePage';
+import { DocsPage } from './pages/DocsPage';
+import { Navbar } from './components/Navbar';
+import { AboutPage } from './pages/AboutPage';
+import { AiModelPage } from './pages/AiModelPage';
+import { UserInfoPage } from './pages/UserInfoPage';
+import { ModelInferenceServicePage } from './pages/ModelInferenceServicePage';
 
 // 레이아웃 컴포넌트를 따로 분리
 const Layout = () => {
@@ -12,7 +13,7 @@ const Layout = () => {
   const isHomePage = location.pathname === '/';
 
   return (
-    <div className={`${isHomePage ? 'bg-cyber-security bg-cover bg-center bg-no-repeat min-h-screen' : ''}`}>
+    <div className={`min-h-screen bg-[#0A0C35] ${isHomePage ? 'bg-cyber-security bg-cover bg-center bg-no-repeat' : ''}`}>
       <Navbar />
       <main className="w-full px-4 sm:px-6 md:px-8 lg:px-[178px] max-w-[1564px] mx-auto">
         <Routes>
@@ -21,6 +22,7 @@ const Layout = () => {
           <Route path="/ai-model" element={<AiModelPage />} />
           <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
           <Route path="/docs" element={<DocsPage />} />
+          <Route path="/userinfo" element={<UserInfoPage/>} />
         </Routes>
       </main>
     </div>
@@ -35,4 +37,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
