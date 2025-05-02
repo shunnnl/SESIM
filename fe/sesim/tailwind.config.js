@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 export default {
   content: [
     "./index.html",
@@ -9,10 +9,16 @@ export default {
       backgroundImage: {
         'cyber-security': "url('/src/assets/images/cyber-security-bg.jpg')",
       },
-      fontFamily: {
-        sans: ['Pretendard', 'system-ui', 'sans-serif'],
+      keyframes: {
+        slideInRight: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+      },
+      animation: {
+        slideInRight: 'slideInRight 0.3s ease-out',
       },
     },
   },
   plugins: [],
-} 
+}
