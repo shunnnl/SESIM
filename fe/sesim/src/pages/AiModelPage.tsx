@@ -1,4 +1,3 @@
-
 export const AiModelPage: React.FC = () => {
     return (
         <div>

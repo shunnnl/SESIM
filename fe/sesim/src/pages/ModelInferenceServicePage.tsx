@@ -1,4 +1,3 @@
-
 export const ModelInferenceServicePage: React.FC = () => {
     return (
         <div>
