@@ -1,0 +1,1213 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 4,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "gridPos": {
+        "h": 3,
+        "w": 18,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "\n<h1 style=\"font-size: 48px; text-align: center; font-weight: bold;\">\n  SESIM <span style=\"color: blue; font-weight: bold;\">AI모델명</span>\n</h1>",
+        "mode": "html"
+      },
+      "pluginVersion": "9.5.21",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "dark-orange",
+                "value": 30
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 25,
+          "valueSize": 30
+        },
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH logs AS (\r\n  SELECT \r\n    is_attack,\r\n    status_code,\r\n    path\r\n  FROM ai_result \r\n  WHERE timestamp BETWEEN to_timestamp($__from / 1000) AND to_timestamp($__to / 1000)\r\n),\r\naggregates AS (\r\n  SELECT \r\n    COUNT(*) AS total_requests,\r\n    SUM(CASE WHEN is_attack THEN 1 ELSE 0 END) AS attack_requests,\r\n    SUM(CASE WHEN status_code BETWEEN 500 AND 599 THEN 1 ELSE 0 END) AS error_5xx,\r\n    SUM(CASE WHEN path ILIKE '%../%' OR path ILIKE '%admin%' OR path ILIKE '%.php%' THEN 1 ELSE 0 END) AS abnormal_paths\r\n  FROM logs\r\n),\r\nscores AS (\r\n  SELECT\r\n    total_requests,\r\n    attack_requests,\r\n    error_5xx,\r\n    abnormal_paths,\r\n    attack_requests::float / NULLIF(total_requests, 0) AS attack_rate,\r\n    CASE \r\n      WHEN total_requests = 0 THEN 100\r\n      ELSE GREATEST(\r\n        0,\r\n        100\r\n        - CASE \r\n            WHEN attack_requests::float / NULLIF(total_requests, 0) >= 0.2 THEN attack_requests::float / NULLIF(total_requests, 0) * 60\r\n            ELSE attack_requests::float / NULLIF(total_requests, 0) * 30\r\n          END\r\n        - (error_5xx::float / total_requests) * 25\r\n        - (abnormal_paths::float / total_requests) * 15\r\n      )\r\n    END AS score\r\n  FROM aggregates\r\n)\r\nSELECT\r\n  score AS \"보안점수\",\r\n  CASE\r\n    WHEN score >= 90 THEN '매우 양호'\r\n    WHEN score >= 70 THEN '양호,약간 주의 필요'\r\n    WHEN score >= 50 THEN '경고'\r\n    WHEN score >= 30 THEN '위험'\r\n    ELSE '심각'\r\n  END AS \"보안 상태\"\r\nFROM scores;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "보안점수",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 5,
+        "x": 0,
+        "y": 3
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {
+          "titleSize": 25,
+          "valueSize": 40
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    COUNT(*) AS \"탐지된 로그\"\r\nFROM ai_result\r\nWHERE\r\n    timestamp >= to_timestamp(${__from} / 1000)\r\n    AND timestamp <= to_timestamp(${__to} / 1000);\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 13,
+        "x": 5,
+        "y": 3
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH interval_setting AS (\r\n    SELECT \r\n        CASE \r\n            WHEN (${__to} - ${__from}) <= 3600000 THEN '1 minute'::interval  -- 1시간 이하\r\n            WHEN (${__to} - ${__from}) <= 86400000 THEN '1 hour'::interval    -- 24시간 이하\r\n            ELSE '1 day'::interval  -- 24시간 초과\r\n        END AS interval_value,\r\n        CASE \r\n            WHEN (${__to} - ${__from}) <= 3600000 THEN 'minute'  -- 1시간 이하\r\n            WHEN (${__to} - ${__from}) <= 86400000 THEN 'hour'   -- 24시간 이하\r\n            ELSE 'day'  -- 24시간 초과\r\n        END AS trunc_unit\r\n),\r\ntime_series AS (\r\n    SELECT generate_series(\r\n        date_trunc(\r\n            (SELECT trunc_unit FROM interval_setting),\r\n            to_timestamp(${__from} / 1000)\r\n        ),\r\n        date_trunc(\r\n            (SELECT trunc_unit FROM interval_setting),\r\n            to_timestamp(${__to} / 1000)\r\n        ),\r\n        (SELECT interval_value FROM interval_setting)\r\n    ) AS time_interval\r\n),\r\nattack_data AS (\r\n    SELECT\r\n        CASE\r\n            WHEN (SELECT interval_value FROM interval_setting) = '1 minute'::interval\r\n                THEN date_trunc('minute', timestamp)  -- 1분 단위 처리\r\n            WHEN (SELECT interval_value FROM interval_setting) = '10 minutes'::interval\r\n                THEN date_trunc('hour', timestamp) + INTERVAL '10 min' * floor(date_part('minute', timestamp) / 10)  -- 10분 단위 처리\r\n            WHEN (SELECT interval_value FROM interval_setting) = '1 hour'::interval\r\n                THEN date_trunc('hour', timestamp)  -- 1시간 단위 처리\r\n            ELSE\r\n                date_trunc('day', timestamp)  -- 1일 단위 처리\r\n        END AS time_interval,\r\n        COUNT(*) AS anomaly_count\r\n    FROM ai_result \r\n    WHERE is_attack = TRUE\r\n      AND timestamp >= to_timestamp(${__from} / 1000)\r\n      AND timestamp <= to_timestamp(${__to} / 1000)\r\n    GROUP BY time_interval\r\n)\r\nSELECT \r\n    ts.time_interval,\r\n    COALESCE(ad.anomaly_count, 0) AS anomaly_count\r\nFROM time_series ts\r\nLEFT JOIN attack_data ad ON ts.time_interval = ad.time_interval\r\nORDER BY ts.time_interval;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "이상탐지 그래프",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ip"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 347
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 6,
+        "x": 18,
+        "y": 3
+      },
+      "id": 7,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT ip, COUNT(*) AS \"공격횟수\"\r\nFROM ai_result \r\nWHERE timestamp >= $__timeFrom() AND timestamp <= $__timeTo()  -- Grafana에서 시간 범위를 자동으로 설정\r\n  AND is_attack = TRUE  -- 공격으로 표시된 로그만\r\nGROUP BY ip\r\nORDER BY \"공격횟수\" DESC\r\nLIMIT 10;  -- 상위 10개 IP만 표시",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "이상사용자 top 10",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 5,
+        "x": 0,
+        "y": 5
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 25,
+          "valueSize": 40
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    COUNT(*) AS \"이상행동 탐지수\"\r\nFROM ai_result\r\nWHERE\r\n    is_attack = TRUE\r\n    AND timestamp >= to_timestamp(${__from} / 1000)\r\n    AND timestamp <= to_timestamp(${__to} / 1000);",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#ff0e0e",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "string"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 5,
+        "x": 0,
+        "y": 7
+      },
+      "id": 11,
+      "options": {
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    CASE \r\n        WHEN is_attack = TRUE THEN '이상행동'\r\n        ELSE '정상행동'\r\n    END AS behavior_type,\r\n    COUNT(*) AS count\r\nFROM ai_result\r\nWHERE\r\n    timestamp >= to_timestamp(${__from} / 1000)\r\n    AND timestamp <= to_timestamp(${__to} / 1000)\r\nGROUP BY behavior_type;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "탐지 결과 이상행동비율",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 13,
+        "x": 5,
+        "y": 12
+      },
+      "id": 14,
+      "options": {
+        "calculate": false,
+        "cellGap": 0,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "RdYlGn",
+          "steps": 128
+        },
+        "exemplars": {
+          "color": "orange"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "ge"
+        },
+        "tooltip": {
+          "show": true,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false
+        }
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH interval_setting AS (\r\n    SELECT \r\n        CASE \r\n            WHEN (${__to} - ${__from}) <= 3600000 THEN '1 minute'::interval  -- 1시간 이하\r\n            WHEN (${__to} - ${__from}) <= 86400000 THEN '1 hour'::interval    -- 24시간 이하\r\n            ELSE '1 day'::interval  -- 24시간 초과\r\n        END AS interval_value,\r\n        CASE \r\n            WHEN (${__to} - ${__from}) <= 3600000 THEN 'minute'  -- 1시간 이하\r\n            WHEN (${__to} - ${__from}) <= 86400000 THEN 'hour'   -- 24시간 이하\r\n            ELSE 'day'  -- 24시간 초과\r\n        END AS trunc_unit\r\n),\r\ntime_series AS (\r\n    SELECT generate_series(\r\n        date_trunc(\r\n            (SELECT trunc_unit FROM interval_setting),\r\n            to_timestamp(${__from} / 1000)\r\n        ),\r\n        date_trunc(\r\n            (SELECT trunc_unit FROM interval_setting),\r\n            to_timestamp(${__to} / 1000)\r\n        ),\r\n        (SELECT interval_value FROM interval_setting)\r\n    ) AS time_interval\r\n),\r\nattack_data AS (\r\n    SELECT\r\n        CASE\r\n            WHEN (SELECT interval_value FROM interval_setting) = '1 minute'::interval\r\n                THEN date_trunc('minute', timestamp)  -- 1분 단위 처리\r\n            WHEN (SELECT interval_value FROM interval_setting) = '1 hour'::interval\r\n                THEN date_trunc('hour', timestamp)  -- 1시간 단위 처리\r\n            ELSE\r\n                date_trunc('day', timestamp)  -- 1일 단위 처리\r\n        END AS time_interval,\r\n        COUNT(*) AS anomaly_count\r\n    FROM ai_result \r\n    WHERE is_attack = TRUE\r\n      AND timestamp >= to_timestamp(${__from} / 1000)\r\n      AND timestamp <= to_timestamp(${__to} / 1000)\r\n    GROUP BY time_interval\r\n)\r\nSELECT \r\n    ts.time_interval,\r\n    COALESCE(ad.anomaly_count, 0) AS anomaly_count\r\nFROM time_series ts\r\nLEFT JOIN attack_data ad ON ts.time_interval = ad.time_interval\r\nORDER BY ts.time_interval;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "히트맵",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 10,
+        "x": 5,
+        "y": 16
+      },
+      "id": 13,
+      "options": {
+        "color": "blue",
+        "iteration": 7,
+        "labelSize": 14,
+        "monochrome": false,
+        "nodeColor": "grey",
+        "nodePadding": 30,
+        "nodeWidth": 30
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH attack_flows AS (\r\n    SELECT\r\n        ip AS source,\r\n        path AS target,\r\n        COUNT(*) AS value\r\n    FROM ai_result \r\n    WHERE is_attack = TRUE\r\n      AND timestamp >= to_timestamp(${__from} / 1000)\r\n      AND timestamp <= to_timestamp(${__to} / 1000)\r\n    GROUP BY ip, path\r\n),\r\ntop_attackers AS (\r\n    SELECT\r\n        source\r\n    FROM attack_flows\r\n    GROUP BY source\r\n    ORDER BY SUM(value) DESC\r\n    LIMIT 3\r\n)\r\nSELECT *\r\nFROM attack_flows\r\nWHERE source IN (SELECT source FROM top_attackers)\r\nORDER BY value DESC;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "top3 이상행동 사용자 공격경로",
+      "type": "netsage-sankey-panel"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "path"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 559
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 9,
+        "x": 15,
+        "y": 16
+      },
+      "id": 6,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT path, COUNT(*) AS \"공격횟수\"\r\nFROM ai_result \r\nWHERE timestamp >= $__timeFrom() AND timestamp <= $__timeTo()  -- Grafana에서 시간 범위를 자동으로 설정\r\n  AND is_attack = TRUE  -- 공격으로 표시된 로그만\r\nGROUP BY path\r\nORDER BY \"공격횟수\" DESC\r\nLIMIT 10;  -- 상위 10개 경로만 표시",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "가장 많이 공격 받은 경로",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 30
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 0,
+        "y": 18
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {
+          "titleSize": 25,
+          "valueSize": 40
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH current_period AS (\r\n    SELECT COUNT(*) AS \"현재기간 공격횟수\"\r\n    FROM ai_result\r\n    WHERE is_attack = TRUE\r\n    AND timestamp >= to_timestamp(${__from} / 1000)\r\n    AND timestamp <= to_timestamp(${__to} / 1000)\r\n),\r\nprevious_period AS (\r\n    SELECT COUNT(*) AS \"이전기간 공격횟수\"\r\n    FROM ai_result\r\n    WHERE is_attack = TRUE\r\n    AND timestamp >= to_timestamp(${__from} / 1000) - INTERVAL '1 day'\r\n    AND timestamp < to_timestamp(${__from} / 1000)\r\n)\r\nSELECT\r\n    current_period.\"현재기간 공격횟수\",\r\n    previous_period.\"이전기간 공격횟수\"\r\nFROM current_period, previous_period;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "orange",
+                "value": 40
+              },
+              {
+                "color": "dark-orange",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 0,
+        "y": 24
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^공격 증감률$/",
+          "values": false
+        },
+        "text": {
+          "titleSize": 25,
+          "valueSize": 60
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "WITH current_period AS (\r\n    SELECT COUNT(*) AS \"현재 단위기간 공격횟수\"\r\n    FROM ai_result\r\n    WHERE is_attack = TRUE\r\n    AND timestamp >= to_timestamp(${__from} / 1000)\r\n    AND timestamp <= to_timestamp(${__to} / 1000)\r\n),\r\nprevious_period AS (\r\n    SELECT COUNT(*) AS \"이전 단위기간 공격횟수\"\r\n    FROM ai_result\r\n    WHERE is_attack = TRUE\r\n    AND timestamp >= to_timestamp(${__from} / 1000) - INTERVAL '1 day'\r\n    AND timestamp < to_timestamp(${__from} / 1000)\r\n)\r\nSELECT\r\n    current_period.\"현재 단위기간 공격횟수\" AS \"현재 단위기간 공격횟수\",\r\n    previous_period.\"이전 단위기간 공격횟수\" AS \"이전 단위기간 공격횟수\",\r\n    CASE\r\n        WHEN previous_period.\"이전 단위기간 공격횟수\" = 0 THEN NULL  -- 이전 기간에 공격이 없으면 증감률을 계산하지 않음\r\n        ELSE\r\n            (current_period.\"현재 단위기간 공격횟수\" - previous_period.\"이전 단위기간 공격횟수\") * 100.0 / previous_period.\"이전 단위기간 공격횟수\"\r\n    END AS \"공격 증감률\"\r\nFROM current_period, previous_period;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 10,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    timestamp AS \"시간\",\r\n    ip,\r\n    path AS \"경로\"\r\nFROM\r\nai_result \r\nWHERE\r\n    is_attack = TRUE\r\nORDER BY\r\n    timestamp DESC;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "실시간 이상탐지",
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s"
+    ]
+  },
+  "timezone": "browser",
+  "title": "test dashboard",
+  "uid": "dek6a3kaic268a1",
+  "version": 3,
+  "weekStart": ""
+}
