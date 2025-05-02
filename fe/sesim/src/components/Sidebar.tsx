@@ -1,7 +1,7 @@
     import React from 'react';
     import { NavLink } from 'react-router-dom';
     import { LuChartColumnIncreasing } from "react-icons/lu";
-    import { FaFolder ,FaUserAlt,FaKey, FaMoneyBillWave } from 'react-icons/fa';
+    import { FaFolder ,FaUserAlt,FaKey} from 'react-icons/fa';
 
     export const Sidebar: React.FC = () => {
     const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
