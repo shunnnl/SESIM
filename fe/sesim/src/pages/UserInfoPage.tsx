@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sidebar } from '../components/Sidebar';
+import React from "react";
+import { Sidebar } from "../components/Sidebar";
 
 const InfoField = ({ label, value }: { label: string; value: string }) => (
   <div className="mt-6 mb-6">
@@ -28,7 +28,7 @@ export const UserInfoPage = () => {
           <InfoField label="이메일" value="ssafy@gmail.com" />
         </div>
 
-        <div className="w- mt-6 ml-72">
+        <div className="mt-6 ml-72">
           <button className="px-4 py-2 border border-white text-white rounded-full bg-transparent hover:bg-white hover:text-gray-900 transition-colors duration-200">
             회원 탈퇴
           </button>

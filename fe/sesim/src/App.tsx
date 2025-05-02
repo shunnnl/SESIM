@@ -4,8 +4,9 @@ import { DocsPage } from './pages/DocsPage';
 import { Navbar } from './components/Navbar';
 import { AboutPage } from './pages/AboutPage';
 import { AiModelPage } from './pages/AiModelPage';
-import { ModelInferenceServicePage } from './pages/ModelInferenceServicePage';
 import { UserInfoPage } from './pages/UserInfoPage';
+import { ModelInferenceServicePage } from './pages/ModelInferenceServicePage';
+
 
 // 레이아웃 컴포넌트를 따로 분리
 const Layout = () => {
