@@ -44,6 +44,5 @@ export const Sidebar: React.FC = () => {
                 </NavLink>
             </nav>
         </div>
-
     );
 };

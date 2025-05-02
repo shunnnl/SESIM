@@ -6,7 +6,7 @@ import loading from "../../assets/lotties/Loading.json";
 interface ListItem {
     id: number;
     modelName: string;
-    ALBadress: string;
+    ALBaddress: string;
     APIKeyState: string;
     state: string;
 }
@@ -97,9 +97,9 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
 
                             <p className="text-lg font-semibold text-white flex items-center gap-2 ml-2">
                                 <span className="w-1 h-1 rounded-full bg-gray-400 inline-block mr-1" />
-                                ABL주소
+                                ALB주소
                             </p>
-                            <p className="text-lg text-white ml-2 mb-2">{item.ALBadress}</p>
+                            <p className="text-lg text-white ml-2 mb-2">{item.ALBaddress}</p>
 
                             <div className="flex items-center gap-2 ml-2 mb-2">
                                 <span className="w-1 h-1 rounded-full bg-gray-400 inline-block mr-1" />
@@ -111,7 +111,7 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
                                 <p className="text-lg text-white">배포상태</p>
 
                                 <div
-                                    className={`text-lg px-4 flex items-center ${config ? config.textClass : "text-gray-700"}`}
+                                    className={`text-lg px-4 flex items-center ${config?.textClass || "text-gray-700"}`}
                                 >
                                     <div className="flex items-center gap-2 text-lg">
                                         {config?.icon}
