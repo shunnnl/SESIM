@@ -1,43 +1,26 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { SesimLogo } from './SesimLogo';
+import { NavbarMenu } from './NavbarMenu';
+import { SidebarMenu } from './SidebarMenu';
 
-const NavbarMenu: React.FC = () => {
+const LoginButton = () => {
     return (
-        <div className="nav-menu flex lg:gap-[60px] md:gap-[20px] text-[18px] text-white px-8 items-center justify-center text-center">
-            <Link to="/">홈</Link>
-            <Link to="/about">소개</Link>
-            <Link to="/ai-model">AI모델</Link>
-            <Link to="/model-inference-service">모델추론 서비스</Link>
-            <Link to="/docs">Docs</Link>
-        </div>
-    );
-};
-
-const SidebarMenu: React.FC<{ onClickMenu?: () => void }> = ({ onClickMenu }) => {
-    return (
-        <div className="flex flex-col gap-[20px] text-[18px] text-white px-8 pt-[86px]">
-            <Link to="/" onClick={onClickMenu}>홈</Link>
-            <Link to="/about" onClick={onClickMenu}>소개</Link>
-            <Link to="/ai-model" onClick={onClickMenu}>AI모델</Link>
-            <Link to="/model-inference-service" onClick={onClickMenu}>모델추론 서비스</Link>
-            <Link to="/docs" onClick={onClickMenu}>Docs</Link>
-        </div>
-    );
-};
+        <button className="text-white text-[18px] font-bold bg-gradient-to-r from-[#5EA3EC] to-[#6C72F4] rounded-[35px] px-[22px] py-[7px]">로그인</button>
+    )
+}
 
 export const Navbar: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     return (
         <nav className="flex justify-between items-center px-4 border-b-2 border-white/ md:px-12 h-[86px]">
-            <div className="flex items-center lg:gap-[120px] md:gap-8" >
+            <div className="flex items-center lg:gap-[120px] md:gap-2" >
                 <SesimLogo />
                 <div className="hidden md:flex gap-8">
                     <NavbarMenu />
                 </div>
             </div>
             <div className="hidden md:block">
-                <button className="text-white text-[18px]">로그인</button>
+                <LoginButton />
             </div>
             {/* 모바일 햄버거 버튼 */}
             {!sidebarOpen && (
