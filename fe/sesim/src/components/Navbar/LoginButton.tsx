@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { LoginModal } from "../Popup/LoginModal";
+import { SignUpModal } from "../Popup/SignUpModal";
 
 export const LoginButton = () => {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+
+    const handleSignUpClick = () => {
+        setIsLoginModalOpen(false);
+        setIsSignUpModalOpen(true);
+    };
 
     return (
         <>
@@ -15,6 +22,12 @@ export const LoginButton = () => {
             <LoginModal
                 isOpen={isLoginModalOpen}
                 onClose={() => setIsLoginModalOpen(false)}
+                onSwitchToSignUp={handleSignUpClick}
+            />
+            <SignUpModal
+                isOpen={isSignUpModalOpen}
+                onClose={() => setIsSignUpModalOpen(false)}
+                onSwitchToLogin={() => setIsLoginModalOpen(true)}
             />
         </>
     )
