@@ -62,8 +62,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 const data = await login({ email, password });
 
                 if (data.success) {
+                    console.log("로그인 성공:", data);
                     handleClose();
                 } else {
+                    console.log("로그인 실패:", data);
                     setLoginErrorMessage("로그인 정보를 다시 확인해주세요.");
                 }
             } catch (error) {
