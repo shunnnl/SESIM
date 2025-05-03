@@ -11,6 +11,11 @@ export const LoginButton = () => {
         setIsSignUpModalOpen(true);
     };
 
+    const handleLoginClick = () => {
+        setIsLoginModalOpen(true);
+        setIsSignUpModalOpen(false);
+    };
+
     return (
         <>
             <button 
@@ -27,7 +32,7 @@ export const LoginButton = () => {
             <SignUpModal
                 isOpen={isSignUpModalOpen}
                 onClose={() => setIsSignUpModalOpen(false)}
-                onSwitchToLogin={() => setIsLoginModalOpen(true)}
+                onSwitchToLogin={handleLoginClick}
             />
         </>
     )
