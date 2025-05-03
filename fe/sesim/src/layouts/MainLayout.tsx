@@ -3,6 +3,8 @@ import { HomePage } from "../pages/HomePage";
 import { DocsPage } from "../pages/DocsPage";
 import { AboutPage } from "../pages/AboutPage";
 import { AiModelPage } from "../pages/AiModelPage";
+import { KeyInfoPage } from "../pages/KeyInfoPage";
+import { UserInfoPage } from "../pages/UserInfoPage";
 import { Navbar } from "../components/Navbar/Navbar";
 import { ModelInferenceServicePage } from "../pages/ModelInferenceServicePage";
 
@@ -20,6 +22,8 @@ export const MainLayout = () => {
                     <Route path="/ai-model" element={<AiModelPage />} />
                     <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
                     <Route path="/docs" element={<DocsPage />} />
+                    <Route path="/userinfo" element={<UserInfoPage/>} />
+                    <Route path="/keyinfo" element={<KeyInfoPage/>} />
                 </Routes>
             </main>
         </div>
