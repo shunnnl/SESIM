@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { login } from "../../services/authService";
 import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 
-interface LoginModalProps {
+interface SignUpModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [emailError, setEmailError] = useState("");
