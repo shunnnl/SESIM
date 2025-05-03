@@ -1,4 +1,3 @@
-import React from "react";
 import { Sidebar } from "../components/Sidebar";
 import ItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 
@@ -8,21 +7,21 @@ export const KeyInfoPage = () => {
             {
                 id: 1,
                 modelName: "AuthGaurd",
-                ALBadress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
+                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYED",
                 state: "DEPLOYED"
             },
             {
                 id: 2,
                 modelName: "DataWatch",
-                ALBadress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
+                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "FAILED",
                 state: "FAILED"
             },
             {
                 id: 3,
                 modelName: "WebSentinel",
-                ALBadress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
+                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYING",
                 state: "DEPLOYING"
             }
@@ -31,21 +30,21 @@ export const KeyInfoPage = () => {
             {
                 id: 4,
                 modelName: "FileGuard",
-                ALBadress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
+                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYED",
                 state: "DEPLOYED"
             },
             {
                 id: 5,
                 modelName: "CloudWatch",
-                ALBadress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
+                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "FAILED",
                 state: "FAILED"
             },
             {
                 id: 6,
                 modelName: "NetworkSentinel",
-                ALBadress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
+                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYING",
                 state: "DEPLOYING"
             }
