@@ -8,7 +8,7 @@ export const Navbar: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     
     return (
-        <nav className="flex justify-between items-center px-4 border-b-2 border-white/ md:px-12 h-[86px]">
+        <nav className="flex justify-between items-center px-4 border-b-2 border-white/20 md:px-12 h-[86px]">
             <div className="flex items-center lg:gap-[120px] md:gap-2" >
                 <SesimLogo />
                 <div className="hidden md:flex gap-8">
