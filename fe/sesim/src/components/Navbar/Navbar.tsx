@@ -37,7 +37,7 @@ export const Navbar: React.FC = () => {
                 </div>
             </div>
             <div className="hidden md:block">
-                <LoginButton setIsLoginModalOpen={handleLoginModalOpen} />
+                <LoginButton onClickLoginModal={handleLoginModalOpen} />
             </div>
             {!sidebarOpen && (
                 <button
