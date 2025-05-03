@@ -7,7 +7,7 @@ export const Sidebar: React.FC = () => {
     const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
         `flex items-center gap-2 pl-4 pt-2 pb-2 pr-3 rounded-full transition duration-200 ${isActive ? "bg-gray-600 font-semibold" : "hover:bg-gray-600"}`;
     return (
-        <div className="w-[250px] h-screen text-white pt-6 pr-6 flex flex-col border-r border-gray-400">
+        <div className="w-[250px] h-full text-white pt-6 pr-6 flex flex-col border-r border-gray-400">
             <div className="mb-8 flex items-center gap-4">
                 {/* 동그란 텍스트 */}
                 <div className="w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-full">
@@ -38,9 +38,9 @@ export const Sidebar: React.FC = () => {
                     프로젝트
                 </NavLink>
 
-                <NavLink to="/help" className={getNavLinkClass}>
+                <NavLink to="/keyinfo" className={getNavLinkClass}>
                     <FaKey className="text-sm text-gray-400" />
-                    키발급
+                    키 정보
                 </NavLink>
             </nav>
         </div>
