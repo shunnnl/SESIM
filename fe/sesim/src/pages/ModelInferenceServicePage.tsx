@@ -15,21 +15,21 @@ export const ModelInferenceServicePage: React.FC = () => {
                 backgroundImage={PageBackground}
             />
 
-            <div className="container-padding w-full text-white py-[88px]">
+            <div className="container-padding w-full text-white py-[44px] md:py-[88px]">
                 <div className="flex flex-col items-center gap-[15px]">
                     <BlueCircle />
-                    <h1 className="text-[37px] font-bold">모델 추론 서비스</h1>
+                    <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">모델 추론 서비스</h1>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-center items-center gap-[60px] mt-[40px]">
+                <div className="flex flex-col md:flex-row justify-center items-center gap-[30px] md:gap-[60px] mt-[20px] md:mt-[40px]">
                     {/* 왼쪽: 설명 및 버튼 */}
-                    <div className="flex flex-col gap-[30px]">
-                        <p className="text-[22px] font-normal">
+                    <div className="flex flex-col gap-[15px] md:gap-[30px]">
+                        <p className="text-[16px] md:text-[20px] lg:text-[22px] font-normal">
                             SESIM이 제공하는 다양한 보안 AI 모델 중 원하는 모델을 선택하고,
                             <br />
                             VPC(개인망)에 안전하게 설치할 수 있습니다.
                         </p>
-                        <div className="flex flex-col gap-[15px]">
+                        <div className="flex flex-col gap-[10px] md:gap-[15px]">
                             <ServiceDescriptionList
                                 title="모델 선택"
                                 description="이상행위 탐지, 계정 도용 방지 등 다양한 보안 AI 모델을 제공합니다."
