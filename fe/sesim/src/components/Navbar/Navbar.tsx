@@ -2,9 +2,21 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SesimLogo } from './SesimLogo';
 
-const NavbarMenu: React.FC<{ onClickMenu?: () => void }> = ({ onClickMenu }) => {
+const NavbarMenu: React.FC = () => {
     return (
         <div className="nav-menu flex lg:gap-[60px] md:gap-[20px] text-[18px] text-white px-8 items-center justify-center text-center">
+            <Link to="/">홈</Link>
+            <Link to="/about">소개</Link>
+            <Link to="/ai-model">AI모델</Link>
+            <Link to="/model-inference-service">모델추론 서비스</Link>
+            <Link to="/docs">Docs</Link>
+        </div>
+    );
+};
+
+const SidebarMenu: React.FC<{ onClickMenu?: () => void }> = ({ onClickMenu }) => {
+    return (
+        <div className="flex flex-col gap-[20px] text-[18px] text-white px-8 pt-[86px]">
             <Link to="/" onClick={onClickMenu}>홈</Link>
             <Link to="/about" onClick={onClickMenu}>소개</Link>
             <Link to="/ai-model" onClick={onClickMenu}>AI모델</Link>
@@ -39,7 +51,7 @@ export const Navbar: React.FC = () => {
                     {/* 사이드바 */}
                     <div className="ml-auto w-2/3 max-w-xs h-full bg-black shadow-lg flex flex-col animate-slideInRight relative">
                         <button className="absolute top-4 right-4 text-white text-2xl" onClick={() => setSidebarOpen(false)} aria-label="메뉴 닫기">✕</button>
-                        <NavbarMenu onClickMenu={() => setSidebarOpen(false)} />
+                        <SidebarMenu onClickMenu={() => setSidebarOpen(false)} />
                         <div className="px-8 py-4 mt-auto">
                             <button className="text-white text-[18px] w-full text-left">로그인</button>
                         </div>
@@ -49,18 +61,3 @@ export const Navbar: React.FC = () => {
         </nav>
     );
 };
-
-// tailwind.config.js에 아래 애니메이션 추가 필요
-// theme: {
-//   extend: {
-//     keyframes: {
-//       slideInRight: {
-//         '0%': { transform: 'translateX(100%)' },
-//         '100%': { transform: 'translateX(0)' },
-//       },
-//     },
-//     animation: {
-//       slideInRight: 'slideInRight 0.3s ease-out',
-//     },
-//   },
-// },
