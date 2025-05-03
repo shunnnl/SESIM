@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -6,29 +7,65 @@ interface SignUpModalProps {
   onSwitchToLogin: () => void;
 }
 
-export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => {
+export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwitchToLogin }) => {
+  const [step, setStep] = useState<"emailVerify" | "setDetails">("emailVerify");
+
+  // step 1: 이메일 인증
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [emailError, setEmailError] = useState("");
   const [verificationCodeError, setVerificationCodeError] = useState("");
-
   const [isVerificationCodeSent, setIsVerificationCodeSent] = useState(false);
-  const [shouldRender, setShouldRender] = useState(false);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isVerificationCodeFocused, setIsVerificationCodeFocused] = useState(false);
 
-  const handleClose = () => {
+  // step 2: 닉네임, 비밀번호 설정
+  const [nickname, setNickname] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [nicknameError, setNicknameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [isNicknameFocused, setIsNicknameFocused] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [isConfirmPasswordFocused, setIsConfirmPasswordFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [shouldRender, setShouldRender] = useState(false);
+
+  const resetEmailVerifyForm = () => {
     setEmail("");
     setVerificationCode("");
     setEmailError("");
     setVerificationCodeError("");
     setIsVerificationCodeSent(false);
+  }
+
+
+  const resetSetDetailsForm = () => {
+    setNickname("");
+    setPassword("");
+    setConfirmPassword("");
+    setNicknameError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  }
+
+
+  const handleClose = () => {
+    resetEmailVerifyForm();
+    resetSetDetailsForm();
+    setStep("emailVerify");
     onClose();
   };
 
 
   const handleRequestVerificationCode = async () => {
     setEmailError("");
+
     if (!email) {
       setEmailError("이메일을 입력해주세요.");
       return;
@@ -39,7 +76,9 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
 
     try {
       console.log(`인증번호 요청: ${email}`);
-      // TODO: 여기에 이메일로 인증번호를 보내는 API 호출 로직 구현
+
+      // TODO: 이메일로 인증번호를 보내는 API 호출 로직 구현
+
       setIsVerificationCodeSent(true);
     } catch (error) {
       console.error("인증번호 요청 실패:", error);
@@ -47,20 +86,36 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
   };
 
 
-  const handleVerifyCode = async () => {
+  const validateEmailVerifyForm = () => {
+    if (!email) {
+      setEmailError("이메일을 입력해주세요.");
+      return false;
+    }
+
     if (!verificationCode || verificationCode.length !== 6) {
-      setVerificationCodeError("6자리 인증번호를 입력해주세요.");
+      setVerificationCodeError("인증번호를 입력해주세요.");
+      return false;
+    }
+
+    return true;
+  }
+
+
+  const handleVerifyCode = async () => {
+    if (!validateEmailVerifyForm()) {
       return;
     }
-  
+
     try {
       // TODO: 인증번호 검증 API 호출
-      const isValid = false;
+      const isValid = true;
+
       if (!isValid) {
         setVerificationCodeError("인증번호가 올바르지 않습니다. 다시 시도해주세요.");
       } else {
         console.log("인증 성공!");
-        // ToDo: 인증 성공 후 처리 로직 구현
+        setStep("setDetails");
+        // TODO: 인증 성공 후 처리 로직 구현
       }
     } catch (error) {
       console.error("인증번호 검증 실패:", error);
@@ -69,9 +124,56 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
   };
 
 
-  const handleNextButtonClick = (e: React.FormEvent) => {
+  const validateSignUpForm = () => {
+    if (!nickname) {
+      setNicknameError("닉네임을 입력해주세요.");
+      return false;
+    }
+
+    if (!password) {
+      setPasswordError("비밀번호를 입력해주세요.");
+      return false;
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError("비밀번호를 다시 입력해주세요.");
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("비밀번호가 일치하지 않습니다.");
+      return false;
+    }
+
+    return true;
+  }
+
+
+  const handleSignUp = () => {
+    if (!validateSignUpForm()) {
+      return;
+    }
+
+    try {
+      // TODO: 회원가입 API 호출
+      handleClose();
+    } catch (error) {
+      console.error("회원가입 실패:", error);
+    }
+  }
+
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleVerifyCode();
+
+    switch (step) {
+      case "emailVerify":
+        handleVerifyCode();
+        break;
+      case "setDetails":
+        handleSignUp();
+        break;
+    }
   };
 
 
@@ -81,10 +183,14 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
     } else {
       const timer = setTimeout(() => {
         setShouldRender(false);
+        resetEmailVerifyForm();
+        resetSetDetailsForm();
+        setStep("emailVerify");
       }, 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
+
 
   if (!shouldRender && !isOpen) {
     return null;
@@ -115,80 +221,223 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
             회원가입
           </p>
 
-          <div className="flex flex-col items-center gap-12 w-full mb-10">
-            <div className="w-full">
-              {/* 이메일 입력 */}
-              <div className="relative group flex flex-row items-end gap-2">
-                <div className="flex-grow relative group">
-                  <label
-                    className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isEmailFocused || email ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
-                  >
-                    이메일
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (emailError) {
-                        return setEmailError("");
+          <div className="flex flex-col items-center gap-10 w-full">
+            {/* step 1: 이메일 인증 */}
+            {step === "emailVerify" && (
+              <>
+                <div className="w-full">
+                  {/* 이메일 입력 */}
+                  <div className="relative group flex flex-row items-end gap-2">
+                    <div className="flex-grow relative group">
+                      <label
+                        className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isEmailFocused || email ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
+                      >
+                        이메일
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (emailError) {
+                            return setEmailError("");
+                          }
+                        }}
+                        onFocus={() => setIsEmailFocused(true)}
+                        onBlur={() => setIsEmailFocused(false)}
+                        placeholder={isEmailFocused ? "" : "이메일 주소를 입력해주세요."}
+                        className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
+                        disabled={isVerificationCodeSent}
+                      />
+                      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                      <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isEmailFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                      {emailError && 
+                        <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
+                          {emailError}
+                        </p>
                       }
-                    }}
-                    onFocus={() => setIsEmailFocused(true)}
-                    onBlur={() => setIsEmailFocused(false)}
-                    placeholder={isEmailFocused ? "" : "이메일 주소를 입력해주세요."}
-                    className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
-                    disabled={isVerificationCodeSent}
-                  />
-                  <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                  <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isEmailFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
-                  {emailError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{emailError}</p>}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRequestVerificationCode}
+                      disabled={isVerificationCodeSent}
+                      className={`font-['Pretendard'] text-sm font-medium px-3 py-3 rounded-md border border-[#A3A3A3]/50 text-[#A3A3A3] hover:border-white hover:text-white transition-colors duration-300 whitespace-nowrap ${isVerificationCodeSent ? "bg-gray-600 cursor-not-allowed opacity-50" : "bg-transparent"}`}
+                    >
+                      인증번호 받기
+                    </button>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleRequestVerificationCode}
-                  disabled={isVerificationCodeSent}
-                  className={`font-['Pretendard'] text-sm font-medium px-3 py-3 rounded-md border border-[#A3A3A3]/50 text-[#A3A3A3] hover:border-white hover:text-white transition-colors duration-300 whitespace-nowrap ${isVerificationCodeSent ? "bg-gray-600 cursor-not-allowed opacity-50" : "bg-transparent"}`}
-                >
-                  인증번호 받기
-                </button>
-              </div>
-            </div>
-            
-            {/* 인증번호 입력 */}
-            <div className="w-full">
-              <div className="relative group">
-                <label
-                  className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isVerificationCodeFocused || verificationCode ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
-                >
-                  인증번호
-                </label>
-                <input
-                  type="text"
-                  value={verificationCode}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    if (value.length <= 6) {
-                      setVerificationCode(value);
+
+                {/* 인증번호 입력 */}
+                <div className="w-full">
+                  <div className="relative group">
+                    <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isVerificationCodeFocused || verificationCode ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
+                      인증번호
+                    </label>
+                    <input
+                      type="text"
+                      value={verificationCode}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "");
+                        if (value.length <= 6) {
+                          setVerificationCode(value);
+                        }
+                        if (verificationCodeError) {
+                          return setVerificationCodeError("");
+                        }
+                      }}
+                      onFocus={() => setIsVerificationCodeFocused(true)}
+                      onBlur={() => setIsVerificationCodeFocused(false)}
+                      placeholder={isVerificationCodeFocused ? "" : "●●●●●●"}
+                      className="w-full bg-transparent text-start font-mono text-2xl text-white placeholder-[#555] border-b-2 border-[#555]/50 focus:border-[#3B66AF] focus:outline-none py-2 px-1 tracking-[6px]"
+                      maxLength={6}
+                    />
+                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                    <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isVerificationCodeFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                    {verificationCodeError && 
+                      <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
+                        {verificationCodeError}
+                      </p>
                     }
-                    if (verificationCodeError) { 
-                      return setVerificationCodeError("");
-                    }
-                  }}
-                  onFocus={() => setIsVerificationCodeFocused(true)}
-                  onBlur={() => setIsVerificationCodeFocused(false)}
-                  placeholder={isVerificationCodeFocused ? "" : "●●●●●●"}
-                  className="w-full bg-transparent text-start font-mono text-2xl text-white placeholder-[#555] border-b-2 border-[#555]/50 focus:border-[#3B66AF] focus:outline-none py-2 px-1 tracking-[6px]"
-                  maxLength={6}
-                />
-                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isVerificationCodeFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
-                {verificationCodeError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{verificationCodeError}</p>}
-              </div>
-            </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* step 2: 닉네임, 비밀번호 설정 */}
+            {step === "setDetails" && (
+              <>
+                <div className="w-full flex flex-col items-center gap-10">
+                  {/* 이메일 확인 */}
+                  <div className="relative group flex flex-row items-end gap-2 w-full">
+                    <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isEmailFocused || email ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
+                      이메일
+                    </label>
+                    <p className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] py-2 px-1">
+                      {email}
+                    </p>
+                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 transition-all duration-300"></div>
+                  </div>
+
+                  {/* 닉네임 입력 */}
+                  <div className="w-full">
+                    <div className="relative group">
+                      <label
+                        className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isNicknameFocused || nickname ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
+                      >
+                        닉네임
+                      </label>
+                      <input
+                        type="text"
+                        value={nickname}
+                        onChange={(e) => {
+                          setNickname(e.target.value);
+                          if (nicknameError) {
+                            setNicknameError("");
+                          }
+                        }}
+                        onFocus={() => setIsNicknameFocused(true)}
+                        onBlur={() => setIsNicknameFocused(false)}
+                        placeholder={isNicknameFocused ? "" : "사용하실 닉네임을 입력해주세요."}
+                        className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
+                        maxLength={15}
+                      />
+                      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                      <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isNicknameFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                      {nicknameError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{nicknameError}</p>}
+                    </div>
+                  </div>
+
+                  {/* 비밀번호 입력 */}
+                  <div className="w-full">
+                    <div className="relative group">
+                      <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isPasswordFocused || password ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
+                        비밀번호
+                      </label>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          if (passwordError) {
+                            setPasswordError("");
+                          }
+                          if (confirmPasswordError && e.target.value === confirmPassword) {
+                            setConfirmPasswordError("");
+                          }
+                        }}
+                        onFocus={() => setIsPasswordFocused(true)}
+                        onBlur={() => setIsPasswordFocused(false)}
+                        placeholder={isPasswordFocused ? "" : "비밀번호를 입력해주세요."}
+                        className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 pr-10 pl-1 [&:not(:placeholder-shown)]:text-white"
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#A3A3A3] hover:text-white transition-colors duration-300 focus:outline-none p-1"
+                      >
+                        {showPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
+                      </button>
+                      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                      <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isPasswordFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                      {passwordError &&
+                        <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
+                          {passwordError}
+                        </p>
+                      }
+                    </div>
+                  </div>
+
+                  {/* 비밀번호 입력 확인 */}
+                  <div className="w-full">
+                    <div className="relative group">
+                      <label
+                        className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isConfirmPasswordFocused || confirmPassword ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
+                      >
+                        비밀번호 확인
+                      </label>
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => {
+                          setConfirmPassword(e.target.value);
+                          if (confirmPasswordError) {
+                            return setConfirmPasswordError("");
+                          }
+                          if (passwordError && e.target.value === password) {
+                            setPasswordError("");
+                          }
+                        }}
+                        onFocus={() => setIsConfirmPasswordFocused(true)}
+                        onBlur={() => setIsConfirmPasswordFocused(false)}
+                        placeholder={isConfirmPasswordFocused ? "" : "비밀번호를 다시 입력해주세요."}
+                        className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 pr-10 pl-1 [&:not(:placeholder-shown)]:text-white"
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#A3A3A3] hover:text-white transition-colors duration-300 focus:outline-none p-1"
+                      >
+                        {showConfirmPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
+                      </button>
+                      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                      <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isConfirmPasswordFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                      {confirmPasswordError &&
+                        <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
+                          {confirmPasswordError}
+                        </p>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="flex flex-col gap-4 w-full mt-4">
-              <form onSubmit={handleNextButtonClick}
+              {/* 다음/회원가입 버튼 */}
+              <form onSubmit={handleSubmit}
               >
                 <button
                   type="submit"
@@ -205,10 +454,23 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose }) => 
                     }}
                   ></div>
                   <div className="relative block w-full text-center rounded-[28px] font-['Pretendard'] font-medium text-lg md:text-xl text-white py-2 sm:py-3 transition-all duration-300 backdrop-blur-md group-hover:bg-white/[0.05]">
-                    다음
+                    {step === "emailVerify" ? "인증번호 확인" : "회원가입"}
                   </div>
                 </button>
               </form>
+
+              {/* 로그인 버튼 */}
+              <div className="flex justify-end">
+                <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
+                  이미 계정이 있으신가요?{"  "}
+                  <a
+                    onClick={onSwitchToLogin}
+                    className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer"
+                  >
+                    로그인
+                  </a>
+                </span>
+              </div>
             </div>
           </div>
         </div>
