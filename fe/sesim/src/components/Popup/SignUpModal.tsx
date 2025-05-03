@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 import { AnimatePresence, motion } from "framer-motion";
+import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 
 interface SignUpModalProps {
   isOpen: boolean;
