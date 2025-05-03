@@ -5,9 +5,10 @@ import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSwitchToSignUp: () => void;
 }
 
-export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToSignUp }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [emailError, setEmailError] = useState("");
@@ -72,6 +73,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 console.error("로그인 실패:", error);
             }
         }
+    };
+
+
+    const handleSignUpClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        onSwitchToSignUp();
     };
 
 
@@ -210,7 +217,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                             <p className={`font-['Pretendard'] text-red-500 text-xs mt-1 hidden: ${loginErrorMessage ? false : true}`}>{loginErrorMessage}</p>
                             <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
                                 아직 회원이 아니신가요?{"  "}
-                                <a className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer">
+                                <a 
+                                    onClick={handleSignUpClick}
+                                    className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer"
+                                >
                                     회원가입
                                 </a>
                             </span>
