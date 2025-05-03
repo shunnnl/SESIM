@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { EyeIcon, EyeSlashIcon } from "../common/Icons";
-import { emailVerify, sendVerificationCode } from "../../services/authService";
+import { emailVerify, sendVerificationCode, signUp } from "../../services/authService";
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -96,8 +96,6 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
       }
     } catch (error) {
       console.error("인증번호 요청 실패:", error);
-      setEmailError("인증번호 요청 실패");
-      // TODO: 인증번호 요청 실패 처리 로직 구현
     }
   };
 
@@ -166,14 +164,18 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   }
 
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!validateSignUpForm()) {
       return;
     }
 
     try {
-      // TODO: 회원가입 API 호출
-      handleClose();
+      const response = await signUp({ email, password, nickname });
+
+      if (response.success) {
+        console.log("회원가입 성공");
+        handleClose();
+      }
     } catch (error) {
       console.error("회원가입 실패:", error);
     }
