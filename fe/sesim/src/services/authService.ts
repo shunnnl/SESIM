@@ -5,6 +5,11 @@ interface LoginRequest {
   password: string;
 }
 
+interface EmailVerifyRequest {
+  email: string;
+  code: string;
+}
+
 export const login = async (data: LoginRequest) => {
   const response = await api.post("/auth/login", data);
 
@@ -18,5 +23,12 @@ export const login = async (data: LoginRequest) => {
     localStorage.setItem("refreshToken", refreshToken);
   }
   
+  return response.data;
+};
+
+
+export const emailVerify = async (data: EmailVerifyRequest) => {
+  const response = await api.post("/mail/verify", data);
+
   return response.data;
 };
