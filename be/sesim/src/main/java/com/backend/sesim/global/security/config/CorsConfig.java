@@ -31,7 +31,8 @@ public class CorsConfig {
                 "http://k12s109.p.ssafy.io", // BE1
                 "https://k12s109.p.ssafy.io",
                 "http://3.34.198.223",       // BE2
-                "https://3.34.198.223"
+                "https://3.34.198.223",
+                "http://sesim-front-alb-35113181.ap-northeast-2.elb.amazonaws.com/"
         ));
 
         // 허용할 HTTP 메서드 설정
