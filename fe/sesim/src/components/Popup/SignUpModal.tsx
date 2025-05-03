@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { EyeIcon, EyeSlashIcon } from "../common/Icons";
+import { sendVerificationCode } from "../../services/authService";
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -84,13 +85,19 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
     }
 
     try {
-      console.log(`인증번호 요청: ${email}`);
+      const response = await sendVerificationCode({ email });
 
-      // TODO: 이메일로 인증번호를 보내는 API 호출 로직 구현
-
-      setIsVerificationCodeSent(true);
+      if (response.success) {
+        console.log("인증번호 요청 성공");
+        setIsVerificationCodeSent(true);
+      } else {
+        setEmailError("인증번호 요청 실패");
+        // TODO: 인증번호 요청 실패 처리 로직 구현
+      }
     } catch (error) {
       console.error("인증번호 요청 실패:", error);
+      setEmailError("인증번호 요청 실패");
+      // TODO: 인증번호 요청 실패 처리 로직 구현
     }
   };
 
