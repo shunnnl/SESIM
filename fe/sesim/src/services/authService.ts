@@ -10,6 +10,10 @@ interface EmailVerifyRequest {
   code: string;
 }
 
+interface SendVerificationCodeRequest {
+  email: string;
+}
+
 export const login = async (data: LoginRequest) => {
   const response = await api.post("/auth/login", data);
 
@@ -23,6 +27,13 @@ export const login = async (data: LoginRequest) => {
     localStorage.setItem("refreshToken", refreshToken);
   }
   
+  return response.data;
+};
+
+
+export const sendVerificationCode = async (data: SendVerificationCodeRequest) => {
+  const response = await api.post("/mail/send-code", data);
+
   return response.data;
 };
 
