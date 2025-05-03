@@ -25,7 +25,7 @@ export const Navbar: React.FC = () => {
                 <Link to="/docs">
                     Docs
                 </Link>
-                //FIXME - 이후 삭제할 네비게이션 옵션
+               {/* FIXME - 이후 삭제할 네비게이션 옵션 */}
                 <Link to="/userinfo">
                     임시 이동(사용자 정보)
                 </Link>

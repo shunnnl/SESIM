@@ -4,6 +4,7 @@ import { DocsPage } from './pages/DocsPage';
 import { Navbar } from './components/Navbar';
 import { AboutPage } from './pages/AboutPage';
 import { AiModelPage } from './pages/AiModelPage';
+import { KeyInfoPage } from './pages/KeyInfoPage';
 import { UserInfoPage } from './pages/UserInfoPage';
 import { ModelInferenceServicePage } from './pages/ModelInferenceServicePage';
 
@@ -23,6 +24,7 @@ const Layout = () => {
           <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
           <Route path="/docs" element={<DocsPage />} />
           <Route path="/userinfo" element={<UserInfoPage/>} />
+          <Route path="/keyinfo" element={<KeyInfoPage/>} />
         </Routes>
       </main>
     </div>
