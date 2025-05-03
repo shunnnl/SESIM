@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { Link } from 'react-router-dom';
-import arrowWhite from "../../assets/images/arrow-white.png";
+import { memo } from "react";
+import { Link } from "react-router-dom";
 import arrowBlue from "../../assets/images/arrow-blue.png";
+import arrowWhite from "../../assets/images/arrow-white.png";
 
 const DetailButtonComponent: React.FC = () => {
     return (

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import sesimLogo from '../../assets/images/sesim-logo.png';
+import sesimLogo from "../../assets/images/sesim-logo.png";
 
 export const SesimLogo: React.FC = () => {
     return (

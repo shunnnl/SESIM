@@ -1,10 +1,10 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
-import { HomePage } from '../pages/HomePage';
-import { DocsPage } from '../pages/DocsPage';
-import { Navbar } from '../components/Navbar/Navbar';
-import { AboutPage } from '../pages/AboutPage';
-import { AiModelPage } from '../pages/AiModelPage';
-import { ModelInferenceServicePage } from '../pages/ModelInferenceServicePage';
+import { Route, Routes, useLocation } from "react-router-dom"
+import { HomePage } from "../pages/HomePage";
+import { DocsPage } from "../pages/DocsPage";
+import { AboutPage } from "../pages/AboutPage";
+import { AiModelPage } from "../pages/AiModelPage";
+import { Navbar } from "../components/Navbar/Navbar";
+import { ModelInferenceServicePage } from "../pages/ModelInferenceServicePage";
 
 export const MainLayout = () => {
     const location = useLocation();

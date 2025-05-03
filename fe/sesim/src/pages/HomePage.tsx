@@ -1,5 +1,5 @@
-import { DetailButton } from "../components/Navbar/DetailButton";
 import { motion } from "framer-motion";
+import { DetailButton } from "../components/Navbar/DetailButton";
 
 const MainText = () => {
     return (
