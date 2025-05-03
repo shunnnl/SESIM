@@ -16,6 +16,7 @@ const MainText = () => {
     )
 }
 
+
 const SubText = () => {
     return (
         <motion.p 
@@ -31,6 +32,7 @@ const SubText = () => {
     )
 }
 
+
 const AnimatedDetailButton = () => {
     return (
         <motion.div
@@ -42,6 +44,7 @@ const AnimatedDetailButton = () => {
         </motion.div>
     )
 }
+
 
 export const HomePage: React.FC = () => {
     return (

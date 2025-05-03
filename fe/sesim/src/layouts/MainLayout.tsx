@@ -10,10 +10,10 @@ import { ModelInferenceServicePage } from "../pages/ModelInferenceServicePage";
 
 export const MainLayout = () => {
     const location = useLocation();
-    const isHomePage = location.pathname === '/';
+    const isHomePage = location.pathname === "/";
 
     return (
-        <div className={`${isHomePage ? 'bg-cyber-security bg-cover bg-center bg-no-repeat min-h-screen' : ''}`}>
+        <div className={`${isHomePage ? "bg-cyber-security bg-cover bg-center bg-no-repeat min-h-screen" : ""}`}>
             <Navbar />
             <main className="w-full px-4 sm:px-6 md:px-8 lg:px-[178px] max-w-[1564px] mx-auto">
                 <Routes>

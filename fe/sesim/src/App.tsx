@@ -6,7 +6,7 @@ function App() {
     <BrowserRouter>
       <MainLayout />
     </BrowserRouter>
-  )
-}
+  );
+};
 
 export default App;
