@@ -122,7 +122,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                         로그인
                     </p>
 
-                    <div className="flex flex-col items-center gap-12 w-full mb-10">
+                    <div className="flex flex-col items-center gap-12 w-full mb-10 p-2">
                         {/* 이메일 입력 */}
                         <div className="w-full">
                             <div className="relative group">
