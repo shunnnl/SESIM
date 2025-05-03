@@ -252,7 +252,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                   animate="visible"
                   exit="exit"
                   variants={formVariants}
-                  className="flex flex-col items-center gap-10 w-full overflow-hidden p-2"
+                  className="flex flex-col items-center gap-10 w-full overflow-hidden p-2 pb-10"
                 >
                   {/* 이메일 입력 */}
                   <div className="w-full">
@@ -346,7 +346,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="w-full flex flex-col items-center gap-10 overflow-hidden p-2"
+                    className="w-full flex flex-col items-center gap-10 overflow-hidden p-2 pb-10"
                   >
                     {/* 이메일 확인 */}
                     <div className="relative group flex flex-row items-end gap-2 w-full">
@@ -479,7 +479,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
           <motion.div 
             layout
-            className="flex flex-col gap-4 w-full mt-4"
+            className="flex flex-col gap-4 w-full"
           >
             {/* 다음/회원가입 버튼 */}
             <form onSubmit={handleSubmit}
