@@ -66,7 +66,7 @@ public class IamRoleService {
         return AssumeRoleRequest.builder()
                 .roleArn(roleArn)
                 .roleSessionName("SesimVerifySession")
-                .durationSeconds(900)
+                .durationSeconds(36000)
                 .build();
     }
 
@@ -79,8 +79,6 @@ public class IamRoleService {
             log.info("⏰ Expiration: {}", creds.expiration());
 
             return new RoleVerificationResponse(
-                    true,
-                    "AssumeRole 검증 성공",
                     stsResponse.credentials().accessKeyId(),
                     stsResponse.credentials().secretAccessKey(),
                     stsResponse.credentials().sessionToken()
