@@ -8,7 +8,7 @@ from typing import Optional
 log_pattern = re.compile(
     r'(?P<ip>\S+) - - \[(?P<time>.*?)\] '
     r'"(?P<method>\S+) (?P<url>\S+) (?P<protocol>\S+)" '
-    r'(?P<status>\d{3}) (?P<size>\d+) "(?P<referer>.*?)" "(?P<user_agent>.*?)"'
+    r'(?P<status_code>\d{3}) (?P<size>\d+) "(?P<referer>.*?)" "(?P<user_agent>.*?)"'
 )
 
 
