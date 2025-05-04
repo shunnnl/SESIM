@@ -13,6 +13,7 @@ export const MainLayout = () => {
     const isHomePage = location.pathname === "/";
 
     return (
+        <div className="min-h-screen bg-[#0A0C35]">
         <div className={`${isHomePage ? "bg-cyber-security bg-cover bg-center bg-no-repeat min-h-screen" : ""}`}>
             <Navbar />
             <main className="w-full px-4 sm:px-6 md:px-8 lg:px-[178px] max-w-[1564px] mx-auto">
@@ -26,6 +27,7 @@ export const MainLayout = () => {
                     <Route path="/keyinfo" element={<KeyInfoPage/>} />
                 </Routes>
             </main>
+        </div>
         </div>
     );
 };
