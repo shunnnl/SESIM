@@ -39,3 +39,8 @@ jwt:
   header-string: "Authorization"
   issuer: "sesim"
   refresh-expiration-time: 86400000
+aws:
+  credentials:
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+  region: ap-northeast-2
