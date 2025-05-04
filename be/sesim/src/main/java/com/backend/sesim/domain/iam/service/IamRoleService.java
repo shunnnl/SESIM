@@ -66,15 +66,23 @@ public class IamRoleService {
         return AssumeRoleRequest.builder()
                 .roleArn(roleArn)
                 .roleSessionName("SesimVerifySession")
-                .durationSeconds(900)
+                .durationSeconds(36000)
                 .build();
     }
 
     private RoleVerificationResponse executeAssumeRole(StsClient stsClient, AssumeRoleRequest request) {
         AssumeRoleResponse stsResponse = stsClient.assumeRole(request);
 
-        if (stsResponse.credentials() != null) {
-            return new RoleVerificationResponse(true, "AssumeRole 검증 성공");
+        Credentials creds = stsResponse.credentials();
+
+        if (creds != null) {
+            log.info("⏰ Expiration: {}", creds.expiration());
+
+            return new RoleVerificationResponse(
+                    stsResponse.credentials().accessKeyId(),
+                    stsResponse.credentials().secretAccessKey(),
+                    stsResponse.credentials().sessionToken()
+            );
         } else {
             log.warn("자격 증명을 찾을 수 없음: {}", request.roleArn());
             throw new GlobalException(IamErrorCode.CREDENTIALS_NOT_FOUND);
