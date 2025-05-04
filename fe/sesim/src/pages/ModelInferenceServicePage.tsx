@@ -80,8 +80,9 @@ export const ModelInferenceServicePage: React.FC = () => {
                         >
                             <AnimatedButton
                                 text="프로젝트 생성하기" 
-                                link="/model-inference-service" 
-                                width="250px"
+                                link="/model-inference-service/create-project" 
+                                width="250px" 
+                                onClick={() => window.scrollTo(0,0)}
                             />
                         </motion.div>
                     </motion.div>

@@ -7,13 +7,15 @@ interface AnimatedButtonProps {
     text: string;
     link: string;
     width?: string;
+    onClick?: () => void;
 }
 
-const AnimatedButtonComponent: React.FC<AnimatedButtonProps> = ({ text, link, width }) => {
+const AnimatedButtonComponent: React.FC<AnimatedButtonProps> = ({ text, link, width, onClick }) => {
     return (
         <button 
             className={`group relative border-2 border-white/24 rounded-[35px] h-[70px] px-[24px] py-[12px] transition-all duration-300 overflow-hidden hover:border-[#6296EF] ${width ? `w-[${width}]` : 'w-[190px]'}`}
             style={{ willChange: "transform, border-color" }}
+            onClick={onClick}
         >
             <Link to={link} className="absolute inset-0 flex items-center justify-center gap-[10px] px-[24px] py-[12px]">
                 <div 

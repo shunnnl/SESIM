@@ -10,7 +10,6 @@ import { Navbar } from "../components/Navbar/Navbar";
 import { CreateProjectPage } from "../pages/CreateProjectPage";
 import { getPageBackgroundClass } from "../utils/backgroundUtils";
 import { ModelInferenceServicePage } from "../pages/ModelInferenceServicePage";
-
 export const MainLayout = () => {
     const location = useLocation();
     const backgroundClass = getPageBackgroundClass(location.pathname);
