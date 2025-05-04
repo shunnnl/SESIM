@@ -317,26 +317,42 @@ public class TerraformTemplateService {
 
     /**
      * 모든 Terraform 파일을 지정된 디렉토리에 생성합니다.
+     *
+     * @param workspacePath 작업 경로
+     * @param deploymentId 배포 ID
+     * @param region AWS 리전
+     * @param instanceType EC2 인스턴스 타입
+     * @param amiId AMI ID
+     * @param iamRoleName IAM 역할 이름
+     * @param accessKey AWS 액세스 키
+     * @param secretKey AWS 시크릿 키
+     * @param sessionToken AWS 세션 토큰
+     * @throws IOException 파일 생성 중 오류 발생 시
      */
     public void createTerraformFiles(String workspacePath, String deploymentId,
                                      String region, String instanceType,
                                      String amiId, String iamRoleName,
                                      String accessKey, String secretKey, String sessionToken) throws IOException {
-        // 디렉토리 생성
-        Path workspaceDir = Paths.get(workspacePath);
-        Files.createDirectories(workspaceDir);
+        try {
+            // 디렉토리 생성
+            Path workspaceDir = Paths.get(workspacePath);
+            Files.createDirectories(workspaceDir);
 
-        // Terraform 파일 생성
-        Files.writeString(workspaceDir.resolve("provider.tf"), createProviderTemplate());
-        Files.writeString(workspaceDir.resolve("variables.tf"), createVariablesTemplate());
-        Files.writeString(workspaceDir.resolve("vpc.tf"), createVpcTemplate(deploymentId));
-        Files.writeString(workspaceDir.resolve("ec2.tf"), createEc2Template(deploymentId));
-        Files.writeString(workspaceDir.resolve("iam.tf"), createIamTemplate(deploymentId));
-        Files.writeString(workspaceDir.resolve("keypair.tf"), createKeypairTemplate(deploymentId));
-        Files.writeString(workspaceDir.resolve("outputs.tf"), createOutputsTemplate());
-        Files.writeString(workspaceDir.resolve("terraform.tfvars"),
-                createTfvarsTemplate(region, instanceType, amiId, iamRoleName, accessKey, secretKey, sessionToken));
+            // Terraform 파일 생성
+            Files.writeString(workspaceDir.resolve("provider.tf"), createProviderTemplate());
+            Files.writeString(workspaceDir.resolve("variables.tf"), createVariablesTemplate());
+            Files.writeString(workspaceDir.resolve("vpc.tf"), createVpcTemplate(deploymentId));
+            Files.writeString(workspaceDir.resolve("ec2.tf"), createEc2Template(deploymentId));
+            Files.writeString(workspaceDir.resolve("iam.tf"), createIamTemplate(deploymentId));
+            Files.writeString(workspaceDir.resolve("keypair.tf"), createKeypairTemplate(deploymentId));
+            Files.writeString(workspaceDir.resolve("outputs.tf"), createOutputsTemplate());
+            Files.writeString(workspaceDir.resolve("terraform.tfvars"),
+                    createTfvarsTemplate(region, instanceType, amiId, iamRoleName, accessKey, secretKey, sessionToken));
 
-        log.info("Created Terraform files in directory: {}", workspacePath);
+            log.info("Created Terraform files in directory: {}", workspacePath);
+        } catch (IOException e) {
+            log.error("Terraform 파일 생성 실패: {}", e.getMessage());
+            throw e;
+        }
     }
 }

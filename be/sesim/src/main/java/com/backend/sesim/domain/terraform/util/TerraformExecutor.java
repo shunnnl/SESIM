@@ -2,6 +2,7 @@ package com.backend.sesim.domain.terraform.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
@@ -10,12 +11,36 @@ import java.nio.file.Path;
 @Component
 public class TerraformExecutor {
 
-    public void runTerraformInitAndApply(Path dirPath) {
-        runCommand("terraform init", dirPath);
-        runCommand("terraform apply -auto-approve", dirPath);
+    /**
+     * Terraform init 및 apply 명령을 실행합니다.
+     *
+     * @param dirPath 작업 디렉토리 경로
+     * @return 성공 여부
+     */
+    public boolean runTerraformInitAndApply(Path dirPath) {
+        boolean initSuccess = runCommand("terraform init", dirPath);
+        if (!initSuccess) {
+            log.error("Terraform init 실패");
+            return false;
+        }
+
+        boolean applySuccess = runCommand("terraform apply -auto-approve", dirPath);
+        if (!applySuccess) {
+            log.error("Terraform apply 실패");
+            return false;
+        }
+
+        return true;
     }
 
-    private void runCommand(String command, Path workingDir) {
+    /**
+     * 시스템 명령어를 실행합니다.
+     *
+     * @param command 실행할 명령어
+     * @param workingDir 작업 디렉토리
+     * @return 명령어 실행 성공 여부
+     */
+    private boolean runCommand(String command, Path workingDir) {
         try {
             ProcessBuilder builder = new ProcessBuilder();
 
@@ -46,18 +71,25 @@ public class TerraformExecutor {
 
             if (exitCode != 0) {
                 log.error("명령어 실행 실패 (종료 코드: {}): {}", exitCode, command);
+                return false;
             }
 
+            return true;
         } catch (Exception e) {
             log.error("명령어 실행 오류: {}", command, e);
+            return false;
         }
     }
 
-    // 테라폼 설치 확인
+    /**
+     * Terraform이 설치되어 있는지 확인합니다.
+     *
+     * @return 설치 여부
+     */
     public boolean isTerraformInstalled() {
         try {
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-            String command = isWindows ? "terraform --version" : "terraform --version";
+            String command = "terraform --version";
 
             ProcessBuilder builder = new ProcessBuilder();
             if (isWindows) {
@@ -69,7 +101,12 @@ public class TerraformExecutor {
             Process process = builder.start();
             int exitCode = process.waitFor();
 
-            return exitCode == 0;
+            if (exitCode != 0) {
+                log.warn("Terraform이 설치되어 있지 않습니다.");
+                return false;
+            }
+
+            return true;
         } catch (Exception e) {
             log.error("Terraform 설치 확인 실패", e);
             return false;
