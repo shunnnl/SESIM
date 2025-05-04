@@ -4,8 +4,11 @@ import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+import { useState } from "react";
 
 export const CreateProjectPage = () => {
+    const [selectedModels, setSelectedModels] = useState<string[]>([]);
+
     return (
         <div>
             <PageTitleImageWithText
@@ -18,8 +21,8 @@ export const CreateProjectPage = () => {
             <div className="container-padding text-white py-[120px]">
                 <FirstStep />
                 <SecondStep />
-                <ThirdStep />
-                <ForthStep />
+                <ThirdStep selectedModels={selectedModels} setSelectedModels={setSelectedModels} />
+                <ForthStep selectedModels={selectedModels} />
             </div>
         </div>
     );

@@ -1,14 +1,18 @@
 import { SmallCard } from "./smallCard"
 import { FormStepHeader } from "./FormStepHeader"
-import { useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 
-export const ThirdStep = () => {
-    const [selectedModels, setSelectedModels] = useState<string[]>([])
+interface ThirdStepProps {
+    selectedModels: string[];
+    setSelectedModels: Dispatch<SetStateAction<string[]>>;
+}
 
+export const ThirdStep = ({ selectedModels, setSelectedModels }: ThirdStepProps) => {
+    
     const handleModelClick = (modelName: string) => {
         setSelectedModels(prev => {
             if (prev.includes(modelName)) {
-                return prev.filter(name => name !== modelName)
+                return prev.filter((name: string) => name !== modelName)
             } else {
                 return [...prev, modelName]
             }
@@ -44,8 +48,6 @@ export const ThirdStep = () => {
                     isSelected={selectedModels.includes("하시윤 모델")}
                     onClick={() => handleModelClick("하시윤 모델")}
                 />
-                
-                
             </div>
             <div className="mt-[15px] flex flex-row gap-[40px]">
                 <SmallCard
@@ -64,25 +66,9 @@ export const ThirdStep = () => {
                     description="그냥 자기만들고싶은대로 만들고있는 (아 뭐요!!)"
                     modelName="심근원 모델"
                     isSelected={selectedModels.includes("심근원 모델")}
-                        onClick={() => handleModelClick("심근원 모델")}
+                    onClick={() => handleModelClick("심근원 모델")}
                 />
             </div>
-
-
-
-
-            {selectedModels.length > 0 && (
-                <div className="mt-[20px] p-[15px] bg-[#242C4D] rounded-[10px]">
-                    <p className="text-[16px] font-bold mb-[10px]">선택된 모델:</p>
-                    <div className="flex flex-wrap gap-[10px]">
-                        {selectedModels.map(model => (
-                            <span key={model} className="px-[15px] py-[5px] bg-[#3C4061] rounded-[5px] text-[14px]">
-                                {model}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     )
 }
