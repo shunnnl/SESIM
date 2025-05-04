@@ -1,7 +1,7 @@
+import { useState } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
-import { useState } from "react"
 
 export const FirstStep = () => {
     const [validationStatus, setValidationStatus] = useState<'none' | 'success' | 'fail'>('none')

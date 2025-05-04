@@ -1,7 +1,10 @@
-import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
-import backgroundImage from "../assets/images/create-project-bg.png";
 import { FirstStep } from "../components/CreateProject/FirstStep";
+import { ThirdStep } from "../components/CreateProject/ThirdStep";
+import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
+import backgroundImage from "../assets/images/create-project-bg.png";
+import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+
 export const CreateProjectPage = () => {
     return (
         <div>
@@ -15,8 +18,8 @@ export const CreateProjectPage = () => {
             <div className="container-padding text-white py-[120px]">
                 <FirstStep />
                 <SecondStep />
-                {/* <ThirdStep /> */}
-                {/* <FourthStep /> */}
+                <ThirdStep />
+                <ForthStep />
             </div>
         </div>
     );

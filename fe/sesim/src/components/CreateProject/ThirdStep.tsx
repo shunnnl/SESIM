@@ -1,0 +1,88 @@
+import { SmallCard } from "./smallCard"
+import { FormStepHeader } from "./FormStepHeader"
+import { useState } from "react"
+
+export const ThirdStep = () => {
+    const [selectedModels, setSelectedModels] = useState<string[]>([])
+
+    const handleModelClick = (modelName: string) => {
+        setSelectedModels(prev => {
+            if (prev.includes(modelName)) {
+                return prev.filter(name => name !== modelName)
+            } else {
+                return [...prev, modelName]
+            }
+        })
+    }
+
+    return (
+        <div className="mt-[120px]">
+            <FormStepHeader
+                step="03"
+                title="보안 AI 모델 선택" 
+                description="사용할 보안 AI 모델을 선택해 주세요 (1개이상)"
+                must={true}
+                information="모델은 프로젝트 생성 이후 변경할 수 없습니다."
+            />
+
+            <div className="mt-[15px] flex flex-row gap-[40px]">
+                <SmallCard
+                    description="우리 팀의 믓쟁이 팀장"
+                    modelName="손은주 모델"
+                    isSelected={selectedModels.includes("손은주 모델")}
+                    onClick={() => handleModelClick("손은주 모델")}
+                />
+                <SmallCard
+                    description="도대체 모르는게 없는 똑똑이"
+                    modelName="박진훈 모델"
+                    isSelected={selectedModels.includes("박진훈 모델")}
+                    onClick={() => handleModelClick("박진훈 모델")}
+                />
+                <SmallCard
+                    description="알아서 척척 귀염둥이 막내"
+                    modelName="하시윤 모델"
+                    isSelected={selectedModels.includes("하시윤 모델")}
+                    onClick={() => handleModelClick("하시윤 모델")}
+                />
+                
+                
+            </div>
+            <div className="mt-[15px] flex flex-row gap-[40px]">
+                <SmallCard
+                    description="못하는게없는 자칭 말하는 감자"
+                    modelName="안주현 모델"
+                    isSelected={selectedModels.includes("안주현 모델")}
+                    onClick={() => handleModelClick("안주현 모델")}
+                />
+                <SmallCard
+                    description="칭찬에목말라있는쪼그라든포도"
+                    modelName="배지해 모델"
+                    isSelected={selectedModels.includes("배지해 모델")}
+                    onClick={() => handleModelClick("배지해 모델")}
+                />
+                <SmallCard
+                    description="그냥 자기만들고싶은대로 만들고있는 (아 뭐요!!)"
+                    modelName="심근원 모델"
+                    isSelected={selectedModels.includes("심근원 모델")}
+                        onClick={() => handleModelClick("심근원 모델")}
+                />
+            </div>
+
+
+
+
+            {selectedModels.length > 0 && (
+                <div className="mt-[20px] p-[15px] bg-[#242C4D] rounded-[10px]">
+                    <p className="text-[16px] font-bold mb-[10px]">선택된 모델:</p>
+                    <div className="flex flex-wrap gap-[10px]">
+                        {selectedModels.map(model => (
+                            <span key={model} className="px-[15px] py-[5px] bg-[#3C4061] rounded-[5px] text-[14px]">
+                                {model}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
