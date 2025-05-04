@@ -5,9 +5,10 @@ import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
 
 interface FirstStepProps {
     setFirstStepDone: (done: boolean) => void;
+    show: boolean;
 }
 
-export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
+export const FirstStep = ({ setFirstStepDone, show }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
     const [arn, setArn] = useState("")
 
@@ -27,7 +28,7 @@ export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
     }
 
     return (
-        <>
+        <div className={`transition-all duration-500 ${show ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}>
             <FormStepHeader
                 step="01"
                 title="IAM Role 연결" 
@@ -86,6 +87,6 @@ export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
                     </div>
                 </BigCard>
             </div>
-        </>
+        </div>
     )
 }

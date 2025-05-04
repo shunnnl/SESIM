@@ -4,9 +4,10 @@ import { FormStepHeader } from "./FormStepHeader"
 
 interface SecondStepProps {
     setSecondStepDone: (done: boolean) => void;
+    show: boolean;
 }
 
-export const SecondStep = ({ setSecondStepDone }: SecondStepProps) => {
+export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
     const [projectName, setProjectName] = useState("")
     const [projectDescription, setProjectDescription] = useState("")
 
@@ -16,7 +17,7 @@ export const SecondStep = ({ setSecondStepDone }: SecondStepProps) => {
     }
 
     return (
-        <div className="mt-[120px]">
+        <div className={`mt-[120px] transition-all duration-500 ${show ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}>
             <FormStepHeader
                 step="02"
                 title="프로젝트 기본 정보" 

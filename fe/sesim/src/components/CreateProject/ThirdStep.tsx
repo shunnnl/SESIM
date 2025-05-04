@@ -5,9 +5,10 @@ import { Dispatch, SetStateAction } from "react"
 interface ThirdStepProps {
     selectedModels: string[];
     setSelectedModels: Dispatch<SetStateAction<string[]>>;
+    show: boolean;
 }
 
-export const ThirdStep = ({ selectedModels, setSelectedModels }: ThirdStepProps) => {
+export const ThirdStep = ({ selectedModels, setSelectedModels, show }: ThirdStepProps) => {
 
     const handleModelClick = (modelName: string) => {
         setSelectedModels(prev => {
@@ -20,7 +21,7 @@ export const ThirdStep = ({ selectedModels, setSelectedModels }: ThirdStepProps)
     }
 
     return (
-        <div className="mt-[120px]">
+        <div className={`transition-all duration-500 ${show ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden mt-[120px]`}>
             <FormStepHeader
                 step="03"
                 title="보안 AI 모델 선택" 

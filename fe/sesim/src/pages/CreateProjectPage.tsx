@@ -20,23 +20,11 @@ export const CreateProjectPage = () => {
                 backgroundImage={backgroundImage}
             />
 
-            <div className="container-padding text-white py-[120px]">
-                <FirstStep setFirstStepDone={setFirstStepDone} />
-                <div
-                    className={`transition-all duration-500 ${firstStepDone ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}
-                >
-                    <SecondStep setSecondStepDone={setSecondStepDone} />
-                </div>
-                <div
-                    className={`transition-all duration-500 ${secondStepDone ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}
-                >
-                    <ThirdStep selectedModels={selectedModels} setSelectedModels={setSelectedModels} />
-                </div>
-                <div
-                    className={`transition-all duration-500 ${selectedModels.length > 0 ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}
-                >
-                    <ForthStep selectedModels={selectedModels} />
-                </div>
+            <div className="container-padding text-white pt-[120px]">
+                <FirstStep show={true} setFirstStepDone={setFirstStepDone} />
+                <SecondStep show={firstStepDone} setSecondStepDone={setSecondStepDone} />
+                <ThirdStep show={secondStepDone} selectedModels={selectedModels} setSelectedModels={setSelectedModels} />
+                <ForthStep show={selectedModels.length > 0} selectedModels={selectedModels} />
             </div>
         </div>
     );
