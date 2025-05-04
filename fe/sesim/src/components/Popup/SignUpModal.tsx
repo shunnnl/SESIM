@@ -482,8 +482,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
             className="flex flex-col gap-4 w-full"
           >
             {/* 다음/회원가입 버튼 */}
-            <form onSubmit={handleSubmit}
-            >
+            <form onSubmit={handleSubmit}>
               <button
                 type="submit"
                 className="relative rounded-[30px] p-[2px] group hover:scale-[1.01] transition-all duration-300 w-full"
