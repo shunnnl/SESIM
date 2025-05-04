@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MailVerifyDTO {
+public class MailVerifyRequest {
     private String email;
     private String code;
 }

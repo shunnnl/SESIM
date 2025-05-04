@@ -1,2 +1,4 @@
-package com.backend.sesim.domain.iam.dto.response;public class AssumeRoleResponseDto {
+package com.backend.sesim.domain.iam.dto.response;
+
+public class AssumeRoleResponse {
 }
