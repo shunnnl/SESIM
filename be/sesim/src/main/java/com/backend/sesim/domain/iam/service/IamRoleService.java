@@ -66,7 +66,7 @@ public class IamRoleService {
         return AssumeRoleRequest.builder()
                 .roleArn(roleArn)
                 .roleSessionName("SesimVerifySession")
-                .durationSeconds(36000)
+                .durationSeconds(3600) // 유효 시간 수정
                 .build();
     }
 

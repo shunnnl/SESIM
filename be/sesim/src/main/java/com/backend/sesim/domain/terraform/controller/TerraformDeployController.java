@@ -1,6 +1,7 @@
 package com.backend.sesim.domain.terraform.controller;
 
 import com.backend.sesim.domain.terraform.dto.request.DeployRequest;
+import com.backend.sesim.domain.terraform.dto.response.DeployResultResponse;
 import com.backend.sesim.domain.terraform.service.TerraformDeployService;
 import com.backend.sesim.global.dto.CommonResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,11 +19,11 @@ public class TerraformDeployController {
 
     private final TerraformDeployService terraformDeployService;
 
-    @Operation(summary = "리소스 배포", description = "테라폼을 사용하여 고객 계정에 AWS 리소스를 배포합니다.")
+    @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
     @PostMapping("/deploy")
-    public CommonResponseDto deploy(@RequestBody DeployRequest request) {
+    public CommonResponseDto<DeployResultResponse> deploy(@RequestBody DeployRequest request) {
         log.info("배포 요청 시작: {}", request.getDeploymentId());
-        terraformDeployService.deployToCustomerAccount(request);
-        return CommonResponseDto.ok();
+        DeployResultResponse result = terraformDeployService.deployToSaasAccount(request);
+        return CommonResponseDto.ok(result);
     }
 }

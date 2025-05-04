@@ -1,17 +1,19 @@
 package com.backend.sesim.domain.terraform.service;
 
 import com.backend.sesim.domain.terraform.dto.request.DeployRequest;
+import com.backend.sesim.domain.terraform.dto.response.DeployResultResponse;
 import com.backend.sesim.domain.terraform.exception.TerraformErrorCode;
 import com.backend.sesim.domain.terraform.util.TerraformExecutor;
 import com.backend.sesim.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -22,12 +24,19 @@ public class TerraformDeployService {
     private final TerraformTemplateService templateService;
     private final TerraformExecutor terraformExecutor;
 
+    @Value("${aws.saas.access-key}")
+    private String saasAccessKey;
+
+    @Value("${aws.saas.secret-key}")
+    private String saasSecretKey;
+
     /**
-     * 고객 계정에 AWS 리소스를 배포합니다.
+     * SaaS 계정에 AWS 리소스를 배포합니다.
      *
      * @param request 배포 요청 정보
+     * @return 배포 결과
      */
-    public void deployToCustomerAccount(DeployRequest request) {
+    public DeployResultResponse deployToSaasAccount(DeployRequest request) {
         // 입력값 검증
         validateDeployRequest(request);
 
@@ -44,18 +53,21 @@ public class TerraformDeployService {
         // 리전에 따른 AMI ID 매핑
         String amiId = getAmiIdForRegion(request.getRegion());
 
+        // 고객 ID 추출 (IAM Role ARN에서)
+        String customerId = extractCustomerId(request.getIamRoleArn());
+
         try {
-            // 템플릿 생성
-            templateService.createTerraformFiles(
+            // 템플릿 생성 - SaaS 계정 자격 증명 사용
+            templateService.createSaasTerraformFiles(
                     workingDir,
                     request.getDeploymentId(),
+                    customerId,
                     request.getRegion(),
                     request.getInstanceType(),
                     amiId,
-                    request.getIamRoleArn(),
-                    request.getAccessKey(),
-                    request.getSecretKey(),
-                    request.getSessionToken()
+                    saasAccessKey,
+                    saasSecretKey,
+                    ""  // 세션 토큰 불필요
             );
 
             // Terraform 실행
@@ -65,7 +77,16 @@ public class TerraformDeployService {
                 throw new GlobalException(TerraformErrorCode.TERRAFORM_EXECUTION_FAILED);
             }
 
-            log.info("배포 완료: {}", request.getDeploymentId());
+            // 결과 수집
+            Map<String, Object> outputs = terraformExecutor.getOutputs(Paths.get(workingDir));
+
+            return DeployResultResponse.builder()
+                    .deploymentId(request.getDeploymentId())
+                    .customerId(customerId)
+                    .ec2PublicIps((List<String>) outputs.get("ec2_public_ips"))
+                    .pemKeyPath((String) outputs.get("pem_file_path"))
+                    .build();
+
         } catch (IOException e) {
             log.error("Terraform 파일 생성 실패: {}", e.getMessage(), e);
             throw new GlobalException(TerraformErrorCode.TERRAFORM_FILE_CREATION_FAILED);
@@ -85,6 +106,25 @@ public class TerraformDeployService {
         if (request.getRegion() == null || !isValidRegion(request.getRegion())) {
             throw new GlobalException(TerraformErrorCode.UNSUPPORTED_REGION);
         }
+
+        if (request.getIamRoleArn() == null || !request.getIamRoleArn().startsWith("arn:aws:iam::")) {
+            throw new GlobalException(TerraformErrorCode.INVALID_ROLE_ARN);
+        }
+    }
+
+    /**
+     * 고객 ID 추출 (IAM Role ARN에서)
+     *
+     * @param roleArn IAM Role ARN
+     * @return 고객 ID (AWS 계정 ID)
+     */
+    private String extractCustomerId(String roleArn) {
+        // arn:aws:iam::123456789012:role/stack-name-sesim-access-role
+        String[] parts = roleArn.split(":");
+        if (parts.length >= 5) {
+            return parts[4]; // AWS 계정 ID
+        }
+        return "unknown-customer";
     }
 
     /**
