@@ -8,6 +8,7 @@ export const NavbarMenu: React.FC = () => {
             <Link to="/ai-model">AI모델</Link>
             <Link to="/model-inference-service">모델추론 서비스</Link>
             <Link to="/docs">Docs</Link>
+            <Link to="/keyinfo">apiKey</Link>
         </div>
     );
 };
