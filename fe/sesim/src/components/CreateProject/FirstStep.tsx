@@ -3,19 +3,26 @@ import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
 
-export const FirstStep = () => {
-    const [validationStatus, setValidationStatus] = useState<'none' | 'success' | 'fail'>('none')
-    const [arn, setArn] = useState('')
+interface FirstStepProps {
+    setFirstStepDone: (done: boolean) => void;
+}
+
+export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
+    const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
+    const [arn, setArn] = useState("")
 
     const handleValidation = () => {
         // NOTE: 실제 검증 로직이 들어갈 자리
         // TODO: 임시로 성공/실패를 번갈아가며 표시하도록 구현
-        if (validationStatus === 'none') {
-            setValidationStatus('success')
-        } else if (validationStatus === 'success') {
-            setValidationStatus('fail')
+        if (validationStatus === "none") {
+            setValidationStatus("success")
+            setFirstStepDone(true)
+        } else if (validationStatus === "success") {
+            setValidationStatus("fail")
+            setFirstStepDone(false)
         } else {
-            setValidationStatus('success')
+            setValidationStatus("success")
+            setFirstStepDone(true)
         }
     }
 
@@ -63,16 +70,17 @@ export const FirstStep = () => {
                                 onChange={(e) => setArn(e.target.value)}
                             />
                             <button 
-                                className="mt-[10px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200"
+                                className="mt-[10px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200 disabled:bg-[#44485e] disabled:text-[#A3A3A3] disabled:cursor-not-allowed"
                                 onClick={handleValidation}
+                                disabled={validationStatus === "success"}
                             >
                                 <p className="text-[16px] font-medium">Assume Role 검증</p>
                             </button>
                         </div>
-                        {validationStatus === 'success' && (
+                        {validationStatus === "success" && (
                             <p className="mt-[10px] text-[16px] font-medium text-[#90EE90]">완료</p>
                         )}
-                        {validationStatus === 'fail' && (
+                        {validationStatus === "fail" && (
                             <p className="mt-[10px] text-[16px] font-medium text-[#FF7F7F]">실패</p>
                         )}
                     </div>

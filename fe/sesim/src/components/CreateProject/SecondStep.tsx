@@ -2,9 +2,18 @@ import { useState } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 
-export const SecondStep = () => {
-    const [projectName, setProjectName] = useState('')
-    const [projectDescription, setProjectDescription] = useState('')
+interface SecondStepProps {
+    setSecondStepDone: (done: boolean) => void;
+}
+
+export const SecondStep = ({ setSecondStepDone }: SecondStepProps) => {
+    const [projectName, setProjectName] = useState("")
+    const [projectDescription, setProjectDescription] = useState("")
+
+    const handleSave = () => {
+        // 임시 저장 성공 시
+        setSecondStepDone(true)
+    }
 
     return (
         <div className="mt-[120px]">
@@ -35,7 +44,7 @@ export const SecondStep = () => {
                         />
                     </div>
 
-                    <button className="mt-[10px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200 ml-auto">
+                    <button className="mt-[10px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200 ml-auto" onClick={handleSave}>
                         프로젝트 정보 저장
                     </button>
                 </BigCard>
