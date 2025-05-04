@@ -51,7 +51,8 @@ export const KeyInfoPage = () => {
                 modelName: "NetworkSentinel",
                 ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYING",
-                state: "DEPLOYING"
+                state: "DEPLOYING",  
+                APIKey: "sjdlkjdsljd-adjskjlads12"
             }
         ]
     ];
