@@ -5,7 +5,6 @@ from app.core.config import settings
 from app.core.extractors.nginx_extractor import parse_log_lines
 from app.db.database import SessionLocal
 from app.dependencies.auth import verify_api_key
-from app.models.dynamic_ai_results import create_ai_result_table
 from app.schemas.predict.request import PredictRequest
 from app.schemas.predict.response import PredictResponse
 from app.services.predict_client import send_to_ai_model
@@ -17,8 +16,8 @@ router = APIRouter()
 
 @router.post("/v1/predict", response_model=PredictResponse)
 def predict(
-    request: PredictRequest,
-    api_key: str = Header(..., alias="api-key")
+        request: PredictRequest,
+        api_key: str = Header(..., alias="api-key")
 ):
     verify_api_key(model_id=request.model_id, api_key=api_key)
 
@@ -36,7 +35,7 @@ def predict(
             raise HTTPException(status_code=404, detail="해당 모델 없음")
 
         # 3. AI 서버 전체 URL 사용 (포트 포함)
-        ai_url = f"{settings.AI_SERVER_URL}/v1/predict"
+        ai_url = f"{settings.AI_SERVER_BASE_URL}{request.model_id}:{settings.AI_SERVER_PORT}/v1/predict"
 
         # 4. 모델 서버 예측 요청
         results = send_to_ai_model(ai_url, parsed_logs)

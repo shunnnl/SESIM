@@ -1,23 +1,24 @@
 import os
-from sqlalchemy import create_engine, MetaData
+
+from app.models.models import Base
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models.models import Base, Model
-from app.models.dynamic_ai_results import create_ai_result_table
 
 # 환경 변수로부터 가져오기
-DATABASE_URL = os.getenv("DB_URL")
+DB_URL = os.getenv("DB_URL")
 
-if not DATABASE_URL:
+if not DB_URL:
     raise ValueError("❌ DATABASE_URL (DB_URL) 환경변수가 설정되지 않았습니다.")
 
 # 엔진 생성
 engine = create_engine(
-    DATABASE_URL,
+    DB_URL,
     pool_pre_ping=True,
 )
 
 # 세션 생성
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 def get_db():
     """
@@ -29,6 +30,7 @@ def get_db():
     finally:
         db.close()
 
+
 def init_db():
     """
     서버 시작할 때 고정 테이블 + dynamic ai_results 테이블 생성
@@ -39,23 +41,23 @@ def init_db():
     # dynamic ai_results 테이블 생성
     create_dynamic_ai_result_tables()
 
+
 def create_dynamic_ai_result_tables():
     """
-    models 테이블에 등록된 모든 모델 id를 가져와서
-    ai_results_<model_id> 테이블을 동적으로 생성
+    models 테이블에 등록된 모든 모델에 대해
+    AI 서버에 스키마 요청 → 동적 테이블 생성
     """
-    from sqlalchemy.orm import Session
+    from app.models.models import Model
+    from app.api.model_table import create_result_table_for_model
 
-    session = Session(bind=engine)
-    metadata = MetaData()
-
+    db = SessionLocal()
     try:
-        model_ids = session.query(Model.model_id).all()
-
+        model_ids = db.query(Model.model_id).all()
         for (model_id,) in model_ids:
-            dynamic_table = create_ai_result_table(model_id)
-            dynamic_table.metadata.create_all(bind=engine)
-
-        print(f"✅ dynamic ai_results_N 테이블 {len(model_ids)}개 생성 완료")
+            try:
+                create_result_table_for_model(model_id)
+                print(f"✅ ai_results_{model_id} 테이블 생성 완료")
+            except Exception as e:
+                print(f"❌ 테이블 생성 실패 (model_id={model_id}): {e}")
     finally:
-        session.close()
+        db.close()
