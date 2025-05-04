@@ -1,10 +1,10 @@
 from contextlib import asynccontextmanager
 
+from app.api import predict
+from app.db.database import init_db
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.db.database import init_db
-from app.api.ping import router as ping_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,6 +16,7 @@ app = FastAPI(
     title="Sesim",
     description="Client Sesim Server",
     version="1.0.0",
+    root_path="/api",
     lifespan=lifespan,
 )
 
@@ -29,8 +30,4 @@ app.add_middleware(
 )
 
 # API 라우터 등록
-app.include_router(ping_router)
-
-@app.get("/")
-def hello():
-    return "Hello, World!"
+app.include_router(predict.router)
