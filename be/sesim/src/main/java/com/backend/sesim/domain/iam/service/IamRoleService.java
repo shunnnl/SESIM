@@ -76,12 +76,15 @@ public class IamRoleService {
         Credentials creds = stsResponse.credentials();
 
         if (creds != null) {
-            log.info("🧾 AccessKeyId: {}", creds.accessKeyId());
-            log.info("🔑 SecretAccessKey: {}", creds.secretAccessKey());
-            log.info("🔐 SessionToken: {}", creds.sessionToken());
             log.info("⏰ Expiration: {}", creds.expiration());
 
-            return new RoleVerificationResponse(true, "AssumeRole 검증 성공");
+            return new RoleVerificationResponse(
+                    true,
+                    "AssumeRole 검증 성공",
+                    stsResponse.credentials().accessKeyId(),
+                    stsResponse.credentials().secretAccessKey(),
+                    stsResponse.credentials().sessionToken()
+            );
         } else {
             log.warn("자격 증명을 찾을 수 없음: {}", request.roleArn());
             throw new GlobalException(IamErrorCode.CREDENTIALS_NOT_FOUND);

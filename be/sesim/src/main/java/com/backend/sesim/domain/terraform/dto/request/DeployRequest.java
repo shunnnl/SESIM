@@ -6,7 +6,6 @@ import lombok.Getter;
 public class DeployRequest {
     private String region;
     private String instanceType;
-    private String amiId;
     private String iamRoleArn;
     private String accessKey;
     private String secretKey;
