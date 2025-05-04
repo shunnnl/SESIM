@@ -1,15 +1,23 @@
 package com.backend.sesim.domain.terraform.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
 public class TerraformExecutor {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Terraform init 및 apply 명령을 실행합니다.
@@ -31,6 +39,71 @@ public class TerraformExecutor {
         }
 
         return true;
+    }
+
+    /**
+     * Terraform 출력값을 가져옵니다.
+     *
+     * @param dirPath 작업 디렉토리 경로
+     * @return 출력값 맵
+     */
+    public Map<String, Object> getOutputs(Path dirPath) {
+        Map<String, Object> outputs = new HashMap<>();
+        try {
+            ProcessBuilder builder = new ProcessBuilder();
+            boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+
+            if (isWindows) {
+                builder.command("cmd.exe", "/c", "terraform output -json");
+            } else {
+                builder.command("/bin/bash", "-c", "terraform output -json");
+            }
+
+            builder.directory(dirPath.toFile());
+            Process process = builder.start();
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                JsonNode outputJson = objectMapper.readTree(output.toString());
+
+                // EC2 public IPs
+                if (outputJson.has("ec2_public_ips")) {
+                    JsonNode ipsNode = outputJson.get("ec2_public_ips").get("value");
+                    List<String> ips = new ArrayList<>();
+                    ipsNode.forEach(node -> ips.add(node.asText()));
+                    outputs.put("ec2_public_ips", ips);
+                }
+
+                // PEM file path
+                if (outputJson.has("pem_file_path")) {
+                    outputs.put("pem_file_path", outputJson.get("pem_file_path").get("value").asText());
+                }
+
+                // Key name
+                if (outputJson.has("key_name")) {
+                    outputs.put("key_name", outputJson.get("key_name").get("value").asText());
+                }
+
+                // IAM instance profile
+                if (outputJson.has("iam_instance_profile")) {
+                    outputs.put("iam_instance_profile",
+                            outputJson.get("iam_instance_profile").get("value").asText());
+                }
+            } else {
+                log.error("Terraform output 명령 실패 (종료 코드: {})", exitCode);
+            }
+        } catch (Exception e) {
+            log.error("Terraform output 가져오기 실패", e);
+        }
+        return outputs;
     }
 
     /**

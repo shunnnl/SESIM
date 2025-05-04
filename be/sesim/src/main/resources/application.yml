@@ -43,4 +43,7 @@ aws:
   credentials:
     access-key: ${AWS_ACCESS_KEY}
     secret-key: ${AWS_SECRET_KEY}
+  saas:
+    access-key: ${SAAS_AWS_ACCESS_KEY}
+    secret-key: ${SAAS_AWS_SECRET_KEY}
   region: ap-northeast-2
