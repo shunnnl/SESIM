@@ -8,13 +8,13 @@ export const ProjectPage = () => {
                 id: 1,
                 modelName: "AuthGaurd",
                 description: "비정상적 로그인 패턴을 감지",
-                link: "",
+                link: "http://localhost:5173/userinfo",
             },
             {
                 id: 2,
                 modelName: "DataWatch",
                 description: "비정상적 로그인 패턴을 감지",
-                link: "",
+                link: "http://localhost:5173/userinfo",
             },
             {
                 id: 3,
@@ -57,7 +57,7 @@ export const ProjectPage = () => {
                         프로젝트
                     </h1>
                     <p className="text-lg font-medium m-1 mb-7">
-                        프로젝트 AI별 <br/>시각화 대시보드를 제공합니다.
+                        프로젝트에 사용된 보안 AI별 시각화 대시보드를 제공합니다.
                     </p>
                 </div>
                 <div>
