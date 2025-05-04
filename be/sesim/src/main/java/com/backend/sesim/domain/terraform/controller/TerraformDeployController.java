@@ -23,6 +23,6 @@ public class TerraformDeployController {
     public CommonResponseDto deploy(@RequestBody DeployRequest request) {
         log.info("배포 요청 시작: {}", request.getDeploymentId());
         terraformDeployService.deployToCustomerAccount(request);
-        return CommonResponseDto.ok("배포 요청이 성공적으로 처리되었습니다.");
+        return CommonResponseDto.ok();
     }
 }
