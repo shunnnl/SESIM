@@ -1,6 +1,6 @@
 import { FaRegCopy } from "react-icons/fa6";
 import "react-toastify/dist/ReactToastify.css";
-import { toast, ToastContainer } from "react-toastify"; 
+import { toast, ToastContainer } from "react-toastify";
 import { IoIosCheckmarkCircleOutline, IoIosInformationCircleOutline } from "react-icons/io";
 
 interface APIKeyModalProps {
@@ -30,18 +30,18 @@ export const APIKeyModal: React.FC<APIKeyModalProps> = ({
             <div className="flex items-center justify-center gap-2">
                 <IoIosCheckmarkCircleOutline className="text-xl text-white" />
                 <span>API Key가 복사되었습니다.</span>
-            </div>, 
+            </div>,
             {
-                position: "top-center", 
+                position: "top-center",
                 autoClose: 1000,
                 hideProgressBar: true,
-                closeButton: false, 
-                icon: false, 
+                closeButton: false,
+                icon: false,
                 style: {
-                    background: "#242C4D", 
-                    color: "#fff", 
+                    background: "#242C4D",
+                    color: "#fff",
                     borderRadius: "10px",
-                    padding: "5px 20px", 
+                    padding: "5px 20px",
                     boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                     display: "flex",
                     alignItems: "center",
@@ -54,13 +54,11 @@ export const APIKeyModal: React.FC<APIKeyModalProps> = ({
     return (
         <>
             <div
-                className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 z-50 ${
-                    isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut pointer-events-none"}`}
+                className={`fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 z-50 ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut pointer-events-none"}`}
                 onClick={handleClose}
             >
                 <div
-                    className={`relative w-[90%] sm:w-[80%] md:w-[60%] lg:w-[35%] max-h-[750px] rounded-[30px] transform transition-all duration-300 ${
-                        isOpen ? "opacity-100 translate-y-0 animate-slideIn" : "opacity-0 translate-y-4 animate-slideOut"}`}
+                    className={`relative w-[90%] sm:w-[80%] md:w-[60%] lg:w-[35%] max-h-[750px] rounded-[30px] transform transition-all duration-300 ${isOpen ? "opacity-100 translate-y-0 animate-slideIn" : "opacity-0 translate-y-4 animate-slideOut"}`}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div
@@ -128,7 +126,7 @@ export const APIKeyModal: React.FC<APIKeyModalProps> = ({
                     </div>
                 </div>
             </div>
-            
+
             <ToastContainer />
         </>
     );

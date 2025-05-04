@@ -63,7 +63,7 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
         setIsModalOpen(false);
         setSelectedItem(null);
     };
-    
+
 
     const renderState = (state: string) => stateConfig[state as keyof typeof stateConfig];
 

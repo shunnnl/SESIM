@@ -14,20 +14,20 @@ export const MainLayout = () => {
 
     return (
         <div className="min-h-screen bg-[#0A0C35]">
-        <div className={`${isHomePage ? "bg-cyber-security bg-cover bg-center bg-no-repeat min-h-screen" : ""}`}>
-            <Navbar />
-            <main className="w-full px-4 sm:px-6 md:px-8 lg:px-[178px] max-w-[1564px] mx-auto">
-                <Routes>
-                    <Route path="/" element={<HomePage />}  />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/ai-model" element={<AiModelPage />} />
-                    <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
-                    <Route path="/docs" element={<DocsPage />} />
-                    <Route path="/userinfo" element={<UserInfoPage/>} />
-                    <Route path="/keyinfo" element={<KeyInfoPage/>} />
-                </Routes>
-            </main>
-        </div>
+            <div className={`${isHomePage ? "bg-cyber-security bg-cover bg-center bg-no-repeat min-h-screen" : ""}`}>
+                <Navbar />
+                <main className="w-full px-4 sm:px-6 md:px-8 lg:px-[178px] max-w-[1564px] mx-auto">
+                    <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/about" element={<AboutPage />} />
+                        <Route path="/ai-model" element={<AiModelPage />} />
+                        <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
+                        <Route path="/docs" element={<DocsPage />} />
+                        <Route path="/userinfo" element={<UserInfoPage />} />
+                        <Route path="/keyinfo" element={<KeyInfoPage />} />
+                    </Routes>
+                </main>
+            </div>
         </div>
     );
 };

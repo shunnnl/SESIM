@@ -51,12 +51,12 @@ export const KeyInfoPage = () => {
                 modelName: "NetworkSentinel",
                 ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYING",
-                state: "DEPLOYING",  
+                state: "DEPLOYING",
                 APIKey: "sjdlkjdsljd-adjskjlads12"
             }
         ]
     ];
-    {/*FIXME api가 나오면 대체될 리스트 입니다! */}
+    {/*FIXME api가 나오면 대체될 리스트 입니다! */ }
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black">
