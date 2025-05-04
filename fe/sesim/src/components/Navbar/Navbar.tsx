@@ -3,9 +3,30 @@ import { SesimLogo } from "./SesimLogo";
 import { NavbarMenu } from "./NavbarMenu";
 import { SidebarMenu } from "./SidebarMenu";
 import { LoginButton } from "./LoginButton";
+import { LoginModal } from "../Popup/LoginModal";
+import { SignUpModal } from "../Popup/SignUpModal";
 
 export const Navbar: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+
+    const handleSignUpClick = () => {
+        setIsLoginModalOpen(false);
+        setIsSignUpModalOpen(true);
+    };
+
+
+    const handleLoginClick = () => {
+        setIsLoginModalOpen(true);
+        setIsSignUpModalOpen(false);
+    };
+
+    
+    const handleLoginModalOpen = () => {
+        setSidebarOpen(false);
+        setIsLoginModalOpen(!isLoginModalOpen);
+    };
     
     return (
         <nav className="flex justify-between items-center px-4 border-b-2 border-white/ md:px-12 h-[86px]">
@@ -16,14 +37,15 @@ export const Navbar: React.FC = () => {
                 </div>
             </div>
             <div className="hidden md:block">
-                <LoginButton />
+                <LoginButton onClickLoginModal={handleLoginModalOpen} />
             </div>
             {!sidebarOpen && (
-                <button 
+                <button
                     className="md:hidden z-50" 
                     onClick={() => setSidebarOpen(true)} aria-label="메뉴 열기" 
-                    style={{ color: 'white', fontSize: '30px' }}>
-                        ☰
+                    style={{ color: "white", fontSize: "30px" }}
+                >
+                    ☰
                 </button>
             )}
             {sidebarOpen && (
@@ -44,11 +66,26 @@ export const Navbar: React.FC = () => {
                         </button>
                         <SidebarMenu onClickMenu={() => setSidebarOpen(false)} />
                         <div className="px-8 py-4 mt-auto">
-                            <button className="text-white text-[18px] w-full text-left">로그인</button>
+                            <button 
+                                className="text-white text-[18px] w-full text-left"
+                                onClick={handleLoginModalOpen}
+                            >
+                                로그인
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={() => setIsLoginModalOpen(false)}
+                onSwitchToSignUp={handleSignUpClick}
+            />
+            <SignUpModal
+                isOpen={isSignUpModalOpen}
+                onClose={() => setIsSignUpModalOpen(false)}
+                onSwitchToLogin={handleLoginClick}
+            />
         </nav>
     );
 };
