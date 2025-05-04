@@ -14,6 +14,7 @@ public class TerraformDeployController {
 
     @PostMapping("/deploy")
     public String deploy(@RequestBody DeployRequest request) {
-        return terraformDeployService.assumeRoleAndDeploy(request);
+        terraformDeployService.deployToCustomerAccount(request);
+        return "배포 요청 완료";
     }
 }
