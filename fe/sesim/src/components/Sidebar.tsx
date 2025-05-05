@@ -33,7 +33,7 @@ export const Sidebar: React.FC = () => {
                     API사용량 / 금액
                 </NavLink>
 
-                <NavLink to="/help" className={getNavLinkClass}>
+                <NavLink to="/project" className={getNavLinkClass}>
                     <FaFolder className="text-xl text-gray-400" />
                     프로젝트
                 </NavLink>
