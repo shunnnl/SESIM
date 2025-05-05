@@ -44,6 +44,7 @@ export const ProjectPage = () => {
             }
         ]
     ];
+    {/*FIXME api연동시 받아올 리스트 입니다! 그라파나 링크는 그냥 내정보링크로 들어있습니다 클릭시 이동만 구현됨됨*/ }
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black">
@@ -62,9 +63,10 @@ export const ProjectPage = () => {
                 </div>
                 <div>
                     {allItems.map((itemsArray, index) => (
-                        <div key={index} className="mb-6">
+                        <div key={index} className="mb-8">
                             <h2 className="text-2xl font-semibold text-white mb-3">
                                 sesim project
+                                {/*FIXME 프로젝트 이름도 api연동시 받아서 보여줘야할 데이터입니다*/}
                             </h2>
                             <ItemList items={itemsArray} />
                         </div>
