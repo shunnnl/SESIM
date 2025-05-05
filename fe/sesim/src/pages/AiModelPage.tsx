@@ -1,7 +1,7 @@
 
 import backgroundImage from "../assets/images/ai-model-bg.png";
 import { AllAiModels } from "../components/AiModel/AllAiModels";
-import { MostAiModel } from "../components/AiModel/MostAiModels";
+import { MostAiModel } from "../components/AiModel/MostAiModel";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 
 export const AiModelPage: React.FC = () => {

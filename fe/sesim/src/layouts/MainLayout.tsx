@@ -7,9 +7,11 @@ import { KeyInfoPage } from "../pages/KeyInfoPage";
 import { UserInfoPage } from "../pages/UserInfoPage";
 import { Footer } from "../components/Footer/Footer";
 import { Navbar } from "../components/Navbar/Navbar";
+import { AiModelDetailPage } from "../pages/AiModelDetailPage";
 import { CreateProjectPage } from "../pages/CreateProjectPage";
 import { getPageBackgroundClass } from "../utils/backgroundUtils";
 import { ModelInferenceServicePage } from "../pages/ModelInferenceServicePage";
+
 export const MainLayout = () => {
     const location = useLocation();
     const backgroundClass = getPageBackgroundClass(location.pathname);
@@ -23,6 +25,7 @@ export const MainLayout = () => {
                         <Route path="/" element={<HomePage />}  />
                         <Route path="/about" element={<AboutPage />} />
                         <Route path="/ai-model" element={<AiModelPage />} />
+                        <Route path="/ai-model/:modelName" element={<AiModelDetailPage />} />
                         <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
                         <Route path="/model-inference-service/create-project" element={<CreateProjectPage />} />
                         <Route path="/docs" element={<DocsPage />} />

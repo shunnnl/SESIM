@@ -5,7 +5,6 @@ interface AiModelCardProps {
     modelName: string;
     modelDescription: string;
     modelDetailList: string[];
-    modelLink?: string;
 }
 
 export const AiModelCard = ({ modelName, modelDescription, modelDetailList, modelLink }: AiModelCardProps) => {
@@ -23,7 +22,7 @@ export const AiModelCard = ({ modelName, modelDescription, modelDetailList, mode
             <div className="absolute bottom-0 left-0 w-full px-[60px] pb-[40px]">
                 <SmallAnimatedButton
                     text="자세히 보기"
-                    link="/"
+                    link={`/ai-model/${modelName}`}
                 />
             </div>
         </div>

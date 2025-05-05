@@ -2,6 +2,7 @@ import { useState } from "react";
 import model1 from "../../assets/images/model1.png";
 import model2 from "../../assets/images/model2.png";
 import model3 from "../../assets/images/model3.png";
+import { Link } from "react-router-dom";
 
 const popularModels = [
     {
@@ -9,21 +10,18 @@ const popularModels = [
         subname: "비정상적 접근 탐지 AI",
         description: "로그를 통한 웹 공격 실시간 포착",
         image: model1,
-        modelLink: "/auth-guard"
     },
     {
         name: "WebSentinel",
         subname: "웹 / 앱 이상행동 감지 AI",
         description: "로그를 통한 웹 공격 실시간 포착",
         image: model2,
-        modelLink: "/web-sentinel"
     },
     {
         name: "NetPulse",
         subname: "이상 트래픽 / 시스템 공격 감지 AI",
         description: "로그를 통한 웹 공격 실시간 포착",
         image: model3,
-        modelLink: "/net-pulse"
     }
 ];
 
@@ -49,13 +47,13 @@ function CardItem({ model, style, extraStyle, isLink = false }: any) {
     };
     if (isLink) {
         return (
-            <a
-                href={model.modelLink}
+            <Link
+                to={`/ai-model/${model.name}`}
                 className={`${CARD_BASE_CLASS} ${style}`}
                 style={mergedStyle}
             >
                 {content}
-            </a>
+            </Link>
         );
     }
     return (
