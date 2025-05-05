@@ -8,11 +8,11 @@ from fastapi import FastAPI, Form
 from fastapi.responses import HTMLResponse
 from sklearn.preprocessing import LabelEncoder
 from scipy.sparse import hstack, csr_matrix
-from app.core.config import MODEL_DIR, MODEL_VERSION, DEFAULT_MODEL_ID
+from app.core.config import MODEL_DIR, MODEL_VERSION
 
 app = FastAPI()
 
-model_dir = MODEL_DIR / str(DEFAULT_MODEL_ID) / f"model_v{MODEL_VERSION}"
+model_dir = MODEL_DIR / f"model_v{MODEL_VERSION}"
 
 try:
     model = joblib.load(model_dir / f"xgboost_nginx_model_v{MODEL_VERSION}.pkl")

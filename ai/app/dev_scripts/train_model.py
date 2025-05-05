@@ -26,13 +26,10 @@ print(f" 데이터 로딩 완료 (총 {len(df)}건)")
 
 target_col = 'is_attack'
 
-# 전처리된 url 별도 컬럼 ('path'를 'url'로 변경)
 df['decoded_url'] = df['url'].astype(str).apply(preprocess_url)
 
-# URL 기반 특성 추출
 df = extract_url_features(df, url_column='decoded_url')
 
-# 라벨 인코딩
 le_method = LabelEncoder()
 le_method.fit(["GET", "POST"])
 df['method'] = le_method.transform(df['method'])
@@ -43,7 +40,6 @@ le_agent.fit([
 ])
 df['user_agent'] = le_agent.transform(df['user_agent'])
 
-# 수치형 특성
 X_basic = df[[
     'method', 'status_code', 'user_agent', 'url_len',
     'has_select', 'has_alert', 'has_script', 'has_div',
@@ -51,20 +47,16 @@ X_basic = df[[
     'has_eq', 'has_quote', 'has_union', 'has_dash', 'has_admin'
 ]]
 
-# TF-IDF 벡터화
 tfidf = TfidfVectorizer(analyzer='char_wb', ngram_range=(3, 5), max_features=500)
-X_url = tfidf.fit_transform(df['decoded_url'])  # 'X_path'를 'X_url'로 변경
+X_url = tfidf.fit_transform(df['decoded_url'])
 
-# 전체 특성 결합
 X = hstack([csr_matrix(X_basic.values), X_url])
 y = df[target_col].astype(int)
 
-# 학습/테스트 분할
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, stratify=y, random_state=42
 )
 
-# 모델 학습
 model = xgb.XGBClassifier(
     n_estimators=150,
     learning_rate=0.1,

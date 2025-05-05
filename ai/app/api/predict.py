@@ -3,17 +3,14 @@ from fastapi import APIRouter
 from app.utils import preprocess_url
 from app.core.registry import load_bundle
 from app.dto.response import PredictResponse
-from app.core.config import DEFAULT_MODEL_ID
 from app.services.predictor import predict_logs
 from app.dto.request import PredictRequest, RawLog
 
-router = APIRouter()
+router = APIRouter(tags=["공격 판별 api"])
 
 @router.post("/predict", response_model=PredictResponse)
 def predict_endpoint(req: PredictRequest):
-
-    model_id = DEFAULT_MODEL_ID
-    model, vectorizer, method_encoder, agent_encoder = load_bundle(model_id)
+    model, vectorizer, method_encoder, agent_encoder = load_bundle()
 
     processed_logs: List[RawLog] = []
     for log in req.logs:
