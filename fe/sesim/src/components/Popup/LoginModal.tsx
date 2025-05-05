@@ -5,9 +5,10 @@ import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSwitchToSignUp: () => void;
 }
 
-export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToSignUp }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [emailError, setEmailError] = useState("");
@@ -75,6 +76,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     };
 
 
+    const handleSignUpClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        onSwitchToSignUp();
+    };
+
+
     useEffect(() => {
         if (isOpen) {
             setShouldRender(true);
@@ -92,7 +99,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
     return (
         <div
-            className={`fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}
+            className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}
             onClick={handleClose}
         >
             <div
@@ -115,7 +122,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         로그인
                     </p>
 
-                    <div className="flex flex-col items-center gap-12 w-full mb-10">
+                    <div className="flex flex-col items-center gap-12 w-full pb-10 p-2">
                         {/* 이메일 입력 */}
                         <div className="w-full">
                             <div className="relative group">
@@ -182,7 +189,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-4 w-full mt-4">
+                    <div className="flex flex-col gap-4 w-full">
                         {/* 로그인 버튼 */}
                         <form onSubmit={handleLoginSubmit}>
                             <button
@@ -210,7 +217,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                             <p className={`font-['Pretendard'] text-red-500 text-xs mt-1 hidden: ${loginErrorMessage ? false : true}`}>{loginErrorMessage}</p>
                             <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
                                 아직 회원이 아니신가요?{"  "}
-                                <a className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer">
+                                <a 
+                                    onClick={handleSignUpClick}
+                                    className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer"
+                                >
                                     회원가입
                                 </a>
                             </span>
