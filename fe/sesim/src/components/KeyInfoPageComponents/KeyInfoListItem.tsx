@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Lottie from "react-lottie-player";
 import { IoIosCheckmarkCircleOutline, IoIosInformationCircleOutline } from "react-icons/io";
 import loading from "../../assets/lotties/Loading.json";
+import { APIKeyModal } from "../../components/Popup/APIKeyModal";
 
 interface ListItem {
     id: number;
@@ -9,6 +10,7 @@ interface ListItem {
     ALBaddress: string;
     APIKeyState: string;
     state: string;
+    APIKey: string;
 }
 
 interface ItemListProps {
@@ -48,6 +50,21 @@ const stateConfig: Record<"DEPLOYED" | "DEPLOYING" | "FAILED", {
 };
 
 const ItemList: React.FC<ItemListProps> = ({ items }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<ListItem | null>(null);
+
+    const handleOpenModal = (item: ListItem) => {
+        setSelectedItem(item);
+        setIsModalOpen(true);
+    };
+
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedItem(null);
+    };
+
+
     const renderState = (state: string) => stateConfig[state as keyof typeof stateConfig];
 
     const renderButton = (item: ListItem) => {
@@ -76,6 +93,11 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
                         e.currentTarget.style.backgroundImage = "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
                     }
                 }}
+                onClick={() => {
+                    if (isDeployed) {
+                        handleOpenModal(item);
+                    }
+                }}
                 disabled={!isDeployed}
             >
                 <span>{isDeployed ? "API Key 확인" : renderState(item.APIKeyState).label}</span>
@@ -84,46 +106,58 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
     };
 
     return (
-        <div className="w-full bg-[#242C4D] rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500">
-            <div className="flex flex-col w-full">
-                {items.map((item, index) => {
-                    const config = renderState(item.state);
-                    return (
-                        <div key={item.id} className={`flex flex-col p-4 ${index < items.length - 1 ? "border-b border-gray-600" : ""}`}>
-                            <p className="text-xl font-semibold text-white flex items-center mb-2">
-                                <img src="src/assets/images/logo-sesim.png" alt="icon" className="inline-block w-8 h-8" />
-                                {item.modelName}
-                            </p>
+        <>
+            <div className="w-full bg-[#242C4D] rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500">
+                <div className="flex flex-col w-full">
+                    {items.map((item, index) => {
+                        const config = renderState(item.state);
+                        return (
+                            <div key={item.id} className={`flex flex-col p-4 ${index < items.length - 1 ? "border-b border-gray-600" : ""}`}>
+                                <p className="text-xl font-semibold text-white flex items-center mb-2">
+                                    <img src="src/assets/images/logo-sesim.png" alt="icon" className="inline-block w-8 h-8" />
+                                    {item.modelName}
+                                </p>
 
-                            <p className="text-lg font-semibold text-white flex items-center gap-2 ml-2">
-                                <span className="w-1 h-1 rounded-full bg-gray-400 inline-block mr-1" />
-                                ALB주소
-                            </p>
-                            <p className="text-lg text-white ml-2 mb-2">{item.ALBaddress}</p>
+                                <p className="text-lg font-semibold text-white flex items-center gap-2 ml-2">
+                                    <span className="w-1 h-1 rounded-full bg-gray-400 inline-block mr-1" />
+                                    ALB주소
+                                </p>
+                                <p className="text-lg text-white ml-2 mb-2">{item.ALBaddress}</p>
 
-                            <div className="flex items-center gap-2 ml-2 mb-2">
-                                <span className="w-1 h-1 rounded-full bg-gray-400 inline-block mr-1" />
-                                <p className="text-lg font-semibold text-white">API Key</p>
+                                <div className="flex items-center gap-2 ml-2 mb-2">
+                                    <span className="w-1 h-1 rounded-full bg-gray-400 inline-block mr-1" />
+                                    <p className="text-lg font-semibold text-white">API Key</p>
 
-                                {renderButton(item)}
+                                    {renderButton(item)}
 
-                                <span className="w-1 h-1 rounded-full bg-gray-400 inline-block ml-4 mr-1" />
-                                <p className="text-lg text-white">배포상태</p>
+                                    <span className="w-1 h-1 rounded-full bg-gray-400 inline-block ml-4 mr-1" />
+                                    <p className="text-lg text-white">배포상태</p>
 
-                                <div
-                                    className={`text-lg px-4 flex items-center ${config?.textClass || "text-gray-700"}`}
-                                >
-                                    <div className="flex items-center gap-2 text-lg">
-                                        {config?.icon}
-                                        <span className={config?.textClass || "text-gray-400"}>{config?.label || "알 수 없음"}</span>
+                                    <div
+                                        className={`text-lg px-4 flex items-center ${config?.textClass || "text-gray-700"}`}
+                                    >
+                                        <div className="flex items-center gap-2 text-lg">
+                                            {config?.icon}
+                                            <span className={config?.textClass || "text-gray-400"}>{config?.label || "알 수 없음"}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
-        </div>
+
+            {selectedItem && (
+                <APIKeyModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    projectName={"sesim project"}
+                    modelName={selectedItem.modelName}
+                    apiKey={selectedItem.APIKey}
+                />
+            )}
+        </>
     );
 };
 
