@@ -20,7 +20,7 @@ export const ProjectPage = () => {
                 id: 3,
                 modelName: "WebSentinel",
                 description: "비정상적 로그인 패턴을 감지",
-                link: "",
+                link: "http://localhost:5173/userinfo",
             }
         ],
         [
@@ -28,19 +28,19 @@ export const ProjectPage = () => {
                 id: 4,
                 modelName: "FileGuard",
                 description: "비정상적 로그인 패턴을 감지",
-                link: "",
+                link: "http://localhost:5173/userinfo",
             },
             {
                 id: 5,
                 modelName: "CloudWatch",
                 description: "비정상적 로그인 패턴을 감지",
-                link: "",
+                link: "http://localhost:5173/userinfo",
             },
             {
                 id: 6,
                 modelName: "NetworkSentinel",
                 description: "비정상적 로그인 패턴을 감지",
-                link: "",
+                link: "http://localhost:5173/userinfo",
             }
         ]
     ];

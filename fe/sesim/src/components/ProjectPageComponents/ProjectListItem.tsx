@@ -8,7 +8,7 @@ interface Item {
     id: number;
     modelName: string;
     description: string;
-    link?: string;
+    link: string;
 }
 
 interface ItemListProps {
