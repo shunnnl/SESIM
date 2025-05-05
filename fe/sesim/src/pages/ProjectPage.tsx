@@ -47,7 +47,7 @@ export const ProjectPage = () => {
     {/*FIXME api연동시 받아올 리스트 입니다! 그라파나 링크는 그냥 내정보링크로 들어있습니다 클릭시 이동만 구현됨됨*/ }
 
     return (
-        <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black">
+        <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
             <div className="mr-12">
                 <Sidebar />
             </div>

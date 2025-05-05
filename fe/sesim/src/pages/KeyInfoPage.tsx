@@ -59,7 +59,7 @@ export const KeyInfoPage = () => {
     {/*FIXME api가 나오면 대체될 리스트 입니다! */ }
 
     return (
-        <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black">
+        <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
             <div className="mr-12">
                 <Sidebar />
             </div>
