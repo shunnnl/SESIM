@@ -1,16 +1,19 @@
-from fastapi import APIRouter, HTTPException
+from typing import Optional
 from app.dto.response import SchemaResponse
+from app.core.config import DEFAULT_MODEL_ID
+from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import Table, Column, Integer, String, Boolean, Float, DateTime, MetaData, CHAR
 
 router = APIRouter(tags=["schema"])
-
-metadata = MetaData()
 
 def create_ai_result_table(model_id: int):
     """
     model_id에 해당하는 AI 예측 결과 테이블 구조를 반환합니다.
     이 테이블은 DB에 직접 생성되지는 않고, /schema API 응답 용도로 사용됩니다.
     """
+    # 함수 내부에서 MetaData 인스턴스 생성
+    metadata = MetaData()
+    
     table_name = f"ai_results_{model_id}"
     return Table(
         table_name,
@@ -28,8 +31,8 @@ def create_ai_result_table(model_id: int):
     )
 
 
-@router.get("/schema/{model_id}", response_model=SchemaResponse)
-async def schema_endpoint(model_id: int):
+@router.get("/schema", response_model=SchemaResponse)
+async def schema_endpoint(model_id: Optional[int] = Query(default=DEFAULT_MODEL_ID)):
     try:
         table = create_ai_result_table(model_id)
         columns = {col.name: str(col.type) for col in table.columns}
