@@ -107,7 +107,13 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
 
     return (
         <>
-            <div className="w-full bg-[#242C4D] rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500">
+            <div
+                className="w-full bg-[#242C4D] rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500"
+                style={{
+                    boxShadow: '0px 0px 10px rgba(116, 208, 244, 0.2)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}>
                 <div className="flex flex-col w-full">
                     {items.map((item, index) => {
                         const config = renderState(item.state);
