@@ -8,12 +8,12 @@ router = APIRouter(tags=["train"])
 
 @router.post("/train", response_model=TrainResponse)
 async def train_endpoint(
-    csv_file: UploadFile = File(...),
-    model_id: int = DEFAULT_MODEL_ID
+    csv_file: UploadFile = File(...)
 ):
     if not csv_file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="CSV 파일만 가능합니다.")
 
+    model_id = DEFAULT_MODEL_ID
     dest_dir = MODEL_DIR / str(model_id) / f"model_v{SAVE_MODEL_VERSION}"
     dest_dir.mkdir(parents=True, exist_ok=True)
 
@@ -23,8 +23,8 @@ async def train_endpoint(
             f.write(await csv_file.read())
 
         train_from_csv(tmp_path, dest_dir)
-        
-        return TrainResponse(model_id=model_id)
+
+        return TrainResponse()
     
     finally:
         tmp_path.unlink(missing_ok=True)

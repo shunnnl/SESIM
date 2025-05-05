@@ -11,7 +11,7 @@ def create_ai_result_table(model_id: int):
     model_id에 해당하는 AI 예측 결과 테이블 구조를 반환합니다.
     이 테이블은 DB에 직접 생성되지는 않고, /schema API 응답 용도로 사용됩니다.
     """
-    # 함수 내부에서 MetaData 인스턴스 생성
+
     metadata = MetaData()
     
     table_name = f"ai_results_{model_id}"

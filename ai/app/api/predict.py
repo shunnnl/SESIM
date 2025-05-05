@@ -12,7 +12,7 @@ router = APIRouter()
 @router.post("/predict", response_model=PredictResponse)
 def predict_endpoint(req: PredictRequest):
 
-    model_id = req.model_id if req.model_id is not None else DEFAULT_MODEL_ID
+    model_id = DEFAULT_MODEL_ID
     model, vectorizer, method_encoder, agent_encoder = load_bundle(model_id)
 
     processed_logs: List[RawLog] = []
@@ -23,4 +23,4 @@ def predict_endpoint(req: PredictRequest):
 
     results = predict_logs(model, vectorizer, processed_logs, method_encoder, agent_encoder)
 
-    return PredictResponse(model_id=model_id, results=results)
+    return PredictResponse(results=results)
