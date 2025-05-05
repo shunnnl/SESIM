@@ -9,21 +9,24 @@ export const KeyInfoPage = () => {
                 modelName: "AuthGaurd",
                 ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYED",
-                state: "DEPLOYED"
+                state: "DEPLOYED",
+                APIKey: "sjdlkjdsljd-adjskjlads12"
             },
             {
                 id: 2,
                 modelName: "DataWatch",
                 ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "FAILED",
-                state: "FAILED"
+                state: "FAILED",
+                APIKey: "sjdlkjdsljd-adjskjlads12"
             },
             {
                 id: 3,
                 modelName: "WebSentinel",
                 ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYING",
-                state: "DEPLOYING"
+                state: "DEPLOYING",
+                APIKey: "sjdlkjdsljd-adjskjlads12"
             }
         ],
         [
@@ -32,25 +35,28 @@ export const KeyInfoPage = () => {
                 modelName: "FileGuard",
                 ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYED",
-                state: "DEPLOYED"
+                state: "DEPLOYED",
+                APIKey: "sjdlkjdsljd-adjskjlads12"
             },
             {
                 id: 5,
                 modelName: "CloudWatch",
                 ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "FAILED",
-                state: "FAILED"
+                state: "FAILED",
+                APIKey: "sjdlkjdsljd-adjskjlads12"
             },
             {
                 id: 6,
                 modelName: "NetworkSentinel",
                 ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
                 APIKeyState: "DEPLOYING",
-                state: "DEPLOYING"
+                state: "DEPLOYING",
+                APIKey: "sjdlkjdsljd-adjskjlads12"
             }
         ]
     ];
-    {/*FIXME api가 나오면 대체될 리스트 입니다! */}
+    {/*FIXME api가 나오면 대체될 리스트 입니다! */ }
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black">
