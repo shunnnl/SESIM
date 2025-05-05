@@ -1,9 +1,11 @@
-import { BigCard } from "./BigCard"
 import { useState, useEffect } from "react"
+import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import awsIcon from "../../assets/images/aws.svg"
 import azureIcon from "../../assets/images/azure.svg"
 import gcpIcon from "../../assets/images/googlecloudplatform.svg"
+
+const CLOUD_PROVIDERS = ["Amazon Web Services", "Microsoft Azure", "Google Cloud Platform"];
 
 interface ForthStepProps {
     selectedModels: string[];
@@ -49,6 +51,7 @@ export const ForthStep = ({ selectedModels, show, selectedInstancePrice, setSele
         }
     }, [selectedModels]);
 
+
     const handleModelClick = (model: string) => {
         if (selectedModel === model) {
             setSelectedModel("") // 같은 모델을 다시 클릭하면 선택 해제
@@ -57,11 +60,12 @@ export const ForthStep = ({ selectedModels, show, selectedInstancePrice, setSele
         }
     }
 
+
     const handleInstanceClick = (idx: number) => {
         setSelectedInstanceIdx(idx);
         setSelectedInstancePrice(instances[idx].price);
     }
-
+    
     return (
         <div className={`transition-all duration-500 ${show ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden mt-[120px]`}>
             <FormStepHeader
@@ -97,7 +101,7 @@ export const ForthStep = ({ selectedModels, show, selectedInstancePrice, setSele
                 {selectedModel && (
                     <BigCard>
                         <div className="flex flex-row gap-[30px]">
-                            {["Amazon Web Services", "Microsoft Azure", "Google Cloud Platform"].map((label, idx) => {
+                            {CLOUD_PROVIDERS.map((label, idx) => {
                                 const isDisabled = label !== "Amazon Web Services";
                                 return (
                                     <button
@@ -127,7 +131,10 @@ export const ForthStep = ({ selectedModels, show, selectedInstancePrice, setSele
                         </div>
 
                         <div className="mt-[20px] flex flex-row gap-[10px]">
-                            <div className="flex bg-[#F7F7F7] rounded-full p-[6px] w-fit" style={{ boxShadow: "inset 0 2px 4px rgba(0,0,0,0.70)" }}>
+                            <div 
+                                className="flex bg-[#F7F7F7] rounded-full p-[6px] w-fit"
+                                style={{ boxShadow: "inset 0 2px 4px rgba(0,0,0,0.70)" }}
+                            >
                                 {[
                                     "CPU", "GPU", "INF2"
                                 ].map((type) => (
@@ -191,4 +198,4 @@ export const ForthStep = ({ selectedModels, show, selectedInstancePrice, setSele
             </div>
         </div>
     )
-}
+};

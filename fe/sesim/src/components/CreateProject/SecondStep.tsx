@@ -52,4 +52,4 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
             </div>
         </div>
     )
-}
+};

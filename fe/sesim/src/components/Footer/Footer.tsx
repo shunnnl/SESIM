@@ -27,4 +27,4 @@ export const Footer = () => {
             </div>
         </>
     )
-}
+};

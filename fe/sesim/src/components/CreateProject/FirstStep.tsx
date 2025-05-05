@@ -45,7 +45,11 @@ export const FirstStep = ({ setFirstStepDone, show }: FirstStepProps) => {
                             rel="noopener noreferrer"
                             className="mt-[10px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] px-[20px] py-[10px] flex flex-row items-center gap-[10px] cursor-pointer w-fit hover:bg-[#3C4061] transition-colors duration-200"
                         >
-                            <img src={cloudFormationIcon} alt="cloudFormationIcon" className="w-[25px] h-[30px]" />
+                            <img 
+                                src={cloudFormationIcon} 
+                                alt="cloudFormationIcon" 
+                                className="w-[25px] h-[30px]" 
+                            />
                             <p className="text-[20px] font-bold">CloudFormation</p>
                         </a>
                     </div>
@@ -88,5 +92,5 @@ export const FirstStep = ({ setFirstStepDone, show }: FirstStepProps) => {
                 </BigCard>
             </div>
         </div>
-    )
-}
+    );
+};

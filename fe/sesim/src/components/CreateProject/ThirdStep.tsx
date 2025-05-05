@@ -1,6 +1,6 @@
+import { Dispatch, SetStateAction } from "react"
 import { SmallCard } from "./smallCard"
 import { FormStepHeader } from "./FormStepHeader"
-import { Dispatch, SetStateAction } from "react"
 
 interface ThirdStepProps {
     selectedModels: string[];
@@ -73,4 +73,4 @@ export const ThirdStep = ({ selectedModels, setSelectedModels, show }: ThirdStep
             </div>
         </div>
     )
-}
+};
