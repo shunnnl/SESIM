@@ -1,14 +1,14 @@
 import { FiArrowUpRight } from "react-icons/fi";
-import bgImage from '../../assets/images/project-bg.png';
-import bgImage2 from '../../assets/images/project-bg2.png';
-import bgImage3 from '../../assets/images/project-bg3.png';
-import bgImage4 from '../../assets/images/project-bg4.png';
+import bgImage from "../../assets/images/project-bg.png";
+import bgImage2 from "../../assets/images/project-bg2.png";
+import bgImage3 from "../../assets/images/project-bg3.png";
+import bgImage4 from "../../assets/images/project-bg4.png";
 
 interface Item {
     id: number;
     modelName: string;
     description: string;
-    link?: string; // optional property
+    link?: string;
 }
 
 interface ItemListProps {
@@ -16,11 +16,11 @@ interface ItemListProps {
 }
 
 const ItemList: React.FC<ItemListProps> = ({ items }) => {
-    const bgImages = [bgImage, bgImage2, bgImage3, bgImage4];
+    const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4];
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {items.map((item, index) => {
-                const backgroundImage = bgImages[item.id % 4]; return (
+            {items.map((item) => {
+                const backgroundImage = BG_IMAGES[item.id % 4]; return (
                     <div
                         key={item.id}
                         className="relative rounded-2xl h-44 overflow-hidden"
@@ -71,7 +71,6 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
                                     <FiArrowUpRight className="text-xs text-white" />
                                 </span>
                             </button>
-
                         </div>
                     </div>
                 );
