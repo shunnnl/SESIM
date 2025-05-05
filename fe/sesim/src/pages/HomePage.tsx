@@ -14,7 +14,7 @@ const MainText = () => {
             가장 신뢰할 수 있는 AI 보안 솔루션
         </motion.p>
     )
-}
+};
 
 
 const SubText = () => {
@@ -30,7 +30,7 @@ const SubText = () => {
             외부 유출 없이 보안 위협을 실시간으로 감지합니다.  
         </motion.p>
     )
-}
+};
 
 
 const AnimatedDetailButton = () => {
@@ -46,7 +46,7 @@ const AnimatedDetailButton = () => {
             />
         </motion.div>
     )
-}
+};
 
 
 export const HomePage: React.FC = () => {

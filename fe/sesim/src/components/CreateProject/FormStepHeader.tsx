@@ -1,6 +1,6 @@
 import infoIcon from "../../assets/images/info.png";
 
-interface FormStrpHeaderProps {
+interface FormStepHeaderProps {
     step: string;
     title: string;
     description: string;
@@ -8,7 +8,7 @@ interface FormStrpHeaderProps {
     information?: string;
 }
 
-export const FormStepHeader : React.FC<FormStrpHeaderProps> = ({ step, title, description, information, must }) => {
+export const FormStepHeader : React.FC<FormStepHeaderProps> = ({ step, title, description, information, must }) => {
     return (
         <div className="flex flex-row gap-[20px] items-start">  
             <p className="text-[50px] font-bold text-[#949494]/50 leading-none select-none">{step}</p>

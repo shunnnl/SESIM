@@ -22,10 +22,25 @@ export const CreateProjectPage = () => {
             />
 
             <div className="container-padding text-white pt-[120px]">
-                <FirstStep show={true} setFirstStepDone={setFirstStepDone} />
-                <SecondStep show={firstStepDone} setSecondStepDone={setSecondStepDone} />
-                <ThirdStep show={secondStepDone} selectedModels={selectedModels} setSelectedModels={setSelectedModels} />
-                <ForthStep show={selectedModels.length > 0} selectedModels={selectedModels} selectedInstancePrice={selectedInstancePrice} setSelectedInstancePrice={setSelectedInstancePrice} />
+                <FirstStep 
+                    show={true} 
+                    setFirstStepDone={setFirstStepDone} 
+                />
+                <SecondStep 
+                    show={firstStepDone} 
+                    setSecondStepDone={setSecondStepDone} 
+                />
+                <ThirdStep 
+                    show={secondStepDone} 
+                    selectedModels={selectedModels} 
+                    setSelectedModels={setSelectedModels} 
+                />
+                <ForthStep 
+                    show={selectedModels.length > 0} 
+                    selectedModels={selectedModels} 
+                    selectedInstancePrice={selectedInstancePrice} 
+                    setSelectedInstancePrice={setSelectedInstancePrice} 
+                />
             </div>
             
             <div className="mt-[100px]">

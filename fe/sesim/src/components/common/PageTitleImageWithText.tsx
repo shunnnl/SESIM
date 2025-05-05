@@ -7,12 +7,7 @@ interface PageTitleImageWithTextProps {
     backgroundImage: string;
 }
 
-export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({
-    title,
-    description1,
-    description2,
-    backgroundImage
-}) => {
+export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ title, description1, description2, backgroundImage }) => {
     return (
         <div className="grid">
             <img 
