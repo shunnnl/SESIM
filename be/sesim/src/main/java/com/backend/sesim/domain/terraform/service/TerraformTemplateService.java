@@ -16,7 +16,7 @@ public class TerraformTemplateService {
      * SaaS 계정에 배포하기 위한 Terraform 파일을 생성합니다.
      */
     public void createSaasTerraformFiles(String workspacePath, String deploymentId,
-                                         String customerId, String region, String instanceType,
+                                         String customerId, String region,
                                          String amiId, String accessKey, String secretKey,
                                          String sessionToken) throws IOException {
         try {
@@ -33,7 +33,7 @@ public class TerraformTemplateService {
             Files.writeString(workspaceDir.resolve("keypair.tf"), createKeypairTemplateWithCustomerId(deploymentId, customerId));
             Files.writeString(workspaceDir.resolve("outputs.tf"), createOutputsTemplate());
             Files.writeString(workspaceDir.resolve("terraform.tfvars"),
-                    createTfvarsTemplate(region, instanceType, amiId, customerId, accessKey, secretKey, sessionToken));
+                    createTfvarsTemplate(region, amiId, customerId, accessKey, secretKey, sessionToken));
 
             log.info("Created SaaS Terraform files in directory: {}", workspacePath);
         } catch (IOException e) {
@@ -233,7 +233,7 @@ public class TerraformTemplateService {
     resource "aws_instance" "client_nodes" {
       count         = 2
       ami           = var.ami_id
-      instance_type = var.instance_type
+      instance_type = count.index == 0 ? "c5a.xlarge" : "c5a.large"
       key_name      = aws_key_pair.client_keypair.key_name
       iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
@@ -337,7 +337,8 @@ public class TerraformTemplateService {
             Action   = [
               "logs:CreateLogGroup",
               "logs:CreateLogStream",
-              "logs:PutLogEvents"
+              "logs:PutLogEvents",
+              "ec2:DescribeInstances" 
             ]
             Resource = "*"
           }
@@ -409,9 +410,6 @@ public class TerraformTemplateService {
         variable "aws_region" {
           type = string
         }
-        variable "instance_type" {
-          type = string
-        }
         variable "ami_id" {
           type = string
         }
@@ -452,17 +450,16 @@ public class TerraformTemplateService {
     /**
      * terraform.tfvars 파일 템플릿을 생성합니다.
      */
-    public String createTfvarsTemplate(String region, String instanceType, String amiId, String iamRoleName,
+    public String createTfvarsTemplate(String region, String amiId, String iamRoleName,
                                        String accessKey, String secretKey, String sessionToken) {
         return String.format("""
     aws_region    = \"%s\"
-    instance_type = \"%s\"
     ami_id        = \"%s\"
     custom_iam_role_name = \"%s\"
     access_key = \"%s\"
     secret_key = \"%s\"
     session_token = \"%s\"
-    """, region, instanceType, amiId, iamRoleName, accessKey, secretKey, sessionToken);
+    """, region, amiId, iamRoleName, accessKey, secretKey, sessionToken);
     }
 
 }

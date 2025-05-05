@@ -15,6 +15,9 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
@@ -23,12 +26,16 @@ public class TerraformDeployService {
 
     private final TerraformTemplateService templateService;
     private final TerraformExecutor terraformExecutor;
+    private final K3sSetupService k3sSetupService;
 
     @Value("${aws.saas.access-key}")
     private String saasAccessKey;
 
     @Value("${aws.saas.secret-key}")
     private String saasSecretKey;
+
+    @Value("${k3s.setup.timeout:600}")  // 기본 10분 (600초) 제한 시간
+    private int k3sSetupTimeoutSeconds;
 
     /**
      * SaaS 계정에 AWS 리소스를 배포합니다.
@@ -63,7 +70,6 @@ public class TerraformDeployService {
                     request.getDeploymentId(),
                     customerId,
                     request.getRegion(),
-                    request.getInstanceType(),
                     amiId,
                     saasAccessKey,
                     saasSecretKey,
@@ -79,13 +85,46 @@ public class TerraformDeployService {
 
             // 결과 수집
             Map<String, Object> outputs = terraformExecutor.getOutputs(Paths.get(workingDir));
+            List<String> ec2PublicIps = (List<String>) outputs.get("ec2_public_ips");
+            String pemKeyPath = (String) outputs.get("pem_file_path");
 
-            return DeployResultResponse.builder()
+            // K3S 클러스터 설치 (비동기로 실행)
+            log.info("K3S 클러스터 설치 시작 (비동기)");
+            Future<Boolean> k3sFuture = k3sSetupService.setupK3sClusterAsync(
+                    ec2PublicIps,
+                    pemKeyPath,
+                    request.getDeploymentId(),
+                    customerId
+            );
+
+            boolean k3sSetupSuccess = false;
+            try {
+                // 설정된 시간만큼 대기
+                k3sSetupSuccess = k3sFuture.get(k3sSetupTimeoutSeconds, TimeUnit.SECONDS);
+                log.info("K3S 클러스터 설치 완료: {}", k3sSetupSuccess ? "성공" : "실패");
+            } catch (TimeoutException e) {
+                log.warn("K3S 클러스터 설치 제한 시간 초과 ({}초)", k3sSetupTimeoutSeconds);
+                // k3sFuture.cancel(true); // 작업 취소 (필요한 경우)
+            } catch (Exception e) {
+                log.error("K3S 클러스터 설치 예외 발생: {}", e.getMessage(), e);
+            }
+
+            DeployResultResponse response = DeployResultResponse.builder()
                     .deploymentId(request.getDeploymentId())
                     .customerId(customerId)
-                    .ec2PublicIps((List<String>) outputs.get("ec2_public_ips"))
-                    .pemKeyPath((String) outputs.get("pem_file_path"))
+                    .ec2PublicIps(ec2PublicIps)
+                    .pemKeyPath(pemKeyPath)
+                    .pemKeyPath(pemKeyPath)
+                    .k3sSetupCompleted(k3sSetupSuccess)
                     .build();
+
+            if (k3sSetupSuccess && ec2PublicIps != null && !ec2PublicIps.isEmpty()) {
+                String masterIp = ec2PublicIps.get(0);
+                response.setApiEndpoint("http://" + masterIp + "/api");
+                response.setGrafanaEndpoint("http://" + masterIp + "/grafana");
+            }
+
+            return response;
 
         } catch (IOException e) {
             log.error("Terraform 파일 생성 실패: {}", e.getMessage(), e);

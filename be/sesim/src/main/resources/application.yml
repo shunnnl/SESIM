@@ -47,3 +47,11 @@ aws:
     access-key: ${SAAS_AWS_ACCESS_KEY}
     secret-key: ${SAAS_AWS_SECRET_KEY}
   region: ap-northeast-2
+  s3:
+    setup-bucket: sesimbucket
+    setup-zip-key: k3s-setup/v7.zip
+
+# SSH 설정
+ssh:
+  connection-timeout: 60000
+  channel-timeout: 30000
