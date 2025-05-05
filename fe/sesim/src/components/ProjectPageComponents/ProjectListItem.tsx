@@ -11,12 +11,14 @@ interface Item {
     link: string;
 }
 
-interface ItemListProps {
+interface ProjectItemListProps {
     items: Item[];
 }
 
-const ItemList: React.FC<ItemListProps> = ({ items }) => {
+const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
+
     const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4];
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {items.map((item) => {
@@ -79,4 +81,4 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
     );
 };
 
-export default ItemList;
+export default ProjectItemList;

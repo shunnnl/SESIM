@@ -1,5 +1,5 @@
 import { Sidebar } from "../components/Sidebar";
-import ItemList from "../components/ProjectPageComponents/ProjectListItem";
+import ProjectItemList from "../components/ProjectPageComponents/ProjectListItem";
 
 export const ProjectPage = () => {
     const allItems = [
@@ -68,7 +68,7 @@ export const ProjectPage = () => {
                                 sesim project
                                 {/*FIXME 프로젝트 이름도 api연동시 받아서 보여줘야할 데이터입니다*/}
                             </h2>
-                            <ItemList items={itemsArray} />
+                            <ProjectItemList items={itemsArray} />
                         </div>
                     ))}
                 </div>
