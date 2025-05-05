@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { DetailButton } from "../components/Navbar/DetailButton";
+import { AnimatedButton } from "../components/common/AnimatedButton";
 
 const MainText = () => {
     return (
@@ -14,7 +14,7 @@ const MainText = () => {
             가장 신뢰할 수 있는 AI 보안 솔루션
         </motion.p>
     )
-}
+};
 
 
 const SubText = () => {
@@ -30,7 +30,7 @@ const SubText = () => {
             외부 유출 없이 보안 위협을 실시간으로 감지합니다.  
         </motion.p>
     )
-}
+};
 
 
 const AnimatedDetailButton = () => {
@@ -40,15 +40,18 @@ const AnimatedDetailButton = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1, ease: "easeOut" }}
         >
-            <DetailButton />
+            <AnimatedButton 
+                text="자세히보기" 
+                link="/ai-model" 
+            />
         </motion.div>
     )
-}
+};
 
 
 export const HomePage: React.FC = () => {
     return (
-        <div className="flex flex-col gap-[72px] text-white">
+        <div className="flex flex-col gap-[72px] text-white container-padding">
             <div className="flex flex-col gap-[24px] text-white mt-[200px]">
                 <MainText />
                 <SubText />

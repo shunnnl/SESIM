@@ -3,13 +3,21 @@ import { Link } from "react-router-dom";
 import arrowBlue from "../../assets/images/arrow-blue.png";
 import arrowWhite from "../../assets/images/arrow-white.png";
 
-const DetailButtonComponent: React.FC = () => {
+interface AnimatedButtonProps {
+    text: string;
+    link: string;
+    width?: string;
+    onClick?: () => void;
+}
+
+const AnimatedButtonComponent: React.FC<AnimatedButtonProps> = ({ text, link, width, onClick }) => {
     return (
-        <Link to="/ai-model">
-            <button 
-                className="group relative flex items-center justify-center gap-[10px] border-2 border-white/24 rounded-[35px] w-[190px] h-[70px] px-[24px] py-[12px] transition-all duration-300 overflow-hidden hover:border-[#6296EF]"
-                style={{ willChange: "transform, border-color" }}
-            >
+        <button 
+            className={`group relative border-2 border-white/24 rounded-[35px] h-[70px] px-[24px] py-[12px] transition-all duration-300 overflow-hidden hover:border-[#6296EF] ${width ? `w-[${width}]` : "w-[190px]"}`}
+            style={{ willChange: "transform, border-color" }}
+            onClick={onClick}
+        >
+            <Link to={link} className="absolute inset-0 flex items-center justify-center gap-[10px] px-[24px] py-[12px]">
                 <div 
                     className="absolute inset-0 bg-white rounded-[35px] transform -translate-x-full transition-transform duration-300 ease-in-out group-hover:translate-x-0"
                     style={{ willChange: "transform" }}
@@ -20,12 +28,12 @@ const DetailButtonComponent: React.FC = () => {
                     style={{ willChange: "transform" }}
                 />
                 
-                <p className="relative z-10 text-white text-xl font-medium select-none">
-                    자세히보기
+                <p className="relative z-10 text-white text-xl font-medium select-none whitespace-nowrap">
+                    {text}
                 </p>
 
                 <div 
-                    className="relative z-10 bg-[#6296EF] rounded-full w-[30px] h-[30px] flex items-center justify-center transition-colors duration-300 group-hover:bg-white"
+                    className="relative z-10 bg-[#6296EF] rounded-full w-[30px] h-[30px] flex items-center justify-center transition-colors duration-300 group-hover:bg-white shrink-0"
                     style={{ willChange: "background-color" }}
                 >
                     <img 
@@ -43,9 +51,9 @@ const DetailButtonComponent: React.FC = () => {
                         loading="eager"
                     />
                 </div>
-            </button>
-        </Link>
+            </Link>
+        </button>
     );
 };
 
-export const DetailButton = memo(DetailButtonComponent);
+export const AnimatedButton = memo(AnimatedButtonComponent);
