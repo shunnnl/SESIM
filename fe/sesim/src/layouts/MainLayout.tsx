@@ -4,6 +4,7 @@ import { DocsPage } from "../pages/DocsPage";
 import { AboutPage } from "../pages/AboutPage";
 import { AiModelPage } from "../pages/AiModelPage";
 import { KeyInfoPage } from "../pages/KeyInfoPage";
+import { ProjectPage } from "../pages/ProjectPage";
 import { UserInfoPage } from "../pages/UserInfoPage";
 import { Navbar } from "../components/Navbar/Navbar";
 import { ModelInferenceServicePage } from "../pages/ModelInferenceServicePage";
@@ -25,6 +26,7 @@ export const MainLayout = () => {
                         <Route path="/docs" element={<DocsPage />} />
                         <Route path="/userinfo" element={<UserInfoPage />} />
                         <Route path="/keyinfo" element={<KeyInfoPage />} />
+                        <Route path="/project" element={<ProjectPage />} />
                     </Routes>
                 </main>
             </div>
