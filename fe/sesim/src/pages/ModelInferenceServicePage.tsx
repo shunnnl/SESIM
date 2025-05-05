@@ -17,7 +17,7 @@ export const ModelInferenceServicePage: React.FC = () => {
             />
 
             <motion.div 
-                className="container-padding w-full text-white py-[44px] md:py-[88px]"
+                className="container-padding w-full text-white py-[44px]"
                 initial={{ opacity: 0, y: 70 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: "easeOut" }}

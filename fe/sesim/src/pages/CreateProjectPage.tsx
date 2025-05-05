@@ -21,7 +21,7 @@ export const CreateProjectPage = () => {
                 backgroundImage={backgroundImage}
             />
 
-            <div className="container-padding text-white pt-[120px]">
+            <div className="container-padding text-white pt-[88px]">
                 <FirstStep show={true} setFirstStepDone={setFirstStepDone} />
                 <SecondStep show={firstStepDone} setSecondStepDone={setSecondStepDone} />
                 <ThirdStep show={secondStepDone} selectedModels={selectedModels} setSelectedModels={setSelectedModels} />
