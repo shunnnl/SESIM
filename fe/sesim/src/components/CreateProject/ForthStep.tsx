@@ -8,9 +8,11 @@ import gcpIcon from "../../assets/images/googlecloudplatform.svg"
 interface ForthStepProps {
     selectedModels: string[];
     show: boolean;
+    selectedInstancePrice: number;
+    setSelectedInstancePrice: (price: number) => void;
 }
 
-export const ForthStep = ({ selectedModels, show }: ForthStepProps) => {
+export const ForthStep = ({ selectedModels, show, selectedInstancePrice, setSelectedInstancePrice }: ForthStepProps) => {
     const [selectedModel, setSelectedModel] = useState<string>("")
     const [selectedAwsIdx, setSelectedAwsIdx] = useState<number>(0);
     const [selectedType, setSelectedType] = useState("CPU");
@@ -38,7 +40,6 @@ export const ForthStep = ({ selectedModels, show }: ForthStepProps) => {
         }
     ]
     const [selectedInstanceIdx, setSelectedInstanceIdx] = useState<number>(-1);
-    const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
 
     useEffect(() => {
         if (selectedModels.length > 0) {
@@ -186,21 +187,6 @@ export const ForthStep = ({ selectedModels, show }: ForthStepProps) => {
                         </div>
                         
                     </BigCard>
-                )}
-            </div>
-            
-            <div className="mt-[40px]">
-                {selectedInstancePrice > 0 && (
-                    <div className="flex justify-between items-center border-t border-[#3C3D5C] bg-[#242C4D] py-[20px]">
-                        <div>
-                            <p className="text-[30px] font-bold text-[#3893FF]">$ {selectedInstancePrice} / h</p>
-                            <p className="text-[16px] font-medium text-[#A3A3A3]">활성화된 인스턴스(서버) 당 요금</p>
-                        </div>
-                        <button className="bg-[#3893FF] text-white font-bold py-[10px] px-[20px] rounded-[5px] w-[200px]">
-                            프로젝트 생성
-                        </button>
-                    </div>
-                
                 )}
             </div>
         </div>
