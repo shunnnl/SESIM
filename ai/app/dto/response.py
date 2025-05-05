@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 class PredictResult(BaseModel):
     is_attack: bool = Field(..., description="공격 여부")
@@ -11,6 +11,7 @@ class PredictResponse(BaseModel):
 
 class TrainResponse(BaseModel):
     message: str = "모델 학습 완료"
+    version: Optional[str] = None
 
 
 class SchemaResponse(BaseModel):
