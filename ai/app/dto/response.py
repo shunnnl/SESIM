@@ -6,12 +6,10 @@ class PredictResult(BaseModel):
     attack_score: float = Field(..., description="공격일 확률 (0.0 ~ 1.0)")
 
 class PredictResponse(BaseModel):
-    model_id: int
     results: List[PredictResult]
 
 
 class TrainResponse(BaseModel):
-    model_id: int
     message: str = "모델 학습 완료"
 
 

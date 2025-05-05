@@ -11,5 +11,4 @@ class RawLog(BaseModel):
     logged_at: str
 
 class PredictRequest(BaseModel):
-    model_id: int
     logs: List[RawLog]
