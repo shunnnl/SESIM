@@ -5,9 +5,11 @@ import backgroundImage from "../../assets/images/ai-model-detail-bg.png";
 interface ImageTitleBannerWithNavProps {
     modelName: string;
     description: string;
+    selectedTab: "description" | "examplecode";
+    setSelectedTab: (tab: "description" | "examplecode") => void;
 }
 
-export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = ({ modelName, description }) => {
+export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = ({ modelName, description, selectedTab, setSelectedTab }) => {
     return (
         <div className="grid">
             <img 
@@ -30,9 +32,19 @@ export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = (
                     </p>
                 </div>
                 <div className="flex items-center justify-center gap-[100px] bg-[#000000]/40 w-full h-[70px] absolute bottom-0 left-0 z-10">
-                    <button className="text-white text-[24px] font-bold hover:text-gray-300 transition-colors">상세 설명</button>
+                    <button
+                        className={`text-white text-[24px] font-bold hover:text-gray-300 transition-colors ${selectedTab === "description" ? "underline" : ""}`}
+                        onClick={() => setSelectedTab("description")}
+                    >
+                        상세 설명
+                    </button>
                     <div className="bg-[#ffffff]/50 w-[10px] h-[10px] rounded-full"></div>
-                    <button className="text-white text-[24px] font-bold hover:text-gray-300 transition-colors">예시 코드</button>
+                    <button
+                        className={`text-white text-[24px] font-bold hover:text-gray-300 transition-colors ${selectedTab === "examplecode" ? "underline" : ""}`}
+                        onClick={() => setSelectedTab("examplecode")}
+                    >
+                        예시 코드
+                    </button>
                 </div>
             </div>
         </div>
