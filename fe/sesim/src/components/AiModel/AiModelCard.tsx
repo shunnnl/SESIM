@@ -7,7 +7,7 @@ interface AiModelCardProps {
     modelDetailList: string[];
 }
 
-export const AiModelCard = ({ modelName, modelDescription, modelDetailList, modelLink }: AiModelCardProps) => {
+export const AiModelCard = ({ modelName, modelDescription, modelDetailList }: AiModelCardProps) => {
     return (
         <div className="bg-[#2C304B] rounded-[10px] border-[1px] border-[#505671] px-[50px] py-[40px] w-[320px] h-[310px] relative">
             <p className="text-[12px] font-medium pl-[10px]">{modelDescription}</p>
@@ -28,4 +28,4 @@ export const AiModelCard = ({ modelName, modelDescription, modelDetailList, mode
             </div>
         </div>
     )
-}
+};

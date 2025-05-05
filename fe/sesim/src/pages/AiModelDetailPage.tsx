@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { BlueCircle } from "../components/common/BlueCircle";
-import { ImageTitleBannerWithNav } from "../components/AiModelDetail/ImageTitleBannerWithNav";
 import infoIcon from "../assets/images/info.png";
+import { BlueCircle } from "../components/common/BlueCircle";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
+import { ImageTitleBannerWithNav } from "../components/AiModelDetail/ImageTitleBannerWithNav";
 
 export const AiModelDetailPage = () => {
     const [selectedTab, setSelectedTab] = useState<"description" | "examplecode">("description");

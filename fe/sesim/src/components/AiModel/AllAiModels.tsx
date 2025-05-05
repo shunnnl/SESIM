@@ -1,7 +1,6 @@
 import { AiModelCard } from "./AiModelCard";
 import globalImage from "../../assets/images/global.png";
 
-
 const allAiModels = [
     {
         modelName: "AuthGuard",

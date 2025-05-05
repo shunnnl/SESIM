@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import model1 from "../../assets/images/model1.png";
 import model2 from "../../assets/images/model2.png";
 import model3 from "../../assets/images/model3.png";
-import { Link } from "react-router-dom";
 
 const popularModels = [
     {
@@ -26,11 +26,13 @@ const popularModels = [
 ];
 
 const CARD_BASE_CLASS = "transition-all duration-500 w-[380px] h-[340px] bg-[#181C2F] rounded-2xl p-8 flex flex-col justify-start";
+
 const CARD_STYLE = {
     backgroundSize: "cover",
     backgroundPosition: "center",
     minWidth: 0,
 };
+
 
 function CardItem({ model, style, extraStyle, isLink = false }: any) {
     const content = (
@@ -65,7 +67,8 @@ function CardItem({ model, style, extraStyle, isLink = false }: any) {
             {content}
         </div>
     );
-}
+};
+
 
 export const CardCarousel = () => {
     const [current, setCurrent] = useState(0);
