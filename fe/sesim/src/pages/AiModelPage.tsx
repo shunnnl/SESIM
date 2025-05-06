@@ -1,4 +1,3 @@
-
 import backgroundImage from "../assets/images/ai-model-bg.png";
 import { AllAiModels } from "../components/AiModel/AllAiModels";
 import { MostAiModel } from "../components/AiModel/MostAiModel";
