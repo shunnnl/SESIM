@@ -1,10 +1,15 @@
 package com.backend.sesim.domain.user.entity;
 
+import com.amazonaws.arn.Arn;
+import com.backend.sesim.domain.deployment.entity.Project;
+import com.backend.sesim.domain.iam.entity.RoleArn;
 import com.backend.sesim.global.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @Builder
@@ -33,6 +38,9 @@ public class User extends TimeStampEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<RoleArn> roleArns = new ArrayList<>();
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
