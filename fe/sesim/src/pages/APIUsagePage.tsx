@@ -28,14 +28,27 @@ export const APIUsagePage: React.FC = () => {
             },
         ],
     };
-    {/*FIXME api연동시 삭제될 리스트트*/}
+    {/*FIXME api연동시 삭제될 리스트트*/ }
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
             <div className="mr-12">
                 <Sidebar />
             </div>
-            <div className="flex flex-col flex-1 p-6 mt-4">
+
+            <div
+                className="absolute top-[45%] right-[30%] -translate-y-1/2 w-[50px] h-[50px] rounded-full"
+                style={{
+                    background: "#00235D",
+                    boxShadow: "0 0 160px 120px #00235D, 0 0 320px 240px #00235D",
+                    opacity: 0.4,
+                    zIndex: 0
+                }}
+            ></div>
+
+            <div
+                className="flex flex-col flex-1 p-6 mt-4"
+                style={{ zIndex: 1 }}>
                 <h1 className="text-2xl font-semibold flex items-center gap-2 mt-3 mb-8">
                     <span className="w-2 h-2 rounded-full bg-blue-500" />
                     API사용량 / 금액

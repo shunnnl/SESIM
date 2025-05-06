@@ -64,7 +64,19 @@ export const KeyInfoPage = () => {
                 <Sidebar />
             </div>
 
-            <div className="flex flex-col flex-1 p-6 mt-4">
+            <div
+                className="absolute top-[40%] right-[30%] -translate-y-1/2 w-[50px] h-[50px] rounded-full"
+                style={{
+                    background: "#00235D",
+                    boxShadow: "0 0 160px 120px #00235D, 0 0 320px 240px #00235D",
+                    opacity: 0.4,
+                    zIndex: 0
+                }}
+            ></div>
+
+            <div
+                className="flex flex-col flex-1 p-6 mt-4"
+                style={{ zIndex: 1 }}>
                 <div>
                     <h1 className="text-2xl font-semibold flex items-center gap-2 mt-3 mb-8">
                         <span className="w-2 h-2 rounded-full bg-blue-500" />
