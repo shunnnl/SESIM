@@ -12,7 +12,6 @@ export const SesimFunctions: React.FC = () => {
                 <h1 className="text-[60px] font-bold">모든 기능을 담았습니다</h1>
             </div>
 
-
             <div className="grid grid-cols-8 gap-x-[80px] gap-y-[30px] place-items-center mt-[60px]">
                 <div className="col-span-2 col-start-2 flex flex-col items-center justify-center gap-[10px]">
                     <img 

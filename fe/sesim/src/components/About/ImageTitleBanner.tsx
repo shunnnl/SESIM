@@ -13,7 +13,11 @@ export const ImageTitleBanner: React.FC = () => {
             <div className="bg-[#0A0C35]/30 flex items-center justify-center col-start-1 row-start-1">
                 <div className="flex flex-col justify-center items-center gap-[15px] text-center">
                     <div className="flex items-center">
-                        <img src={sesimLogo} alt="SESIM Logo" className="w-[80px] h-[80px]" />
+                        <img 
+                            src={sesimLogo}
+                            alt="SESIM Logo" 
+                            className="w-[80px] h-[80px]" 
+                        />
                         <div className="flex flex-col -space-y-[23px] text-white">
                             <p className="text-[60px] font-bold">SESIM</p>
                             <p className="text-[15px] font-medium">세심하게 설계된, 세심한 보안</p>
