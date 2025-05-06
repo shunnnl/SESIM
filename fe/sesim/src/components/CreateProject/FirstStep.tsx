@@ -2,13 +2,13 @@ import { useState } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
+import { motion } from "framer-motion"
 
 interface FirstStepProps {
     setFirstStepDone: (done: boolean) => void;
-    show: boolean;
 }
 
-export const FirstStep = ({ setFirstStepDone, show }: FirstStepProps) => {
+export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
     const [arn, setArn] = useState("")
 
@@ -28,7 +28,11 @@ export const FirstStep = ({ setFirstStepDone, show }: FirstStepProps) => {
     }
 
     return (
-        <div className={`transition-all duration-500 ${show ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}>
+        <motion.div
+            initial={{ opacity: 0, y: 70 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+        >
             <FormStepHeader
                 step="01"
                 title="IAM Role 연결" 
@@ -91,6 +95,6 @@ export const FirstStep = ({ setFirstStepDone, show }: FirstStepProps) => {
                     </div>
                 </BigCard>
             </div>
-        </div>
+        </motion.div>
     );
 };

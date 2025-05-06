@@ -5,6 +5,7 @@ import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+import { motion } from "framer-motion";
 
 export const CreateProjectPage = () => {
     const [selectedModels, setSelectedModels] = useState<string[]>([]);
@@ -23,7 +24,6 @@ export const CreateProjectPage = () => {
 
             <div className="container-padding text-white pt-[120px]">
                 <FirstStep 
-                    show={true} 
                     setFirstStepDone={setFirstStepDone} 
                 />
                 <SecondStep 
