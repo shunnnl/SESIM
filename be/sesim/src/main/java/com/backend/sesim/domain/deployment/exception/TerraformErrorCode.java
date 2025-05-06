@@ -14,6 +14,10 @@ public enum TerraformErrorCode implements ErrorCode {
     UNSUPPORTED_REGION(400, "지원하지 않는 AWS 리전입니다."),
     INVALID_DEPLOYMENT_ID(400, "유효하지 않은 배포 ID입니다."),
     INVALID_ROLE_ARN(400, "유효하지 않은 IAM Role ARN입니다."),
+    INVALID_ARN_ID(400,  "유효하지 않은 ARN ID입니다."),
+    INVALID_MODEL_ID(400, "유효하지 않은 모델 ID입니다."),
+    INVALID_SPEC_ID(400,  "유효하지 않은 사양 ID입니다."),
+    INVALID_REGION_ID(400,  "유효하지 않은 리전 ID입니다."),
 
     // K3s 자동 설치 관련 에러
     K3S_SETUP_FAILED(500, "K3S 클러스터 설치에 실패했습니다."),
