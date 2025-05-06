@@ -20,7 +20,12 @@ export const AiModelCard = ({ modelName, modelDescription, modelDetailList }: Ai
                 <p className="text-[25px] font-bold">{modelName}</p>
             </div>
             {modelDetailList.map((detail, index) => (
-                <p key={index} className="text-[14px] font-medium pl-[10px] my-[8px]">* {detail}</p>
+                <p 
+                    key={index}
+                    className="text-[14px] font-medium pl-[10px] my-[8px]"
+                >
+                    * {detail}
+                </p>
             ))}
             
             <div className="absolute bottom-0 left-0 w-full px-[60px] pb-[40px]">

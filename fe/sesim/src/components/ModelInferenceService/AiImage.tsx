@@ -1,4 +1,3 @@
-import { div } from "framer-motion/client";
 import ModelInferenceImg1 from "../../assets/images/model-inference1.png";
 
 export const AiImage = () => {

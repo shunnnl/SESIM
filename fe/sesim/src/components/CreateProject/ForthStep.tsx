@@ -10,11 +10,10 @@ const CLOUD_PROVIDERS = ["Amazon Web Services", "Microsoft Azure", "Google Cloud
 interface ForthStepProps {
     selectedModels: string[];
     show: boolean;
-    selectedInstancePrice: number;
     setSelectedInstancePrice: (price: number) => void;
 }
 
-export const ForthStep = ({ selectedModels, show, selectedInstancePrice, setSelectedInstancePrice }: ForthStepProps) => {
+export const ForthStep = ({ selectedModels, show, setSelectedInstancePrice }: ForthStepProps) => {
     const [selectedModel, setSelectedModel] = useState<string>("")
     const [selectedAwsIdx, setSelectedAwsIdx] = useState<number>(0);
     const [selectedType, setSelectedType] = useState("CPU");
