@@ -9,9 +9,9 @@ router = APIRouter(tags=["학습 api"])
 
 @router.post("/train", response_model=TrainResponse)
 async def train_endpoint(
-    csv_file: UploadFile = File(...)
+    file: UploadFile = File(...)
 ):
-    if not csv_file.filename.endswith(".csv"):
+    if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="CSV 파일만 가능합니다.")
 
     next_version = get_next_model_version()
@@ -19,11 +19,11 @@ async def train_endpoint(
     dest_dir = MODEL_DIR / f"model_v{next_version}"
     dest_dir.mkdir(parents=True, exist_ok=True)
 
-    tmp_path = dest_dir / f"raw_{csv_file.filename}"
+    tmp_path = dest_dir / f"raw_{file.filename}"
 
     try:
         with tmp_path.open("wb") as f:
-            f.write(await csv_file.read())
+            f.write(await file.read())
 
         result = train_from_csv(tmp_path, dest_dir, model_version=next_version)
         
