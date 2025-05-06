@@ -1,12 +1,12 @@
 package com.backend.sesim.domain.deployment.service;
 
 import com.backend.sesim.domain.deployment.dto.response.DeployOptionsResponse;
-import com.backend.sesim.domain.infrastructure.entity.InfrastructureSpec;
-import com.backend.sesim.domain.infrastructure.repository.InfrastructureSpecRepository;
-import com.backend.sesim.domain.model.entity.Model;
-import com.backend.sesim.domain.model.repository.ModelRepository;
-import com.backend.sesim.domain.region.entity.Region;
-import com.backend.sesim.domain.region.repository.RegionRepository;
+import com.backend.sesim.domain.resourcemanagement.entity.InfrastructureSpec;
+import com.backend.sesim.domain.resourcemanagement.repository.InfrastructureSpecRepository;
+import com.backend.sesim.domain.resourcemanagement.entity.Model;
+import com.backend.sesim.domain.resourcemanagement.repository.ModelRepository;
+import com.backend.sesim.domain.resourcemanagement.entity.Region;
+import com.backend.sesim.domain.resourcemanagement.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

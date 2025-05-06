@@ -1,6 +1,6 @@
-package com.backend.sesim.domain.infrastructure.repository;
+package com.backend.sesim.domain.resourcemanagement.repository;
 
-import com.backend.sesim.domain.infrastructure.entity.InfrastructureSpec;
+import com.backend.sesim.domain.resourcemanagement.entity.InfrastructureSpec;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

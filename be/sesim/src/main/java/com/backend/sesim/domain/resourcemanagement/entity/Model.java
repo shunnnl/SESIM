@@ -1,4 +1,4 @@
-package com.backend.sesim.domain.model.entity;
+package com.backend.sesim.domain.resourcemanagement.entity;
 
 import com.backend.sesim.global.entity.TimeStampEntity;
 import jakarta.persistence.*;

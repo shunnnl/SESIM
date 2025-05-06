@@ -1,4 +1,4 @@
-package com.backend.sesim.domain.infrastructure.entity;
+package com.backend.sesim.domain.resourcemanagement.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
