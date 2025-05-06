@@ -72,7 +72,7 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
         return (
             <button
                 className={`text-base rounded-full px-3 py-1 w-32 ml-4 relative z-0 ${isDeployed
-                    ? "text-white hover:bg-gradient-to-r hover:from-[#5A316C] hover:via-[#513176] hover:to-[#2C3273]"
+                    ? "text-white hover:bg-gradient-to-r hover:from-gradientpink30 hover:via-gradientpurple30 hover:to-gradientblue30"
                     : "text-gray-300 bg-gray-500 border border-gray-300 cursor-not-allowed"}`}
                 style={isDeployed ? {
                     position: "relative",
@@ -107,7 +107,13 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
 
     return (
         <>
-            <div className="w-full bg-[#242C4D] rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500">
+            <div
+                className="w-full bg-darkitembg rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500"
+                style={{
+                    boxShadow: '0px 0px 10px rgba(116, 208, 244, 0.2)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                }}>
                 <div className="flex flex-col w-full">
                     {items.map((item, index) => {
                         const config = renderState(item.state);

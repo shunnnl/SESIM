@@ -28,12 +28,12 @@ export const Sidebar: React.FC = () => {
                     회원정보
                 </NavLink>
 
-                <NavLink to="/settings" className={getNavLinkClass}>
+                <NavLink to="/apiusage" className={getNavLinkClass}>
                     <LuChartColumnIncreasing className="text-lg text-gray-400" />
                     API사용량 / 금액
                 </NavLink>
 
-                <NavLink to="/help" className={getNavLinkClass}>
+                <NavLink to="/project" className={getNavLinkClass}>
                     <FaFolder className="text-xl text-gray-400" />
                     프로젝트
                 </NavLink>

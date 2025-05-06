@@ -4,6 +4,8 @@ import { DocsPage } from "../pages/DocsPage";
 import { AboutPage } from "../pages/AboutPage";
 import { AiModelPage } from "../pages/AiModelPage";
 import { KeyInfoPage } from "../pages/KeyInfoPage";
+import { ProjectPage } from "../pages/ProjectPage";
+import { APIUsagePage } from "../pages/APIUsagePage";
 import { UserInfoPage } from "../pages/UserInfoPage";
 import { Footer } from "../components/Footer/Footer";
 import { Navbar } from "../components/Navbar/Navbar";
@@ -29,8 +31,10 @@ export const MainLayout = () => {
                         <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
                         <Route path="/model-inference-service/create-project" element={<CreateProjectPage />} />
                         <Route path="/docs" element={<DocsPage />} />
-                        <Route path="/userinfo" element={<UserInfoPage/>} />
-                        <Route path="/keyinfo" element={<KeyInfoPage/>} />
+                        <Route path="/userinfo" element={<UserInfoPage />} />
+                        <Route path="/keyinfo" element={<KeyInfoPage />} />
+                        <Route path="/project" element={<ProjectPage />} />
+                        <Route path="/apiusage" element={<APIUsagePage />} />
                     </Routes>
                 </main>
             </div>
