@@ -32,4 +32,6 @@ public class Model extends TimeStampEntity {
     @Column(name = "framework", nullable = false)
     private String framework;
 
+    @Column(name = "model_price_per_hour", nullable = false, columnDefinition = "DOUBLE DEFAULT 0.0")
+    private Double modelPricePerHour;
 }

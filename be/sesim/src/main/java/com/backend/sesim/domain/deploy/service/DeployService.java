@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ public class DeployService {
                         .id(spec.getId())
                         .ec2Spec(spec.getEc2Spec())
                         .ec2Info(spec.getEc2Info())
+                        .specPricePerHour(spec.getSpecPricePerHour())
                         .build())
                 .collect(Collectors.toList());
 
@@ -55,14 +57,34 @@ public class DeployService {
                         .description(model.getDescription())
                         .version(model.getVersion())
                         .framework(model.getFramework())
+                        .modelPricePerHour(model.getModelPricePerHour())
                         .build())
                 .collect(Collectors.toList());
+
+        // 모든 모델과 인프라 스펙 조합에 대한 가격 정보 생성
+        List<DeployOptionsResponse.CombinedPriceInfoDto> combinedPrices = new ArrayList<>();
+
+        for (Model model : models) {
+            for (InfrastructureSpec spec : specs) {
+                // 두 가격을 합한 총 가격 계산
+                Double totalPrice = model.getModelPricePerHour() + spec.getSpecPricePerHour();
+
+                combinedPrices.add(
+                        DeployOptionsResponse.CombinedPriceInfoDto.builder()
+                                .modelId(model.getId())
+                                .specId(spec.getId())
+                                .totalPricePerHour(totalPrice)
+                                .build()
+                );
+            }
+        }
 
         // 모든 정보를 담은 통합 응답 생성
         return DeployOptionsResponse.builder()
                 .regions(regionOptions)
                 .infrastructureSpecs(specOptions)
                 .models(modelOptions)
+                .combinedPrices(combinedPrices)
                 .build();
     }
 }

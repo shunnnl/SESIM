@@ -13,6 +13,7 @@ public class DeployOptionsResponse {
     private List<RegionOptionDto> regions;
     private List<InfrastructureSpecOptionDto> infrastructureSpecs;
     private List<ModelOptionDto> models;
+    private List<CombinedPriceInfoDto> combinedPrices;
 
     @Getter
     @AllArgsConstructor
@@ -30,6 +31,7 @@ public class DeployOptionsResponse {
         private Long id;
         private String ec2Spec;
         private String ec2Info;
+        private Double specPricePerHour;
     }
 
     @Getter
@@ -41,5 +43,16 @@ public class DeployOptionsResponse {
         private String description;
         private String version;
         private String framework;
+        private Double modelPricePerHour;
+    }
+
+    // 조합된 가격 정보를 위한 새 클래스
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class CombinedPriceInfoDto {
+        private Long modelId;
+        private Long specId;
+        private Double totalPricePerHour; // 두 가격의 합
     }
 }

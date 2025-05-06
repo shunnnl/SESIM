@@ -24,4 +24,7 @@ public class InfrastructureSpec {
 
     @Column(name = "ec2_info", nullable = false)
     private String ec2Info;
+
+    @Column(name = "spec_price_per_hour", nullable = false, columnDefinition = "DOUBLE DEFAULT 0.0")
+    private Double specPricePerHour;
 }
