@@ -6,7 +6,7 @@ from typing import Optional
 
 # Nginx 로그 정규표현식 패턴
 log_pattern = re.compile(
-    r'(?P<ip>\S+) - - \[(?P<time>.*?)\] '
+    r'(?P<client_ip>\S+) - - \[(?P<logged_at>.*?)\] '
     r'"(?P<method>\S+) (?P<url>\S+) (?P<protocol>\S+)" '
     r'(?P<status_code>\d{3}) (?P<size>\d+) "(?P<referer>.*?)" "(?P<user_agent>.*?)"'
 )
