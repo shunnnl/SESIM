@@ -113,7 +113,7 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
 
     return (
         <div
-            className="w-full bg-[#242C4D] rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500"
+            className="w-full bg-darkitembg rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500"
             style={{
                 boxShadow: "0px 0px 10px rgba(116, 208, 244, 0.2)",
                 backgroundSize: "cover",
@@ -133,7 +133,7 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
 
                 <table className="w-3/5 text-white text-lg font-medium ml-6">
                     <thead>
-                        <tr className="border-b border-gray-600">
+                        <tr className="border-b border-gray-500">
                             <th className="px-4 py-2 text-center">모델명</th>
                             <th className="px-4 py-2 text-center">API 요청 수</th>
                             <th className="px-4 py-2 text-center">사용 시간</th>
