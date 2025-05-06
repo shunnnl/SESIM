@@ -23,8 +23,8 @@ export const UserInfoPage = () => {
             회원 정보
           </h1>
 
-          <InfoField label="닉네임" value="김싸피" />
-          <InfoField label="이메일" value="ssafy@gmail.com" />
+          <InfoField label="닉네임" value={localStorage.getItem("nickname") || ""} />
+          <InfoField label="이메일" value={localStorage.getItem("email") || ""} />
         </div>
 
         <div className="mt-6 ml-72">
