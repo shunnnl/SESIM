@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        darkitembg: "#242C4D",
+      },
       backgroundImage: {
         "cyber-security": "url('/src/assets/images/cyber-security-bg.jpg')",
       },
