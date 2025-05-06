@@ -1,11 +1,9 @@
-package com.backend.sesim.domain.terraform.dto.request;
+package com.backend.sesim.domain.deployment.dto.request;
 
 import lombok.Getter;
 
 @Getter
-public class DeployRequest {
-    private String region;
-    private String instanceType;
+public class TerraformDeployRequest {
     private String iamRoleArn;
     private String accessKey;
     private String secretKey;

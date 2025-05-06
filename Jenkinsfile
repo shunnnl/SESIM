@@ -47,7 +47,11 @@ pipeline {
                     withCredentials([
                         string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
                         string(credentialsId: 'MAIL_PASSWORD', variable: 'MAIL_PASSWORD'),
-                        string(credentialsId: 'JWT_SECRET', variable: 'JWT_SECRET')
+                        string(credentialsId: 'JWT_SECRET', variable: 'JWT_SECRET'),
+                        string(credentialsId: 'AWS_ACCESS_KEY', variable: 'AWS_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SECRET_KEY', variable: 'AWS_SECRET_KEY'),
+                        string(credentialsId: 'SAAS_AWS_ACCESS_KEY', variable: 'SAAS_AWS_ACCESS_KEY'),
+                        string(credentialsId: 'SAAS_AWS_SECRET_KEY', variable: 'SAAS_AWS_SECRET_KEY')
                     ]) {
                         sh '''
                             echo 'Docker 이미지 빌드 중...'
@@ -71,6 +75,10 @@ pipeline {
                                 -e MAIL_USERNAME='siyun2072@gmail.com' \
                                 -e MAIL_PASSWORD='${MAIL_PASSWORD}' \
                                 -e JWT_SECRET='${JWT_SECRET}' \
+                                -e AWS_ACCESS_KEY='${AWS_ACCESS_KEY}' \
+                                -e AWS_SECRET_KEY='${AWS_SECRET_KEY}' \
+                                -e SAAS_AWS_ACCESS_KEY='${SAAS_AWS_ACCESS_KEY}' \
+                                -e SAAS_AWS_SECRET_KEY='${SAAS_AWS_SECRET_KEY}' \
                                 '${DOCKER_IMAGE_NAME}'
                             "
                             
@@ -91,6 +99,10 @@ pipeline {
                                 -e MAIL_USERNAME='siyun2072@gmail.com' \
                                 -e MAIL_PASSWORD='${MAIL_PASSWORD}' \
                                 -e JWT_SECRET='${JWT_SECRET}' \
+                                -e AWS_ACCESS_KEY='${AWS_ACCESS_KEY}' \
+                                -e AWS_SECRET_KEY='${AWS_SECRET_KEY}' \
+                                -e SAAS_AWS_ACCESS_KEY='${SAAS_AWS_ACCESS_KEY}' \
+                                -e SAAS_AWS_SECRET_KEY='${SAAS_AWS_SECRET_KEY}' \
                                 '${DOCKER_IMAGE_NAME}'
                             "
 
