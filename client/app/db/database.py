@@ -2,6 +2,7 @@ import os
 
 from app.models.models import Base
 from sqlalchemy import create_engine
+from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 
 # 환경 변수로부터 가져오기
@@ -38,9 +39,6 @@ def init_db():
     # 고정 테이블 생성
     Base.metadata.create_all(bind=engine)
 
-    # dynamic ai_results 테이블 생성
-    create_dynamic_ai_result_tables()
-
 
 def create_dynamic_ai_result_tables():
     """
@@ -61,3 +59,15 @@ def create_dynamic_ai_result_tables():
                 print(f"❌ 테이블 생성 실패 (model_id={model_id}): {e}")
     finally:
         db.close()
+
+
+def execute_sql_file(path: str):
+    with engine.connect() as connection:
+        with open(path, "r") as file:
+            sql = file.read()
+        for stmt in sql.split(";"):
+            stmt = stmt.strip()
+            if stmt:
+                connection.execute(text(stmt))
+        connection.commit()
+    print("[✅ INIT] init.sql 실행 완료")
