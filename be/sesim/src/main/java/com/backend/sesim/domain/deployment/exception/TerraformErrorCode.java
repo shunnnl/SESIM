@@ -1,4 +1,4 @@
-package com.backend.sesim.domain.terraform.exception;
+package com.backend.sesim.domain.deployment.exception;
 
 import com.backend.sesim.global.exception.ErrorCode;
 import lombok.Getter;

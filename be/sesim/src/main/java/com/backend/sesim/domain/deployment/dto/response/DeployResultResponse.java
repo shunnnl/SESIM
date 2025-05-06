@@ -1,4 +1,4 @@
-package com.backend.sesim.domain.terraform.dto.response;
+package com.backend.sesim.domain.deployment.dto.response;
 
 import lombok.*;
 

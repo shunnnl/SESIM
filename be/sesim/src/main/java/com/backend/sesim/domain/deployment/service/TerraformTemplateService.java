@@ -1,4 +1,4 @@
-package com.backend.sesim.domain.terraform.service;
+package com.backend.sesim.domain.deployment.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
