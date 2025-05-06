@@ -38,7 +38,6 @@ export const AllAiModels = () => {
     return (
         <div className="mt-[88px] mb-[300px] text-white">
             <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold text-center">다양한 보안AI 모델을 찾아보세요</h1>
-
             <div className="relative w-full max-w-[1200px] mx-auto my-[88px]">
                 <div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[150px] rounded-full"
@@ -60,8 +59,6 @@ export const AllAiModels = () => {
                     ))}
                 </div>
             </div>
-            
-            
         </div>  
     );
 };

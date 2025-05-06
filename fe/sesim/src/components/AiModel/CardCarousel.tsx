@@ -33,7 +33,6 @@ const CARD_STYLE = {
     minWidth: 0,
 };
 
-
 function CardItem({ model, style, extraStyle, isLink = false }: any) {
     const content = (
         <>

@@ -47,7 +47,6 @@ export const AiModelDetailPage = () => {
                             <div className="flex flex-col gap-[15px]">
                                 <div>
                                     <p>사용자의 로그 데이터를 기반으로 학습시켜 개인 맞춤형 보안 탐지 모델로 활용할 수 있습니다.</p>
-    
                                 </div>
                                 <div>
                                     <p>아래 예시 코드처럼 SESIM SDK를 이용해 모델을 학습시키면,</p>
