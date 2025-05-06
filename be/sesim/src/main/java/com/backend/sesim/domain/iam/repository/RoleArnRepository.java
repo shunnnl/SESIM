@@ -14,4 +14,5 @@ public interface RoleArnRepository extends JpaRepository<RoleArn, Long> {
 
     boolean existsByRoleArnAndUser(String roleArn, User user);
     Optional<RoleArn> findByRoleArn(String roleArn);
+    Optional<RoleArn> findByRoleArnAndUser(String roleArn, User user);
 }

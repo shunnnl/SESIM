@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -59,7 +60,9 @@ public class IamRoleService {
             // 현재 로그인한 사용자의 ARN 목록에 없는 경우 추가
             Long userId = securityUtils.getCurrentUsersId();
             if (userId != null) {
-                saveArnIfNotExists(roleArn, userId);
+                RoleArn savedArn = saveArnIfNotExists(roleArn, userId);
+                // 저장된 ARN의 ID를 응답에 설정
+                response.setArnId(savedArn.getId());
             }
 
             return response;
@@ -70,7 +73,7 @@ public class IamRoleService {
     }
 
     @Transactional
-    public void saveArnIfNotExists(String roleArn, Long userId) {
+    public RoleArn saveArnIfNotExists(String roleArn, Long userId) {
         // 사용자 찾기
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
@@ -78,16 +81,20 @@ public class IamRoleService {
                 });
 
         // 해당 사용자와 ARN 조합이 있는지 확인
-        if (!arnRepository.existsByRoleArnAndUser(roleArn, user)) {
-            log.info("새 ARN 저장: {}, 사용자 ID: {}", roleArn, userId);
+        Optional<RoleArn> existingArn = arnRepository.findByRoleArnAndUser(roleArn, user);
 
-            RoleArn newArn = RoleArn.builder()
-                    .roleArn(roleArn)
-                    .user(user)
-                    .build();
-
-            arnRepository.save(newArn);
+        if (existingArn.isPresent()) {
+            return existingArn.get();  // 이미 존재하는 ARN 반환
         }
+
+        log.info("새 ARN 저장: {}, 사용자 ID: {}", roleArn, userId);
+
+        RoleArn newArn = RoleArn.builder()
+                .roleArn(roleArn)
+                .user(user)
+                .build();
+
+        return arnRepository.save(newArn);  // 저장된 ARN 엔티티 반환
     }
 
     // 사용자 ARN 목록 조회
