@@ -26,7 +26,10 @@ public enum SecurityPath {
 
     // Mail 관련 경로
     SEND_CODE("/api/mail/send-code"),
-    VERIFY("/api/mail/verify");
+    VERIFY("/api/mail/verify"),
+
+    // Health check 관련 경로
+    HEALTH("/health");
 
     // 각 Enum 상수가 가지는 경로 문자열
     private final String path;
