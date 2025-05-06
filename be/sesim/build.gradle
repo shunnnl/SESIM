@@ -45,6 +45,10 @@ dependencies {
 
 	// AWS 검증 관련
 	implementation 'com.amazonaws:aws-java-sdk-sts:1.12.689'
+
+    implementation 'com.github.mwiede:jsch:0.2.16'  // JSch의 포크된 최신 버전
+    // AWS SDK
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.346'
 }
 
 tasks.named('test') {
