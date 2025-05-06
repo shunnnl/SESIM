@@ -49,7 +49,7 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                                     border: "1px solid transparent",
                                     borderRadius: "9999px",
                                     backgroundImage:
-                                        "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
+                                        "linear-gradient(#020207, #020207), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
                                     backgroundOrigin: "border-box",
                                     backgroundClip: "padding-box, border-box",
                                     color: "white",
@@ -65,7 +65,7 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.backgroundImage =
-                                        "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
+                                        "linear-gradient(#020207, #020207), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
                                 }}
                             >
                                 결과보기
