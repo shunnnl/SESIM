@@ -26,8 +26,9 @@ def upload_train_data(
     os.makedirs(model_dir, exist_ok=True)
 
     # 파일 저장
+    basename, extension = os.path.splitext(file.filename)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{timestamp}_{uuid4().hex}.log"
+    filename = f"{timestamp}_{basename}_{uuid4().hex}{extension}"
     file_path = os.path.join(model_dir, filename)
 
     with open(file_path, "wb") as f:
@@ -54,13 +55,17 @@ def get_uploaded_train_files(model_id: int):
     db = SessionLocal()
     try:
         result = db.execute(
-            select(AITrain.path, AITrain.created_at)
+            select(AITrain.ai_train_id, AITrain.path, AITrain.created_at)
             .where(AITrain.model_id == model_id)
             .order_by(AITrain.created_at.desc())
         ).fetchall()
 
         return [
-            {"path": row[0], "created_at": row[1].isoformat()}
+            {
+                "ai_train_id": row[0],
+                "path": row[1],
+                "created_at": row[2].isoformat()
+            }
             for row in result
         ]
     finally:
