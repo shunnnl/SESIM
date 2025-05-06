@@ -1,6 +1,6 @@
-package com.backend.sesim.domain.deploy.service;
+package com.backend.sesim.domain.deployment.service;
 
-import com.backend.sesim.domain.deploy.dto.response.DeployOptionsResponse;
+import com.backend.sesim.domain.deployment.dto.response.DeployOptionsResponse;
 import com.backend.sesim.domain.infrastructure.entity.InfrastructureSpec;
 import com.backend.sesim.domain.infrastructure.repository.InfrastructureSpecRepository;
 import com.backend.sesim.domain.model.entity.Model;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DeployService {
+public class DeploymentOptionService {
 
     private final RegionRepository regionRepository;
     private final InfrastructureSpecRepository infrastructureSpecRepository;

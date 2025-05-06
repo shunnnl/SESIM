@@ -1,4 +1,4 @@
-package com.backend.sesim.domain.terraform.util;
+package com.backend.sesim.domain.deployment.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

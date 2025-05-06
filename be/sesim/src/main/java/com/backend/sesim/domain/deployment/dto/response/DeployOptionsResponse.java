@@ -1,4 +1,4 @@
-package com.backend.sesim.domain.deploy.dto.response;
+package com.backend.sesim.domain.deployment.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

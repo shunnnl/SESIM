@@ -1,9 +1,9 @@
-package com.backend.sesim.domain.terraform.service;
+package com.backend.sesim.domain.deployment.service;
 
-import com.backend.sesim.domain.terraform.dto.request.DeployRequest;
-import com.backend.sesim.domain.terraform.dto.response.DeployResultResponse;
-import com.backend.sesim.domain.terraform.exception.TerraformErrorCode;
-import com.backend.sesim.domain.terraform.util.TerraformExecutor;
+import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
+import com.backend.sesim.domain.deployment.dto.response.DeployResultResponse;
+import com.backend.sesim.domain.deployment.exception.TerraformErrorCode;
+import com.backend.sesim.domain.deployment.util.TerraformExecutor;
 import com.backend.sesim.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -22,7 +21,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TerraformDeployService {
+public class TerraformService {
 
     private final TerraformTemplateService templateService;
     private final TerraformExecutor terraformExecutor;
@@ -47,7 +46,7 @@ public class TerraformDeployService {
      * @param request 배포 요청 정보
      * @return 배포 결과
      */
-    public DeployResultResponse deployToSaasAccount(DeployRequest request) {
+    public DeployResultResponse deployToSaasAccount(TerraformDeployRequest request) {
         // 입력값 검증
         validateDeployRequest(request);
 
@@ -138,7 +137,7 @@ public class TerraformDeployService {
      *
      * @param request 배포 요청 정보
      */
-    private void validateDeployRequest(DeployRequest request) {
+    private void validateDeployRequest(TerraformDeployRequest request) {
         if (request.getDeploymentId() == null || request.getDeploymentId().trim().isEmpty()) {
             throw new GlobalException(TerraformErrorCode.INVALID_DEPLOYMENT_ID);
         }
