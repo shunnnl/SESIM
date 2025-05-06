@@ -38,7 +38,6 @@ export const CreateProjectPage = () => {
                 <ForthStep 
                     show={selectedModels.length > 0} 
                     selectedModels={selectedModels} 
-                    selectedInstancePrice={selectedInstancePrice} 
                     setSelectedInstancePrice={setSelectedInstancePrice} 
                 />
             </div>
