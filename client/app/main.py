@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 
+from app.api import model_table
 from app.api import predict
+from app.api import train
 from app.api import train_data
 from app.db.database import init_db
 from fastapi import FastAPI
@@ -32,4 +34,6 @@ app.add_middleware(
 
 # API 라우터 등록
 app.include_router(predict.router)
-app.include_router(train_data.router, prefix="/admin", tags=["Train Data"])
+app.include_router(train_data.router)
+app.include_router(model_table.router)
+app.include_router(train.router)
