@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class RoleVerificationResponse {
-    private String accessKey;
-    private String secretKey;
-    private String sessionToken;
+public class ArnResponse {
+    private Long id;
+    private String roleArn;
 }
