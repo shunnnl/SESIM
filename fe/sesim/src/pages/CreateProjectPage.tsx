@@ -1,14 +1,16 @@
+import { RootState } from "../store";
+import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { FirstStep } from "../components/CreateProject/FirstStep";
 import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
-import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 import { getDeployOptions, getRoleArns } from "../services/createProjectService";
+import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 
 export const CreateProjectPage = () => {
-    const [selectedModels, setSelectedModels] = useState<string[]>([]);
+    const selectedModels = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
     const [firstStepDone, setFirstStepDone] = useState(false);
     const [secondStepDone, setSecondStepDone] = useState(false);
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
@@ -62,8 +64,6 @@ export const CreateProjectPage = () => {
                 <ThirdStep
                     show={secondStepDone} 
                     models={models}
-                    selectedModels={selectedModels}
-                    setSelectedModels={setSelectedModels} 
                 />
                 <ForthStep
                     show={selectedModels.length > 0}

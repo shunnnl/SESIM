@@ -7,6 +7,7 @@ interface CreateProjectInfoState {
     arnId: number | null;
     projectName: string;
     projectDescription: string;
+    selectedModels: any[];
 }
 
 const initialState: CreateProjectInfoState = {
@@ -16,6 +17,7 @@ const initialState: CreateProjectInfoState = {
     arnId: null,
     projectName: "",
     projectDescription: "",
+    selectedModels: [],
 };
 
 export const createProjectInfoSlice = createSlice({
@@ -42,10 +44,15 @@ export const createProjectInfoSlice = createSlice({
             state.projectName = '';
             state.projectDescription = '';
         },
-        
+        setSelectedModels: (state, action: PayloadAction<any[]>) => {
+            state.selectedModels = action.payload;
+        },
+        clearSelectedModels: (state) => {
+            state.selectedModels = [];
+        },
         
     },
 });
 
-export const { setAwsSession, clearAwsSession, setProjectInfo, clearProjectInfo } = createProjectInfoSlice.actions;
+export const { setAwsSession, clearAwsSession, setProjectInfo, clearProjectInfo, setSelectedModels, clearSelectedModels } = createProjectInfoSlice.actions;
 export default createProjectInfoSlice.reducer;

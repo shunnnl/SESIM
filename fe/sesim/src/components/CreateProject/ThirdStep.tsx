@@ -1,24 +1,24 @@
-import { Dispatch, SetStateAction } from "react"
-import { SmallCard } from "./smallCard"
+import { useDispatch, useSelector } from "react-redux";
+import { SmallCard } from "./smallCard";
+import { RootState } from "../../store";
 import { FormStepHeader } from "./FormStepHeader"
+import { setSelectedModels } from "../../store/createProjectInfoSlice";
 
 interface ThirdStepProps {
-    selectedModels: string[];
-    setSelectedModels: Dispatch<SetStateAction<string[]>>;
     show: boolean;
     models: any[];
 }
 
-export const ThirdStep = ({ selectedModels, setSelectedModels, show, models }: ThirdStepProps) => {
+export const ThirdStep = ({ show, models }: ThirdStepProps) => {
+    const dispatch = useDispatch();
+    const selectedModels = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
 
-    const handleModelClick = (modelName: string) => {
-        setSelectedModels(prev => {
-            if (prev.includes(modelName)) {
-                return prev.filter((name: string) => name !== modelName)
-            } else {
-                return [...prev, modelName]
-            }
-        })
+    const handleModelClick = (model: any) => {
+        if (selectedModels.includes(model)) {
+            dispatch(setSelectedModels(selectedModels.filter((name: any) => name !== model)));
+        } else {
+            dispatch(setSelectedModels([...selectedModels, model]));
+        }
     }
 
     return (
@@ -37,8 +37,8 @@ export const ThirdStep = ({ selectedModels, setSelectedModels, show, models }: T
                             key={idx}
                             description={model.description}
                             modelName={model.name}
-                            isSelected={selectedModels.includes(model.name)}
-                            onClick={() => handleModelClick(model.name)}
+                            isSelected={selectedModels.includes(model)}
+                            onClick={() => handleModelClick(model)}
                         />
                     ))}
                 </div>
