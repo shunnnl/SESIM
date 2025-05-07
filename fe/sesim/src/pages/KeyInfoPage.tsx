@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Sidebar } from "../components/Sidebar";
 import ItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 
@@ -56,7 +57,8 @@ export const KeyInfoPage = () => {
             }
         ]
     ];
-    {/*FIXME api가 나오면 대체될 리스트 입니다! */ }
+    {/*FIXME api연동시 받아올 리스트 입니다! 소켓통신으로 관리될예정(배포진행과정정)*/ }
+
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -67,17 +69,25 @@ export const KeyInfoPage = () => {
             <div
                 className="absolute top-[40%] right-[30%] -translate-y-1/2 w-[50px] h-[50px] rounded-full"
                 style={{
-                    background: "#00235D",
-                    boxShadow: "0 0 160px 120px #00235D, 0 0 320px 240px #00235D",
+                    background: "#00215A",
+                    boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
                     opacity: 0.4,
                     zIndex: 0
                 }}
             ></div>
 
-            <div
+            <motion.div
                 className="flex flex-col flex-1 p-6 mt-4"
-                style={{ zIndex: 1 }}>
-                <div>
+                style={{ zIndex: 1 }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
                     <h1 className="text-2xl font-semibold flex items-center gap-2 mt-3 mb-8">
                         <span className="w-2 h-2 rounded-full bg-blue-500" />
                         키 정보
@@ -87,23 +97,26 @@ export const KeyInfoPage = () => {
                         AI모델 별 API 키 정보를 제공합니다.
                     </p>
 
-                    <p className="text-lg font-medium m-1">
+                    <p className="text-lg font-medium m-1 mb-6">
                         API 키는 최초 1회만 확인 가능하며, 보안상의 이유로 이후에는 다시 확인하실 수 없습니다.
                     </p>
-                </div>
+                </motion.div>
 
-                <div>
-                    {allItems.map((itemsArray, index) => (
-                        <div key={index} className="mb-6">
-                            {/* 프로젝트 이름 추가 */}
-                            <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
-                                sesim project
-                            </h2>
-                            <ItemList items={itemsArray} />
-                        </div>
-                    ))}
-                </div>
-            </div>
+                {allItems.map((itemsArray, index) => (
+                    <motion.div
+                        key={index}
+                        className="mb-6"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
+                    >
+                        <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
+                            sesim project
+                        </h2>
+                        <ItemList items={itemsArray} />
+                    </motion.div>
+                ))}
+            </motion.div>
         </div>
     );
 };

@@ -108,8 +108,13 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                 align: "center",
                 textAlign: "center"
             }
+        },
+        animation: {
+            delay: 300, 
+            duration: 1000, 
+            easing: 'easeInOutQuad'
         }
-    } as unknown as ChartOptions<"doughnut">;
+    } as unknown as ChartOptions<"doughnut">;  
 
     return (
         <div
