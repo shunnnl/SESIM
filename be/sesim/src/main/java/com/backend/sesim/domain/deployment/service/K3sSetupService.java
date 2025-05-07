@@ -134,13 +134,6 @@ public class K3sSetupService {
 			log.info("init.sql 전송 완료");
             sshService.copyFile(session, initSql.getAbsolutePath(), "/home/ubuntu/init.sql");
             log.info("init.sql 전송 완료");
-            // 워커 노드에도 init.sql 복사 임시용!
-            String scpToWorkerCmd = String.format(
-                "scp -i k3s-setup/client-key-%s.pem -o StrictHostKeyChecking=no /home/ubuntu/init.sql ubuntu@%s:/home/ubuntu/init.sql",
-                customerId, workerPublicIp
-            );
-            sshService.executeCommand(session, scpToWorkerCmd);
-            log.info("워커 노드에 init.sql 복사 완료");
 
             // 권한 설정
             String chmodCmd = "chmod 644 /home/ubuntu/init.sql && chmod 644 k3s-setup/init.sql && chmod +x k3s-setup/*.sh && chmod 600 k3s-setup/client-key-" + customerId + ".pem";
@@ -158,6 +151,14 @@ public class K3sSetupService {
                 workerPrivateIp = "10.10.12.10";
                 log.warn("워커 노드 프라이빗 IP를 찾지 못해 기본값 사용: {}", workerPrivateIp);
             }
+
+            // 워커 노드에도 init.sql 복사 임시용!
+            String scpToWorkerCmd = String.format(
+                "scp -i k3s-setup/client-key-%s.pem -o StrictHostKeyChecking=no /home/ubuntu/init.sql ubuntu@%s:/home/ubuntu/init.sql",
+                customerId, workerPublicIp
+            );
+            sshService.executeCommand(session, scpToWorkerCmd);
+            log.info("워커 노드에 init.sql 복사 완료");
 
             // 설치 스크립트 실행 - 경로 수정
             String setupCmd = "cd k3s-setup && ./setup_all.sh client-key-" + customerId + ".pem ubuntu " + workerPrivateIp;
