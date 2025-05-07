@@ -1,5 +1,6 @@
 package com.backend.sesim.domain.resourcemanagement.controller;
 
+import com.backend.sesim.domain.resourcemanagement.dto.response.ModelDetailResponse;
 import com.backend.sesim.domain.resourcemanagement.dto.response.ModelFeaturesResponse;
 import com.backend.sesim.domain.resourcemanagement.service.ModelService;
 import com.backend.sesim.global.dto.CommonResponseDto;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,9 +27,15 @@ public class ModelController {
     @Operation(summary = "모델 기능 목록 조회", description = "전체 모델의 기능 목록을 조회합니다.")
     @GetMapping("/features")
     public CommonResponseDto<List<ModelFeaturesResponse>> getAllModelsFeaturesList() {
-        log.info("모델 기능 목록 조회 요청");
         List<ModelFeaturesResponse> features = modelService.getAllModelsFeaturesList();
         return CommonResponseDto.ok(features);
+    }
+
+    @Operation(summary = "모델 상세 정보 조회", description = "특정 모델의 상세 정보와 기능 세부 내용을 조회합니다.")
+    @GetMapping("/{modelId}")
+    public CommonResponseDto<ModelDetailResponse> getModelDetail(@PathVariable Long modelId) {
+        ModelDetailResponse modelDetail = modelService.getModelDetail(modelId);
+        return CommonResponseDto.ok(modelDetail);
     }
 
 }
