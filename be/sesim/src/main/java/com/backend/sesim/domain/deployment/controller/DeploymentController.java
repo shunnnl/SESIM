@@ -1,7 +1,10 @@
 package com.backend.sesim.domain.deployment.controller;
 
+import com.backend.sesim.domain.deployment.dto.request.ApiKeyCheckRequest;
 import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
+import com.backend.sesim.domain.deployment.dto.response.ApiKeyResponse;
 import com.backend.sesim.domain.deployment.dto.response.DeployOptionsResponse;
+import com.backend.sesim.domain.deployment.dto.response.ProjectDeploymentStatusResponse;
 import com.backend.sesim.domain.deployment.dto.response.ProjectListResponse;
 import com.backend.sesim.domain.deployment.service.DeploymentOptionService;
 import com.backend.sesim.domain.deployment.service.ProjectService;
@@ -41,5 +44,20 @@ public class DeploymentController {
     @GetMapping("/projects")
     public CommonResponseDto<ProjectListResponse> getUserProjects() {
         return CommonResponseDto.ok(projectService.getUserProjects());
+    }
+
+    @Operation(summary = "프로젝트 배포 상태 조회", description = "현재 로그인한 사용자의 프로젝트 및 모델 배포 상태를 조회합니다.")
+    @GetMapping("/status")
+    public CommonResponseDto<ProjectDeploymentStatusResponse> getProjectDeploymentStatus() {
+        ProjectDeploymentStatusResponse response = projectService.getProjectDeploymentStatus();
+        return CommonResponseDto.ok(response);
+    }
+
+    @Operation(summary = "API 키 확인", description = "배포된 모델의 API 키를 확인하고 반환합니다.")
+    @PostMapping("/apikey")
+    public CommonResponseDto<ApiKeyResponse> checkApiKey(@RequestBody ApiKeyCheckRequest request) {
+        log.info("API 키 확인 요청: projectId={}, modelId={}", request.getProjectId(), request.getModelId());
+        ApiKeyResponse response = projectService.checkAndGetApiKey(request);
+        return CommonResponseDto.ok(response);
     }
 }
