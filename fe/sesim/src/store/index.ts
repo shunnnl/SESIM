@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createProjectInfoReducer from "./createProjectInfoSlice";
+import aiModelReducer from "./aiModelSlice";
 
 export const store = configureStore({
     reducer: {
         createProjectInfo: createProjectInfoReducer,
+        aiModel: aiModelReducer,
     },
 });
 

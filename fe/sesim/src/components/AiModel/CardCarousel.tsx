@@ -1,29 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 import model1 from "../../assets/images/model1.png";
 import model2 from "../../assets/images/model2.png";
 import model3 from "../../assets/images/model3.png";
-
-const popularModels = [
-    {
-        name: "AuthGuard",
-        subname: "비정상적 접근 탐지 AI",
-        description: "로그를 통한 웹 공격 실시간 포착",
-        image: model1,
-    },
-    {
-        name: "WebSentinel",
-        subname: "웹 / 앱 이상행동 감지 AI",
-        description: "로그를 통한 웹 공격 실시간 포착",
-        image: model2,
-    },
-    {
-        name: "NetPulse",
-        subname: "이상 트래픽 / 시스템 공격 감지 AI",
-        description: "로그를 통한 웹 공격 실시간 포착",
-        image: model3,
-    }
-];
 
 const CARD_BASE_CLASS = "transition-all duration-500 w-[380px] h-[340px] bg-[#181C2F] rounded-2xl p-8 flex flex-col justify-start";
 
@@ -36,9 +17,9 @@ const CARD_STYLE = {
 function CardItem({ model, style, extraStyle, isLink = false }: any) {
     const content = (
         <>
-            <p className="text-[12px] text-white font-medium">{model.subname}</p>
+            <p className="text-[12px] text-white font-medium">{model.featureTitle}</p>
             <h3 className="text-[30px] text-white font-bold mb-2">{model.name}</h3>
-            <p className="text-[18px] text-white font-bold">{model.description}</p>
+            <p className="text-[18px] text-white font-bold">{model.featureTitle}</p>
         </>
     );
     const mergedStyle = {
@@ -68,9 +49,17 @@ function CardItem({ model, style, extraStyle, isLink = false }: any) {
     );
 };
 
-
 export const CardCarousel = () => {
+    const { data } = useSelector((state: RootState) => state.aiModel);
     const [current, setCurrent] = useState(0);
+    
+    const popularModels = data.slice(0, 3).map((model, index) => ({
+        ...model,
+        image: [model1, model2, model3][index]
+    }));
+
+    if (!popularModels.length) return null;
+
     const prev = () => setCurrent((prev) => (prev === 0 ? popularModels.length - 1 : prev - 1));
     const next = () => setCurrent((prev) => (prev === popularModels.length - 1 ? 0 : prev + 1));
 
