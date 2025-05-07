@@ -2,7 +2,9 @@ package com.backend.sesim.domain.deployment.controller;
 
 import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
 import com.backend.sesim.domain.deployment.dto.response.DeployOptionsResponse;
+import com.backend.sesim.domain.deployment.dto.response.ProjectListResponse;
 import com.backend.sesim.domain.deployment.service.DeploymentOptionService;
+import com.backend.sesim.domain.deployment.service.ProjectService;
 import com.backend.sesim.domain.deployment.service.TerraformService;
 import com.backend.sesim.global.dto.CommonResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,12 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/deployment")
 @RequiredArgsConstructor
-@Tag(name = "배포 컨트롤러", description = "AWS 리소스 배포 및 배포 옵션 조회 기능을 제공하는 통합 컨트롤러")
+@Tag(name = "프로젝트 및 배포 관리 컨트롤러", description = "사용자 프로젝트 조회 및 AWS 리소스 배포 기능을 제공하는 통합 컨트롤러")
 @Slf4j
 public class DeploymentController {
 
     private final TerraformService terraformDeployService;
     private final DeploymentOptionService deployService;
+    private final ProjectService projectService;
 
     @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
     @PostMapping("/terraform")
@@ -32,5 +35,11 @@ public class DeploymentController {
     @GetMapping("/options")
     public CommonResponseDto<DeployOptionsResponse> getDeployOptions() {
         return CommonResponseDto.ok(deployService.getDeployOptions());
+    }
+
+    @Operation(summary = "사용자 프로젝트 목록 조회", description = "현재 로그인한 사용자의 프로젝트 목록과 관련 모델 정보를 조회합니다.")
+    @GetMapping("/projects")
+    public CommonResponseDto<ProjectListResponse> getUserProjects() {
+        return CommonResponseDto.ok(projectService.getUserProjects());
     }
 }

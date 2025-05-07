@@ -11,8 +11,5 @@ import java.util.Optional;
 @Repository
 public interface RoleArnRepository extends JpaRepository<RoleArn, Long> {
     List<RoleArn> findAllByUser(User user);
-
-    boolean existsByRoleArnAndUser(String roleArn, User user);
-    Optional<RoleArn> findByRoleArn(String roleArn);
     Optional<RoleArn> findByRoleArnAndUser(String roleArn, User user);
 }
