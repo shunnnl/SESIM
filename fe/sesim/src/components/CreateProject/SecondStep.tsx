@@ -1,19 +1,23 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 
 interface SecondStepProps {
-    setSecondStepDone: (done: boolean) => void;
     show: boolean;
+    setProjectName: (name: string) => void;
+    setProjectDescription: (description: string) => void;
+    setSecondStepDone: (done: boolean) => void;
 }
 
-export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
-    const [projectName, setProjectName] = useState("")
-    const [projectDescription, setProjectDescription] = useState("")
+export const SecondStep = ({ setSecondStepDone, show, setProjectName, setProjectDescription }: SecondStepProps) => {
+    // 임시 입력값 상태
+    const [tempName, setTempName] = useState("");
+    const [tempDesc, setTempDesc] = useState("");
 
     const handleSave = () => {
-        // 임시 저장 성공 시
-        setSecondStepDone(true)
+        setProjectName(tempName);
+        setProjectDescription(tempDesc);
+        setSecondStepDone(true);
     }
 
     return (
@@ -31,8 +35,8 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                             type="text" 
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3]" 
                             placeholder="프로젝트 이름을 입력해주세요"
-                            value={projectName}
-                            onChange={(e) => setProjectName(e.target.value)}
+                            value={tempName}
+                            onChange={(e) => setTempName(e.target.value)}
                         />
                     </div>
                     <div className="mt-[15px]">
@@ -40,11 +44,10 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                         <textarea 
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3] min-h-[200px] resize-y" 
                             placeholder="프로젝트 설명을 입력해주세요"
-                            value={projectDescription}
-                            onChange={(e) => setProjectDescription(e.target.value)}
+                            value={tempDesc}
+                            onChange={(e) => setTempDesc(e.target.value)}
                         />
                     </div>
-
                     <button className="mt-[10px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200 ml-auto" onClick={handleSave}>
                         프로젝트 정보 저장
                     </button>

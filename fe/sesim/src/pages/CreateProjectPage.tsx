@@ -13,6 +13,10 @@ export const CreateProjectPage = () => {
     const [secondStepDone, setSecondStepDone] = useState(false);
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
 
+    // SecondStep 데이터
+    const [projectName, setProjectName] = useState<string>("");
+    const [projectDescription, setProjectDescription] = useState<string>("");
+
     // ThirdStep 데이터
     const [models, setModels] = useState<any[]>([]);
 
@@ -49,7 +53,9 @@ export const CreateProjectPage = () => {
                     setFirstStepDone={setFirstStepDone} 
                 />
                 <SecondStep 
-                    show={firstStepDone} 
+                    show={firstStepDone}
+                    setProjectName={setProjectName}
+                    setProjectDescription={setProjectDescription}
                     setSecondStepDone={setSecondStepDone} 
                 />
                 <ThirdStep 
