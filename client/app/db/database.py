@@ -46,14 +46,14 @@ def create_dynamic_ai_result_tables():
     AI 서버에 스키마 요청 → 동적 테이블 생성
     """
     from app.models.models import Model
-    from app.api.model_table import create_result_table_for_model
+    from app.services.model_table_service import handle_create_result_table
 
     db = SessionLocal()
     try:
         model_ids = db.query(Model.model_id).all()
         for (model_id,) in model_ids:
             try:
-                create_result_table_for_model(model_id)
+                handle_create_result_table(model_id, db)
                 print(f"✅ ai_results_{model_id} 테이블 생성 완료")
             except Exception as e:
                 print(f"❌ 테이블 생성 실패 (model_id={model_id}): {e}")
