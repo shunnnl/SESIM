@@ -1,4 +1,5 @@
 import { FiArrowUpRight } from "react-icons/fi";
+import logo from "../../assets/images/sesim-logo.png";
 import bgImage from "../../assets/images/project-bg.png";
 import bgImage2 from "../../assets/images/project-bg2.png";
 import bgImage3 from "../../assets/images/project-bg3.png";
@@ -38,7 +39,10 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                         <div className="relative z-10 p-6">
                             <p className="text-sm ml-2 mb-1">{item.description}</p>
                             <p className="text-xl font-semibold mb-2">
-                                <img src="src/assets/images/logo-sesim.png" alt="icon" className="inline-block w-6 h-6" />
+                                <img
+                                    src={logo} alt="icon"
+                                    className="inline-block w-6 h-6"
+                                />
                                 {item.modelName}
                             </p>
 
@@ -49,7 +53,7 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                                     border: "1px solid transparent",
                                     borderRadius: "9999px",
                                     backgroundImage:
-                                        "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
+                                        "linear-gradient(#020207, #020207), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
                                     backgroundOrigin: "border-box",
                                     backgroundClip: "padding-box, border-box",
                                     color: "white",
@@ -65,7 +69,7 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.backgroundImage =
-                                        "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
+                                        "linear-gradient(#020207, #020207), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
                                 }}
                             >
                                 결과보기

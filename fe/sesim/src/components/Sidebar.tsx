@@ -11,13 +11,13 @@ export const Sidebar: React.FC = () => {
             <div className="mb-8 flex items-center gap-4">
                 {/* 동그란 텍스트 */}
                 <div className="w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-full">
-                    김
+                    {localStorage.getItem("nickname")?.[0] || "?"}
                 </div>
 
                 {/* 사용자 정보 */}
                 <div>
                     <div className="text-sm text-gray-400">welcome 🤚</div>
-                    <div className="text-xl font-semibold">김싸피</div>
+                    <div className="text-xl font-semibold">{localStorage.getItem("nickname")}</div>
                 </div>
             </div>
 

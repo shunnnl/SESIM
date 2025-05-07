@@ -131,7 +131,7 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                     />
                 </div>
 
-                <table className="w-3/5 text-white text-lg font-medium ml-6">
+                <table className="w-3/5 mx-auto text-white text-lg font-medium">
                     <thead>
                         <tr className="border-b border-gray-500">
                             <th className="px-4 py-2 text-center">모델명</th>

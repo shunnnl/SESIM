@@ -217,7 +217,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                             <p className={`font-['Pretendard'] text-red-500 text-xs mt-1 hidden: ${loginErrorMessage ? false : true}`}>{loginErrorMessage}</p>
                             <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
                                 아직 회원이 아니신가요?{"  "}
-                                <a 
+                                <a
                                     onClick={handleSignUpClick}
                                     className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer"
                                 >
