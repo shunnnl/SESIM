@@ -64,8 +64,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
 
                 if (data.success) {
                     console.log("로그인 성공:", data);
-                    localStorage.setItem("email", data.data.email);
-                    localStorage.setItem("nickname", data.data.nickname);
                     handleClose();
                 } else {
                     console.log("로그인 실패:", data);
