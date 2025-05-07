@@ -18,5 +18,9 @@ export const getDeployOptions = async () => {
     return response.data;
 };
 
+export const createProject = async (projectInfo: any) => {
+    const response = await api.post("/deployment/terraform", projectInfo);
 
+    return response.data;
+};
 

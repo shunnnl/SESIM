@@ -6,41 +6,48 @@ import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
-import { getDeployOptions, getRoleArns } from "../services/createProjectService";
+import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 
 export const CreateProjectPage = () => {
     const selectedModels = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
+    const createProjectInfo = useSelector((state: RootState) => state.createProjectInfo);
     const [firstStepDone, setFirstStepDone] = useState(false);
     const [secondStepDone, setSecondStepDone] = useState(false);
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
-
-    // FirstStep 데이터
     const [roleArns, setRoleArns] = useState<any[]>([]);
-
-    // ThirdStep 데이터
     const [models, setModels] = useState<any[]>([]);
-
-    // ForthStep 데이터
     const [regions, setRegions] = useState<any[]>([]);
     const [infrastructure, setInfrastructure] = useState<any[]>([]);
     const [combinedPrices, setCombinedPrices] = useState<any[]>([]);
     const [selectedInstanceIdxMap, setSelectedInstanceIdxMap] = useState<{ [modelId: string]: number }>({});
-
     const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined);
+
+    const handleCreateProject = async () => {
+        const projectInfo = {
+            arnId: createProjectInfo.arnId,
+            projectName: createProjectInfo.projectName,
+            projectDescription: createProjectInfo.projectDescription,
+            modelConfigs: createProjectInfo.modelConfigs,
+            accessKey: createProjectInfo.accessKey,
+            secretKey: createProjectInfo.secretKey,
+            sessionToken: createProjectInfo.sessionToken
+        };
+
+        const response = await createProject(projectInfo);
+        if (response.success === true) {
+            console.log("프로젝트 생성 성공");
+        } else {
+            console.log("프로젝트 생성 실패");
+        }
+    };
 
     useEffect(() => {
         const fetchDeployOptions = async () => {
             const roleArns = await getRoleArns();
             const deployOptions = await getDeployOptions();
-
-            // FirstStep 데이터 설정
             setRoleArns(roleArns.data);
-
-            //ThirdStep 데이터 설정
             setModels(deployOptions.data.models);
-
-            // ForthStep 데이터 설정
             setRegions(deployOptions.data.regions);
             setInfrastructure(deployOptions.data.infrastructureSpecs);
             setCombinedPrices(deployOptions.data.combinedPrices);
@@ -94,6 +101,7 @@ export const CreateProjectPage = () => {
                                 ${!isAllSelected ? "opacity-50 cursor-not-allowed bg-gray-400" : ""}
                             `}
                             disabled={!isAllSelected}
+                            onClick={handleCreateProject}
                         >
                             프로젝트 생성
                         </button>
