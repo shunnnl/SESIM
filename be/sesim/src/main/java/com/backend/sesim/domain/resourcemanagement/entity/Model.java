@@ -23,8 +23,11 @@ public class Model extends TimeStampEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "short_description")
+    private String shortDescription; // 간단한 설명
+
     @Column(name = "description")
-    private String description;
+    private String description; // 자세한 설명
 
     @Column(name = "version", nullable = false)
     private String version;
