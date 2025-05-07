@@ -1,5 +1,5 @@
 import { FiArrowUpRight } from "react-icons/fi";
-import logo from "../../assets/images/logo-sesim.png";
+import logo from "../../assets/images/sesim-logo.png";
 import bgImage from "../../assets/images/project-bg.png";
 import bgImage2 from "../../assets/images/project-bg2.png";
 import bgImage3 from "../../assets/images/project-bg3.png";

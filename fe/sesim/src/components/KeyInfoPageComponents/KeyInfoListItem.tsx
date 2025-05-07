@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Lottie from "react-lottie-player";
 import { IoIosCheckmarkCircleOutline, IoIosInformationCircleOutline } from "react-icons/io";
+import logo from "../../assets/images/sesim-logo.png";
 import loading from "../../assets/lotties/Loading.json";
 import { APIKeyModal } from "../../components/Popup/APIKeyModal";
-import { logo } from "../../assets/images/logo-sesim.png";
 
 interface ListItem {
     id: number;
@@ -124,7 +124,8 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
                                     <img
                                         src={logo}
                                         alt="icon"
-                                        className="inline-block w-8 h-8" />
+                                        className="inline-block w-8 h-8"
+                                    />
                                     {item.modelName}
                                 </p>
 
