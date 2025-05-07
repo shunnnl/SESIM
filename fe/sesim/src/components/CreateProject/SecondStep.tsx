@@ -1,19 +1,36 @@
 import { useState } from "react"
+import { useDispatch } from "react-redux";
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
+import { setProjectInfo } from "../../store/createProjectInfoSlice";
 
 interface SecondStepProps {
-    setSecondStepDone: (done: boolean) => void;
     show: boolean;
+    setSecondStepDone: (done: boolean) => void;
 }
 
 export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
-    const [projectName, setProjectName] = useState("")
-    const [projectDescription, setProjectDescription] = useState("")
+    const [isNameValid, setIsNameValid] = useState<"none" | "success" | "fail">("none");
+    const [tempName, setTempName] = useState("");
+    const [tempDesc, setTempDesc] = useState("");
+
+    const dispatch = useDispatch();
 
     const handleSave = () => {
-        // 임시 저장 성공 시
-        setSecondStepDone(true)
+
+        if (tempName.trim() === "") {
+            setIsNameValid("fail");
+            return;
+        }
+        else {
+            setIsNameValid("success");
+        }
+
+        dispatch(setProjectInfo({
+            projectName: tempName,
+            projectDescription: tempDesc,
+        }));
+        setSecondStepDone(true);
     }
 
     return (
@@ -31,25 +48,27 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                             type="text" 
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3]" 
                             placeholder="프로젝트 이름을 입력해주세요"
-                            value={projectName}
-                            onChange={(e) => setProjectName(e.target.value)}
+                            value={tempName}
+                            onChange={(e) => setTempName(e.target.value)}
                         />
+                        {isNameValid === "fail" && 
+                            <p className="text-[#FF7E7E] text-[16px] mt-[5px]">프로젝트 이름을 입력해주세요.</p>
+                        }
                     </div>
                     <div className="mt-[15px]">
                         <p className="text-[16px] font-bold">프로젝트 설명</p>
                         <textarea 
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3] min-h-[200px] resize-y" 
                             placeholder="프로젝트 설명을 입력해주세요"
-                            value={projectDescription}
-                            onChange={(e) => setProjectDescription(e.target.value)}
+                            value={tempDesc}
+                            onChange={(e) => setTempDesc(e.target.value)}
                         />
                     </div>
-
                     <button className="mt-[10px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200 ml-auto" onClick={handleSave}>
                         프로젝트 정보 저장
                     </button>
                 </BigCard>
             </div>
         </div>
-    )
+    );
 };

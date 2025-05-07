@@ -1,29 +1,39 @@
 import { useState } from "react"
+import { motion } from "framer-motion"
+import { useDispatch } from "react-redux";
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
+import { setAwsSession } from "../../store/createProjectInfoSlice";
+import { verifyRoleArn } from "../../services/createProjectService"
 import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
-import { motion } from "framer-motion"
 
 interface FirstStepProps {
+    roleArns: { id: number; roleArn: string }[];
     setFirstStepDone: (done: boolean) => void;
 }
 
-export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
+export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
+    const [validationMessage, setValidationMessage] = useState("")
     const [arn, setArn] = useState("")
+    const dispatch = useDispatch();
 
-    const handleValidation = () => {
-        // NOTE: 실제 검증 로직이 들어갈 자리
-        // TODO: 임시로 성공/실패를 번갈아가며 표시하도록 구현
-        if (validationStatus === "none") {
+    const handleValidation = async () => {
+        const response = await verifyRoleArn(arn);
+        if (response.success & response.data) {
+            dispatch(setAwsSession({
+                accessKey: response.data.accessKey,
+                secretKey: response.data.secretKey,
+                sessionToken: response.data.sessionToken,
+                arnId: response.data.arnId,
+            }))
             setValidationStatus("success")
+            setValidationMessage("검증 완료")
             setFirstStepDone(true)
-        } else if (validationStatus === "success") {
-            setValidationStatus("fail")
-            setFirstStepDone(false)
         } else {
-            setValidationStatus("success")
-            setFirstStepDone(true)
+            setValidationStatus("fail")
+            setValidationMessage(response.error.message)
+            setFirstStepDone(false)
         }
     }
 
@@ -59,11 +69,19 @@ export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
                     </div>
                     <div className="mt-[30px]">
                         <p className="text-[16px] font-normal text-[#979797]">* 기존에 발급한 ARN이 있다면 아래에서 확인해 선택해 주세요.</p>
-                        <select className="mt-[10px] w-[500px] bg-[#FFFFFF] border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#000000]">
+                        <select 
+                            className="mt-[10px] w-[500px] bg-[#FFFFFF] border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#000000]"
+                            onChange={(e) => {
+                                const selectedArn = roleArns.find(role => role.id === Number(e.target.value));
+                                if (selectedArn) {
+                                    setArn(selectedArn.roleArn);
+                                }
+                            }}
+                        >
                             <option value="" disabled selected>ARN을 선택해주세요</option>
-                            <option value="arn1">arn:aws:iam::123456789012:role/example-role-1</option>
-                            <option value="arn2">arn:aws:iam::123456789012:role/example-role-2</option>
-                            <option value="arn3">arn:aws:iam::123456789012:role/example-role-3</option>
+                            {roleArns.map((arn) => (
+                                <option key={arn.id} value={arn.id}>{arn.roleArn}</option>
+                            ))}
                         </select>
                     </div>
 
@@ -87,10 +105,10 @@ export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
                             </button>
                         </div>
                         {validationStatus === "success" && (
-                            <p className="mt-[10px] text-[16px] font-medium text-[#90EE90]">완료</p>
+                            <p className="mt-[10px] text-[16px] font-medium text-[#90EE90]">{validationMessage}</p>
                         )}
                         {validationStatus === "fail" && (
-                            <p className="mt-[10px] text-[16px] font-medium text-[#FF7F7F]">실패</p>
+                            <p className="mt-[10px] text-[16px] font-medium text-[#FF7F7F]">{validationMessage}</p>
                         )}
                     </div>
                 </BigCard>
