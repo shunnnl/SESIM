@@ -2,10 +2,7 @@ package com.backend.sesim.domain.deployment.controller;
 
 import com.backend.sesim.domain.deployment.dto.request.ApiKeyCheckRequest;
 import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
-import com.backend.sesim.domain.deployment.dto.response.ApiKeyResponse;
-import com.backend.sesim.domain.deployment.dto.response.DeployOptionsResponse;
-import com.backend.sesim.domain.deployment.dto.response.ProjectDeploymentStatusResponse;
-import com.backend.sesim.domain.deployment.dto.response.ProjectListResponse;
+import com.backend.sesim.domain.deployment.dto.response.*;
 import com.backend.sesim.domain.deployment.service.DeploymentOptionService;
 import com.backend.sesim.domain.deployment.service.ProjectService;
 import com.backend.sesim.domain.deployment.service.TerraformService;
@@ -58,6 +55,14 @@ public class DeploymentController {
     public CommonResponseDto<ApiKeyResponse> checkApiKey(@RequestBody ApiKeyCheckRequest request) {
         log.info("API 키 확인 요청: projectId={}, modelId={}", request.getProjectId(), request.getModelId());
         ApiKeyResponse response = projectService.checkAndGetApiKey(request);
+        return CommonResponseDto.ok(response);
+    }
+
+    @Operation(summary = "사용자 전체 API 사용량 조회", description = "현재 로그인한 사용자의 모든 프로젝트 API 사용량을 조회합니다.")
+    @GetMapping("/projects/usage")
+    public CommonResponseDto<ApiUsageResponse> getAllUserProjectsApiUsage() {
+        log.info("사용자 전체 API 사용량 조회 요청");
+        ApiUsageResponse response = projectService.getAllUserProjectsApiUsage();
         return CommonResponseDto.ok(response);
     }
 }
