@@ -93,7 +93,7 @@ pipeline {
                                 docker rmi -f '${DOCKER_IMAGE_NAME}' || true
                                 docker load < '${APP_DIR}/backend_image.tar'
                                 docker run -d --name '${DOCKER_CONTAINER_NAME}' -p 8080:8080 \
-                                -e DB_URL='jdbc:mysql://${BE_SERVER_2}:6033/sesim' \
+                                -e DB_URL='jdbc:mysql://${BE_SERVER_1}:6033/sesim' \
                                 -e DB_USERNAME='sesim' \
                                 -e DB_PASSWORD='${DB_PASSWORD}' \
                                 -e MAIL_USERNAME='siyun2072@gmail.com' \
