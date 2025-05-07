@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import keyinfoReducer from "./keyinfoSlice"; 
 import projectReducer from "./projectSlice"; 
+import apiUsageReducer from "./APIUsageSlice";
 
 // configureStore로 스토어 설정
 export const store = configureStore({
     reducer: {
         keyinfo: keyinfoReducer, 
         project: projectReducer, 
+        apiUsage: apiUsageReducer,
     },
 });
 
