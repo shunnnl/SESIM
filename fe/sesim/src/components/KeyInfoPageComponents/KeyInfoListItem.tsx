@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Lottie from "react-lottie-player";
 import { IoIosCheckmarkCircleOutline, IoIosInformationCircleOutline } from "react-icons/io";
 import logo from "../../assets/images/sesim-logo.png";
 import loading from "../../assets/lotties/Loading.json";
 import { APIKeyModal } from "../../components/Popup/APIKeyModal";
+import { fetchApiKey } from "../../services/apiKeyService"; // API Key 가져오는 함수
 
 // Model 타입 정의 (예시)
 interface Model {
@@ -68,15 +69,32 @@ const mapModelToListItem = (model: Model): Model => {
 const ItemList: React.FC<ItemListProps> = ({ items }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Model | null>(null);
+    const [apiKey, setApiKey] = useState<string | null>(null);  // API Key를 저장할 상태
 
-    const handleOpenModal = (item: Model) => {
+    const handleOpenModal = async (item: Model) => {
         setSelectedItem(item);
+
+        if (item.deployStatus === "DEPLOYED") {
+            try {
+                const fetchedApiKey = await fetchApiKey({ projectId: 1, modelId: item.id });
+                setApiKey(fetchedApiKey);  // 가져온 API Key를 상태에 저장
+            } catch (error) {
+                if (error instanceof Error) {
+                    console.error("API Key fetch failed:", error.message);  // 오류 메시지 출력
+                } else {
+                    console.error("API Key fetch failed:", error);  // 객체 자체 출력
+                }
+                setApiKey(null);  // 오류 발생 시 null로 설정
+            }
+        }
+
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedItem(null);
+        setApiKey(null);  // 모달 닫을 때 API Key 초기화
     };
 
     const renderState = (state: string) => {
@@ -179,13 +197,13 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
                 </div>
             </div>
 
-            {selectedItem && (
+            {selectedItem && apiKey && (
                 <APIKeyModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     projectName={"sesim project"}
                     modelName={selectedItem.name}
-                    apiKey={selectedItem.APIKey}
+                    apiKey={apiKey}  // API Key 전달
                 />
             )}
         </>

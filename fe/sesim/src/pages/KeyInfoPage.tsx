@@ -4,19 +4,21 @@ import ItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchKeyInfo } from "../services/keyinfoService";
-import { RootState, AppDispatch } from "../redux/store"; // AppDispatch 추가
-import { Project } from "../redux/keyinfoSlice";
+import { RootState, AppDispatch } from "../store"; // AppDispatch 추가
+import { Project } from "../store/keyinfoSlice";
 export const KeyInfoPage = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     // Redux 상태에서 projects, loading, error를 불러옴
-    const { projects, loading, error} = useSelector((state: RootState) => state.keyinfo);
+    const { loading, error} = useSelector((state: RootState) => state.keyinfo);
+    const { projects } = useSelector((state: RootState) => state.keyinfo);
 
     useEffect(() => {
         dispatch(fetchKeyInfo()); // createAsyncThunk로 자동 상태 처리
     }, [dispatch]);
 
     console.log("Projects:", projects);  // projects 데이터 확인
+    console.log(typeof projects);
 
 
     return (
@@ -85,10 +87,8 @@ export const KeyInfoPage = () => {
 
                 {/* 프로젝트 데이터가 있을 때만 렌더링 */}
                 <>
-                <p>Loading: {loading ? 'Yes' : 'No'}</p>
-                <pre>{JSON.stringify(projects, null, 2)}</pre>
+
                 <p>{Array.isArray(projects)}</p>
-               
 
                     {/* projects가 배열인지 확인 후, 배열이면 map 실행 */}
                     {Array.isArray(projects) && projects.map((project: Project, index: number) => {
@@ -105,7 +105,7 @@ export const KeyInfoPage = () => {
                                 <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
                                     {project.name}
                                 </h2>
-                                {/* <ItemList items={project.models} /> 모델 리스트 전달 */}
+                                <ItemList items={project.models} />
                             </motion.div>
                         );
                     })}

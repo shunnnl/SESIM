@@ -74,7 +74,7 @@ export const APIKeyModal: React.FC<APIKeyModalProps> = ({
 
                     <div className="flex flex-col items-center w-full h-full py-10 sm:py-12 md:py-16 px-6 sm:px-10 md:px-16 rounded-[28px] bg-[#020207]/80">
                         <span className="font-['Pretendard'] font-bold text-3xl md:text-4xl text-center text-white mb-10">
-                            <img src="src/assets/images/logo-sesim.png" alt="icon" className="inline-block w-10 h-10" />
+                            <img src="src/assets/images/sesim-logo.png" alt="icon" className="inline-block w-10 h-10" />
                             {modelName}
                             <p className="font-['Pretendard'] font-bold text-2xl text-center text-white">{projectName}</p>
                         </span>

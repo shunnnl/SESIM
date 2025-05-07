@@ -1,7 +1,8 @@
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { MainLayout } from "./layouts/MainLayout";
-import store from "./redux/store";
+import { store } from "./store"; // store import
+
 function App() {
   return (
     <Provider store={store}>
