@@ -171,17 +171,34 @@ public class TerraformExecutor {
                 builder.command("/bin/bash", "-c", command);
             }
 
+            log.info("Terraform 설치 확인 명령어 실행: {}", command);
+
+            // 오류 스트림도 캡처하도록 설정
+            builder.redirectErrorStream(true);
+
             Process process = builder.start();
+
+            // 명령어 출력 로깅 추가
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    log.info("Terraform 버전 확인 출력: {}", line);
+                }
+            }
+
             int exitCode = process.waitFor();
+            log.info("Terraform 설치 확인 명령어 종료 코드: {}", exitCode);
 
             if (exitCode != 0) {
-                log.warn("Terraform이 설치되어 있지 않습니다.");
+                log.warn("Terraform이 설치되어 있지 않습니다. 종료 코드: {}", exitCode);
                 return false;
             }
 
+            log.info("Terraform이 정상적으로 설치되어 있습니다.");
             return true;
         } catch (Exception e) {
-            log.error("Terraform 설치 확인 실패", e);
+            log.error("Terraform 설치 확인 실패: {}", e.getMessage(), e);
             return false;
         }
     }

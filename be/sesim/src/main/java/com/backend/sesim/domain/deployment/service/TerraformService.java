@@ -69,12 +69,16 @@ public class TerraformService {
     public void deployToSaasAccount(TerraformDeployRequest request) {
         // arnId 유효성 검증
         if (request.getArnId() == null) {
+            log.error("ARN ID 유효성 검증 실패: 요청에서 ARN ID가 null입니다. 요청 정보: {}", request);
             throw new GlobalException(TerraformErrorCode.INVALID_ARN_ID);
         }
 
         // ARN 조회
         RoleArn roleArn = roleArnRepository.findById(request.getArnId())
-                .orElseThrow(() -> new GlobalException(TerraformErrorCode.INVALID_ARN_ID));
+                .orElseThrow(() -> {
+                    log.error("ARN ID에 해당하는 RoleArn을 찾을 수 없음: {}", request.getArnId());
+                    return new GlobalException(TerraformErrorCode.INVALID_ARN_ID);
+                });
 
         // deploymentId 자동 생성
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
