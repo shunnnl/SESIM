@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import awsSessionReducer from "./awsSessionSlice";
+import createProjectInfoReducer from "./createProjectInfoSlice";
 
 export const store = configureStore({
     reducer: {
-        awsSession: awsSessionReducer,
+        createProjectInfo: createProjectInfoReducer,
     },
 });
 

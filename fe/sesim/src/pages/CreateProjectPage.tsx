@@ -14,11 +14,7 @@ export const CreateProjectPage = () => {
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
 
     // FirstStep 데이터
-    const [roleArn, setRoleArn] = useState<any[]>([]);
-
-    // SecondStep 데이터
-    const [projectName, setProjectName] = useState<string>("");
-    const [projectDescription, setProjectDescription] = useState<string>("");
+    const [roleArns, setRoleArns] = useState<any[]>([]);
 
     // ThirdStep 데이터
     const [models, setModels] = useState<any[]>([]);
@@ -29,13 +25,11 @@ export const CreateProjectPage = () => {
 
     useEffect(() => {
         const fetchDeployOptions = async () => {
-            const deployOptions = await getDeployOptions();
             const roleArns = await getRoleArns();
-            console.log(deployOptions);
-            console.log(roleArns);
+            const deployOptions = await getDeployOptions();
 
             // FirstStep 데이터 설정
-            setRoleArn(roleArns.data);
+            setRoleArns(roleArns.data);
 
             //ThirdStep 데이터 설정
             setModels(deployOptions.data.models);
@@ -58,19 +52,17 @@ export const CreateProjectPage = () => {
 
             <div className="container-padding text-white pt-[120px]">
                 <FirstStep
-                    roleArn={roleArn}
+                    roleArns={roleArns}
                     setFirstStepDone={setFirstStepDone} 
                 />
                 <SecondStep 
                     show={firstStepDone}
-                    setProjectName={setProjectName}
-                    setProjectDescription={setProjectDescription}
                     setSecondStepDone={setSecondStepDone} 
                 />
-                <ThirdStep 
+                <ThirdStep
                     show={secondStepDone} 
                     models={models}
-                    selectedModels={selectedModels} 
+                    selectedModels={selectedModels}
                     setSelectedModels={setSelectedModels} 
                 />
                 <ForthStep

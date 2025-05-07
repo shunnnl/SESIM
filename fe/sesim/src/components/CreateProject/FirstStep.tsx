@@ -3,16 +3,16 @@ import { motion } from "framer-motion"
 import { useDispatch } from "react-redux";
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
-import { setAwsSession } from "../../store/awsSessionSlice";
+import { setAwsSession } from "../../store/createProjectInfoSlice";
 import { verifyRoleArn } from "../../services/createProjectService"
 import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
 
 interface FirstStepProps {
-    roleArn: { id: number; roleArn: string }[];
+    roleArns: { id: number; roleArn: string }[];
     setFirstStepDone: (done: boolean) => void;
 }
 
-export const FirstStep = ({ setFirstStepDone, roleArn }: FirstStepProps) => {
+export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
     const [validationMessage, setValidationMessage] = useState("")
     const [arn, setArn] = useState("")
@@ -71,7 +71,7 @@ export const FirstStep = ({ setFirstStepDone, roleArn }: FirstStepProps) => {
                         <p className="text-[16px] font-normal text-[#979797]">* 기존에 발급한 ARN이 있다면 아래에서 확인해 선택해 주세요.</p>
                         <select className="mt-[10px] w-[500px] bg-[#FFFFFF] border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#000000]">
                             <option value="" disabled selected>ARN을 선택해주세요</option>
-                            {roleArn.map((arn) => (
+                            {roleArns.map((arn) => (
                                 <option value={arn.id}>{arn.roleArn}</option>
                             ))}
                         </select>

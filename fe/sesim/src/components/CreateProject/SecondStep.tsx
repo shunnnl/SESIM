@@ -1,22 +1,26 @@
-import { useState, useEffect } from "react"
+import { useDispatch } from "react-redux";
+import { useState } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
+import { setProjectInfo } from "../../store/createProjectInfoSlice";
 
 interface SecondStepProps {
     show: boolean;
-    setProjectName: (name: string) => void;
-    setProjectDescription: (description: string) => void;
     setSecondStepDone: (done: boolean) => void;
 }
 
-export const SecondStep = ({ setSecondStepDone, show, setProjectName, setProjectDescription }: SecondStepProps) => {
+export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
     // 임시 입력값 상태
     const [tempName, setTempName] = useState("");
     const [tempDesc, setTempDesc] = useState("");
 
+    const dispatch = useDispatch();
+
     const handleSave = () => {
-        setProjectName(tempName);
-        setProjectDescription(tempDesc);
+        dispatch(setProjectInfo({
+            projectName: tempName,
+            projectDescription: tempDesc,
+        }));
         setSecondStepDone(true);
     }
 
