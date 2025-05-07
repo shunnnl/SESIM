@@ -53,10 +53,16 @@ public class TerraformExecutor {
             ProcessBuilder builder = new ProcessBuilder();
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
+            String command = "terraform output -json";
+            // command에 terraform이 포함된 경우 전체 경로로 대체
+            if (command.startsWith("terraform")) {
+                command = command.replace("terraform", "/usr/bin/terraform");
+            }
+
             if (isWindows) {
-                builder.command("cmd.exe", "/c", "terraform output -json");
+                builder.command("cmd.exe", "/c", command);
             } else {
-                builder.command("/bin/bash", "-c", "terraform output -json");
+                builder.command("/bin/bash", "-c", command);
             }
 
             builder.directory(dirPath.toFile());
@@ -120,6 +126,11 @@ public class TerraformExecutor {
             // OS 감지하여 적절한 명령 실행 방식 사용
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
+            // command에 terraform이 포함된 경우 전체 경로로 대체
+            if (command.startsWith("terraform")) {
+                command = command.replace("terraform", "/usr/bin/terraform");
+            }
+
             if (isWindows) {
                 builder.command("cmd.exe", "/c", command);
             } else {
@@ -160,11 +171,15 @@ public class TerraformExecutor {
      * @return 설치 여부
      */
     public boolean isTerraformInstalled() {
-        return true;
-        /*
         try {
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+
             String command = "terraform --version";
+
+            // command에 terraform이 포함된 경우 전체 경로로 대체
+            if (command.startsWith("terraform")) {
+                command = command.replace("terraform", "/usr/bin/terraform");
+            }
 
             ProcessBuilder builder = new ProcessBuilder();
             if (isWindows) {
@@ -204,7 +219,6 @@ public class TerraformExecutor {
             return false;
         }
 
-         */
     }
 
 }
