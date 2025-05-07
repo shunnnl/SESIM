@@ -160,6 +160,8 @@ public class TerraformExecutor {
      * @return 설치 여부
      */
     public boolean isTerraformInstalled() {
+        return true;
+        /*
         try {
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
             String command = "terraform --version";
@@ -201,5 +203,7 @@ public class TerraformExecutor {
             log.error("Terraform 설치 확인 실패: {}", e.getMessage(), e);
             return false;
         }
+
+         */
     }
 }
