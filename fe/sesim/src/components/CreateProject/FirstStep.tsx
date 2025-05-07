@@ -1,8 +1,9 @@
 import { useState } from "react"
+import { motion } from "framer-motion"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
+import { verifyRoleArn } from "../../services/createProjectService"
 import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
-import { motion } from "framer-motion"
 
 interface FirstStepProps {
     roleArn: { id: number; roleArn: string }[];
@@ -13,19 +14,24 @@ export const FirstStep = ({ setFirstStepDone, roleArn }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
     const [arn, setArn] = useState("")
 
-    const handleValidation = () => {
+    const handleValidation = async () => {
         // NOTE: 실제 검증 로직이 들어갈 자리
         // TODO: 임시로 성공/실패를 번갈아가며 표시하도록 구현
-        if (validationStatus === "none") {
-            setValidationStatus("success")
-            setFirstStepDone(true)
-        } else if (validationStatus === "success") {
-            setValidationStatus("fail")
-            setFirstStepDone(false)
-        } else {
-            setValidationStatus("success")
-            setFirstStepDone(true)
-        }
+
+        const response = await verifyRoleArn(arn);
+
+        if (response.data)
+
+        // if (validationStatus === "none") {
+        //     setValidationStatus("success")
+        //     setFirstStepDone(true)
+        // } else if (validationStatus === "success") {
+        //     setValidationStatus("fail")
+        //     setFirstStepDone(false)
+        // } else {
+        //     setValidationStatus("success")
+        //     setFirstStepDone(true)
+        // }
     }
 
     return (
