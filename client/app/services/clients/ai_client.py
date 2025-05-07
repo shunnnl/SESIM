@@ -16,3 +16,4 @@ def send_to_ai_model(model_url: str, parsed_logs: list[dict]) -> dict:
         raise RuntimeError(f"AI 서버 응답 오류: {e.response.text}")
     except requests.exceptions.RequestException as e:
         raise RuntimeError(f"AI 서버 요청 실패: {str(e)}")
+
