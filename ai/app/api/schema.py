@@ -17,7 +17,6 @@ def create_ai_result_table():
     return Table(
         table_name,
         metadata,
-        Column("ai_result_id", String(255), primary_key=True),
         Column("logged_at", DateTime, nullable=False),
         Column("client_ip", String(15), nullable=False),
         Column("method", String(10)),
