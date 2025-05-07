@@ -146,7 +146,9 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
             <div className="mt-[15px]">
                 {selectedModels.length > 0 && (
                     <div className="flex w-fit mb-[15px]">
-                        {selectedModels.map((model, idx) => (
+                        {[...selectedModels]
+                            .sort((a, b) => Number(a.id) - Number(b.id))
+                            .map((model, idx) => (
                             <div
                                 key={model.id}
                                 onClick={() => handleModelClick(model)}
@@ -273,7 +275,9 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
             <div className="mt-8">
                 <div className="text-xl font-bold mb-2 text-[#3893FF]">모델별 선택 상세</div>
                 <div className="flex flex-col gap-2">
-                    {selectedModels.map((model) => {
+                    {[...selectedModels]
+                        .sort((a, b) => Number(a.id) - Number(b.id))
+                        .map((model) => {
                         const specIdx = selectedInstanceIdxMap[model.id];
                         const spec = infrastructure[specIdx];
                         const region = selectedRegionMap[model.id];
