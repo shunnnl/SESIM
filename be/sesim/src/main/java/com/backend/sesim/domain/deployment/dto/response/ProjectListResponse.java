@@ -49,6 +49,7 @@ public class ProjectListResponse {
         private Long id;
         private String name;
         private String description; // short_description의 첫 번째 줄
+        private String grafanaUrl;  // 그라파나 URL 추가
 
         public static ModelDto from(ProjectModelInformation modelInfo) {
             // short_description에서 첫 번째 줄 추출
@@ -60,10 +61,27 @@ public class ProjectListResponse {
                 }
             }
 
+            // ALB 주소에서 그라파나 URL 생성
+            String grafanaUrl = "";
+            if (modelInfo.getProject().getAlbAddress() != null && !modelInfo.getProject().getAlbAddress().isEmpty()) {
+                String albAddress = modelInfo.getProject().getAlbAddress();
+
+                // 도메인 부분만 추출 (http://13.125.10.230)
+                int indexOfApi = albAddress.indexOf("/api");
+                if (indexOfApi > 0) {
+                    // "/api" 이전 부분만 추출하고 "/grafana" 추가
+                    grafanaUrl = albAddress.substring(0, indexOfApi) + "/grafana";
+                } else {
+                    // "/api"가 없는 경우 끝에 "/grafana" 추가
+                    grafanaUrl = albAddress + "/grafana";
+                }
+            }
+
             return ModelDto.builder()
                     .id(modelInfo.getModel().getId())
                     .name(modelInfo.getModel().getName())
                     .description(firstLine)
+                    .grafanaUrl(grafanaUrl)
                     .build();
         }
     }
