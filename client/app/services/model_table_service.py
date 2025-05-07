@@ -5,7 +5,7 @@ from app.schemas.common import MessageResponse
 from app.services.clients.ai_client import get_model_schema
 from fastapi import HTTPException
 from sqlalchemy import Table, Column, MetaData, Integer
-from sqlalchemy.dialects.postgresql import VARCHAR, BOOLEAN, FLOAT, TIMESTAMP, CHAR
+from sqlalchemy.dialects.postgresql import VARCHAR, BOOLEAN, FLOAT, TIMESTAMP, CHAR, INTEGER
 from sqlalchemy.orm import Session
 
 metadata = MetaData()
