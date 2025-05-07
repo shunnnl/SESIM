@@ -1,5 +1,5 @@
-import { useDispatch } from "react-redux";
 import { useState } from "react"
+import { useDispatch } from "react-redux";
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import { setProjectInfo } from "../../store/createProjectInfoSlice";
@@ -52,7 +52,7 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                             onChange={(e) => setTempName(e.target.value)}
                         />
                         {isNameValid === "fail" && 
-                            <p className="text-[16px] font-medium text-[#FF7F7F] mt-[5px]">프로젝트 이름을 입력해주세요.</p>
+                            <p className="text-[#FF7E7E] text-[16px] mt-[5px]">프로젝트 이름을 입력해주세요.</p>
                         }
                     </div>
                     <div className="mt-[15px]">
@@ -70,5 +70,5 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                 </BigCard>
             </div>
         </div>
-    )
+    );
 };

@@ -187,13 +187,25 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
                                         disabled={isDisabled}
                                     >
                                         {label === "Amazon Web Services" && (
-                                            <img src={awsIcon} alt="aws" className={`w-[28px] h-[18px] ${isDisabled ? "grayscale" : ""}`} />
+                                            <img 
+                                                src={awsIcon} 
+                                                alt="aws" 
+                                                className={`w-[28px] h-[18px] ${isDisabled ? "grayscale" : ""}`} 
+                                            />
                                         )}
                                         {label === "Microsoft Azure" && (
-                                            <img src={azureIcon} alt="azure" className={`w-[28px] h-[22px] ${isDisabled ? "grayscale" : ""}`} />
+                                            <img 
+                                                src={azureIcon} 
+                                                alt="azure" 
+                                                className={`w-[28px] h-[22px] ${isDisabled ? "grayscale" : ""}`} 
+                                            />
                                         )}
                                         {label === "Google Cloud Platform" && (
-                                            <img src={gcpIcon} alt="gcp" className={`w-[28px] h-[30px] ${isDisabled ? "grayscale" : ""}`} />
+                                            <img 
+                                                src={gcpIcon} 
+                                                alt="gcp" 
+                                                className={`w-[28px] h-[30px] ${isDisabled ? "grayscale" : ""}`} 
+                                            />
                                         )}
                                         <p className={`text-[16px] font-medium ${isDisabled ? "text-[#A3A3A3]" : "text-[#000000]"}`}>{label}</p>
                                     </button>
@@ -231,7 +243,10 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
                                 onChange={e => handleRegionChange(selectedModel, e.target.value)}
                             >
                                 {regions.map(region => (
-                                    <option key={region.code} value={region.code}>
+                                    <option 
+                                        key={region.code} 
+                                        value={region.code}
+                                    >
                                         {region.name} ({region.code})
                                     </option>
                                 ))}
@@ -308,5 +323,5 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
             </div>
             </div>
         </div>
-    )
+    );
 };

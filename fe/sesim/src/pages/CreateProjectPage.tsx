@@ -6,8 +6,8 @@ import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
-import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 
 export const CreateProjectPage = () => {
     const selectedModels = useSelector((state: RootState) => state.createProjectInfo.selectedModels);

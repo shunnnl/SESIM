@@ -44,5 +44,5 @@ export const ThirdStep = ({ show, models }: ThirdStepProps) => {
                 </div>
             </div>
         </div>
-    )
+    );
 };
