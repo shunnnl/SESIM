@@ -53,10 +53,16 @@ public class TerraformExecutor {
             ProcessBuilder builder = new ProcessBuilder();
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
+            String command = "terraform output -json";
+            // command에 terraform이 포함된 경우 전체 경로로 대체
+            if (command.startsWith("terraform")) {
+                command = command.replace("terraform", "/usr/bin/terraform");
+            }
+
             if (isWindows) {
-                builder.command("cmd.exe", "/c", "terraform output -json");
+                builder.command("cmd.exe", "/c", command);
             } else {
-                builder.command("/bin/bash", "-c", "terraform output -json");
+                builder.command("/bin/bash", "-c", command);
             }
 
             builder.directory(dirPath.toFile());
@@ -120,6 +126,11 @@ public class TerraformExecutor {
             // OS 감지하여 적절한 명령 실행 방식 사용
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
+            // command에 terraform이 포함된 경우 전체 경로로 대체
+            if (command.startsWith("terraform")) {
+                command = command.replace("terraform", "/usr/bin/terraform");
+            }
+
             if (isWindows) {
                 builder.command("cmd.exe", "/c", command);
             } else {
@@ -162,7 +173,13 @@ public class TerraformExecutor {
     public boolean isTerraformInstalled() {
         try {
             boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+
             String command = "terraform --version";
+
+            // command에 terraform이 포함된 경우 전체 경로로 대체
+            if (command.startsWith("terraform")) {
+                command = command.replace("terraform", "/usr/bin/terraform");
+            }
 
             ProcessBuilder builder = new ProcessBuilder();
             if (isWindows) {
@@ -171,18 +188,37 @@ public class TerraformExecutor {
                 builder.command("/bin/bash", "-c", command);
             }
 
+            log.info("Terraform 설치 확인 명령어 실행: {}", command);
+
+            // 오류 스트림도 캡처하도록 설정
+            builder.redirectErrorStream(true);
+
             Process process = builder.start();
+
+            // 명령어 출력 로깅 추가
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    log.info("Terraform 버전 확인 출력: {}", line);
+                }
+            }
+
             int exitCode = process.waitFor();
+            log.info("Terraform 설치 확인 명령어 종료 코드: {}", exitCode);
 
             if (exitCode != 0) {
-                log.warn("Terraform이 설치되어 있지 않습니다.");
+                log.warn("Terraform이 설치되어 있지 않습니다. 종료 코드: {}", exitCode);
                 return false;
             }
 
+            log.info("Terraform이 정상적으로 설치되어 있습니다.");
             return true;
         } catch (Exception e) {
-            log.error("Terraform 설치 확인 실패", e);
+            log.error("Terraform 설치 확인 실패: {}", e.getMessage(), e);
             return false;
         }
+
     }
+
 }

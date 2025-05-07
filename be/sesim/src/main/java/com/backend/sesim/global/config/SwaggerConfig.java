@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 @Configuration
 public class SwaggerConfig {
     @Bean
@@ -31,4 +32,6 @@ public class SwaggerConfig {
                         .description("sesim 서비스의 API 문서")
                         .version("1.0.0"));
     }
+
+
 }
