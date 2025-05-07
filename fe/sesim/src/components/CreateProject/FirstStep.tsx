@@ -33,7 +33,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
         } else {
             setValidationStatus("fail")
             setValidationMessage(response.error.message)
-            setFirstStepDone(true)
+            setFirstStepDone(false)
         }
     }
 
@@ -69,10 +69,18 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
                     </div>
                     <div className="mt-[30px]">
                         <p className="text-[16px] font-normal text-[#979797]">* 기존에 발급한 ARN이 있다면 아래에서 확인해 선택해 주세요.</p>
-                        <select className="mt-[10px] w-[500px] bg-[#FFFFFF] border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#000000]">
+                        <select 
+                            className="mt-[10px] w-[500px] bg-[#FFFFFF] border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#000000]"
+                            onChange={(e) => {
+                                const selectedArn = roleArns.find(role => role.id === Number(e.target.value));
+                                if (selectedArn) {
+                                    setArn(selectedArn.roleArn);
+                                }
+                            }}
+                        >
                             <option value="" disabled selected>ARN을 선택해주세요</option>
                             {roleArns.map((arn) => (
-                                <option value={arn.id}>{arn.roleArn}</option>
+                                <option key={arn.id} value={arn.id}>{arn.roleArn}</option>
                             ))}
                         </select>
                     </div>
