@@ -2,7 +2,6 @@ package com.backend.sesim.domain.deployment.controller;
 
 import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
 import com.backend.sesim.domain.deployment.dto.response.DeployOptionsResponse;
-import com.backend.sesim.domain.deployment.dto.response.DeployResultResponse;
 import com.backend.sesim.domain.deployment.service.DeploymentOptionService;
 import com.backend.sesim.domain.deployment.service.TerraformService;
 import com.backend.sesim.global.dto.CommonResponseDto;
@@ -24,10 +23,9 @@ public class DeploymentController {
 
     @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
     @PostMapping("/terraform")
-    public CommonResponseDto<DeployResultResponse> deploy(@RequestBody TerraformDeployRequest request) {
-        log.info("배포 요청 시작: {}", request.getDeploymentId());
-        DeployResultResponse result = terraformDeployService.deployToSaasAccount(request);
-        return CommonResponseDto.ok(result);
+    public CommonResponseDto deploy(@RequestBody TerraformDeployRequest request) {
+        terraformDeployService.deployToSaasAccount(request);
+        return CommonResponseDto.ok();
     }
 
     @Operation(summary = "배포 옵션 조회", description = "배포에 필요한 모든 옵션(리전, 인프라 스펙, 모델)을 한 번에 조회합니다.")
