@@ -33,3 +33,12 @@ def send_train_file(model_url: str, file_path: str) -> dict:
         raise HTTPException(status_code=500, detail=f"AI 서버 응답 오류: {e.response.text}")
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"AI 서버 요청 실패: {str(e)}")
+
+
+def get_model_schema(model_url: str) -> dict:
+    try:
+        response = requests.get(f"{model_url}/api/schema")
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"AI 서버 스키마 요청 실패: {str(e)}")
