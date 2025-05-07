@@ -35,8 +35,8 @@ public class CorsConfig {
                 "http://sesim-front-alb-35113181.ap-northeast-2.elb.amazonaws.com/",
                 "http://52.79.149.27",
                 "https://52.79.149.27",
-                "http://backend",
-                "https://backend"
+                "http://52.79.149.27/",
+                "https://52.79.149.27/"
 
         ));
 
