@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
+import { useDispatch } from "react-redux";
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
+import { setAwsSession } from "../../store/awsSessionSlice";
 import { verifyRoleArn } from "../../services/createProjectService"
 import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
 
@@ -12,26 +14,27 @@ interface FirstStepProps {
 
 export const FirstStep = ({ setFirstStepDone, roleArn }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
+    const [validationMessage, setValidationMessage] = useState("")
     const [arn, setArn] = useState("")
+    const dispatch = useDispatch();
 
     const handleValidation = async () => {
-        // NOTE: 실제 검증 로직이 들어갈 자리
-        // TODO: 임시로 성공/실패를 번갈아가며 표시하도록 구현
-
         const response = await verifyRoleArn(arn);
-
-        if (response.data)
-
-        // if (validationStatus === "none") {
-        //     setValidationStatus("success")
-        //     setFirstStepDone(true)
-        // } else if (validationStatus === "success") {
-        //     setValidationStatus("fail")
-        //     setFirstStepDone(false)
-        // } else {
-        //     setValidationStatus("success")
-        //     setFirstStepDone(true)
-        // }
+        if (response.success & response.data) {
+            dispatch(setAwsSession({
+                accessKey: response.data.accessKey,
+                secretKey: response.data.secretKey,
+                sessionToken: response.data.sessionToken,
+                arnId: response.data.arnId,
+            }))
+            setValidationStatus("success")
+            setValidationMessage("검증 완료")
+            setFirstStepDone(true)
+        } else {
+            setValidationStatus("fail")
+            setValidationMessage(response.error.message)
+            setFirstStepDone(false)
+        }
     }
 
     return (
@@ -94,10 +97,10 @@ export const FirstStep = ({ setFirstStepDone, roleArn }: FirstStepProps) => {
                             </button>
                         </div>
                         {validationStatus === "success" && (
-                            <p className="mt-[10px] text-[16px] font-medium text-[#90EE90]">완료</p>
+                            <p className="mt-[10px] text-[16px] font-medium text-[#90EE90]">{validationMessage}</p>
                         )}
                         {validationStatus === "fail" && (
-                            <p className="mt-[10px] text-[16px] font-medium text-[#FF7F7F]">실패</p>
+                            <p className="mt-[10px] text-[16px] font-medium text-[#FF7F7F]">{validationMessage}</p>
                         )}
                     </div>
                 </BigCard>
