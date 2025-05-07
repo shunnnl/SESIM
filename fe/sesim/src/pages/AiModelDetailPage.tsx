@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import infoIcon from "../assets/images/info.png";
 import { BlueCircle } from "../components/common/BlueCircle";
+import { getAiModelDetail } from "../services/aiModelService";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
 import { ImageTitleBannerWithNav } from "../components/AiModelDetail/ImageTitleBannerWithNav";
-import { getAiModelDetail } from "../services/aiModelService";
 
 export const AiModelDetailPage = () => {
     const { modelId } = useParams();
@@ -81,7 +81,11 @@ export const AiModelDetailPage = () => {
 
                             <div className="mt-[80px]">
                                 <p className="flex items-center gap-2 text-[15px] text-white mb-[20px]">
-                                    <img src={infoIcon} alt="info" className=" w-[30px] h-[30px]" />
+                                    <img 
+                                        src={infoIcon} 
+                                        alt="info" 
+                                        className=" w-[30px] h-[30px]" 
+                                    />
                                     <p className="text-[16px] font-bold">SESIM을 처음이용하신다면, [마이페이지]에서 SESIM SDK를 먼저 다운로드 하세요!</p>
                                 </p>
                                 
