@@ -22,7 +22,13 @@ public enum TerraformErrorCode implements ErrorCode {
     // K3s 자동 설치 관련 에러
     K3S_SETUP_FAILED(500, "K3S 클러스터 설치에 실패했습니다."),
     K3S_SETUP_TIMEOUT(500, "K3S 클러스터 설치 시간이 초과되었습니다."),
-    K3S_INSUFFICIENT_INSTANCES(400, "K3S 클러스터 설치에 필요한 인스턴스 수가 부족합니다.");
+    K3S_INSUFFICIENT_INSTANCES(400, "K3S 클러스터 설치에 필요한 인스턴스 수가 부족합니다."),
+
+    // SQL 생성 관련 에러
+    SQL_CREATE_INIT(500, "초기 데이터 파일 생성을 실패했습니다."),
+
+    // Project 생성 관련 에러
+    PROJECT_INSUFFICIENT_DATA(400, "프로젝트 생성하기위한 정보가 불충분합니다.");
 
     private final int status;
     private final String message;

@@ -31,9 +31,9 @@ public class K3sSetupService {
      * K3S 클러스터 설치를 비동기적으로 수행합니다.
      */
     @Async("taskExecutor")
-    public Future<Boolean> setupK3sClusterAsync(List<String> publicIps, String pemKeyPath, String deploymentId, String customerId) {
+    public Future<Boolean> setupK3sClusterAsync(List<String> publicIps, String pemKeyPath, String deploymentId, String customerId, File initSql) {
         try {
-            boolean result = setupK3sCluster(publicIps, pemKeyPath, deploymentId, customerId);
+            boolean result = setupK3sCluster(publicIps, pemKeyPath, deploymentId, customerId, initSql);
             return new AsyncResult<>(result);
         } catch (Exception e) {
             log.error("비동기 K3S 클러스터 설치 실패: {}", e.getMessage(), e);
@@ -49,7 +49,7 @@ public class K3sSetupService {
      * @param customerId 고객 ID
      * @return 설치 결과 (성공/실패)
      */
-    public boolean setupK3sCluster(List<String> publicIps, String pemKeyPath, String deploymentId, String customerId) {
+    public boolean setupK3sCluster(List<String> publicIps, String pemKeyPath, String deploymentId, String customerId, File initSql) {
         if (publicIps == null || publicIps.isEmpty()) {
             log.error("EC2 인스턴스 IP가 제공되지 않았습니다.");
             return false;
@@ -108,7 +108,10 @@ public class K3sSetupService {
             log.info("설치 패키지 전송 완료");
 
             // 작업 디렉토리 생성 및 압축 해제
-            String prepareCmd = "mkdir -p k3s-setup && mv setup.zip k3s-setup/ && cd k3s-setup && unzip -o setup.zip";
+            String prepareCmd = "mkdir -p k3s-setup "
+				+ "&& mv setup.zip k3s-setup/ "
+				+ "&& cd k3s-setup "
+				+ "&& unzip -o setup.zip ";
             sshService.executeCommand(session, prepareCmd);
             log.info("압축 해제 완료");
 
@@ -126,8 +129,12 @@ public class K3sSetupService {
             sshService.copyFile(session, correctPemPath, "k3s-setup/client-key-" + customerId + ".pem");
             log.info("PEM 키 파일 전송 완료");
 
+			// 파일 전송 - initSql 전송
+			sshService.copyFile(session, initSql.getAbsolutePath(), "k3s-setup/init.sql");
+			log.info("init.sql 전송 완료");
+
             // 권한 설정
-            String chmodCmd = "chmod +x k3s-setup/*.sh && chmod 600 k3s-setup/client-key-" + customerId + ".pem";
+            String chmodCmd = "chmod 644 k3s-setup/init.sql && chmod +x k3s-setup/*.sh && chmod 600 k3s-setup/client-key-" + customerId + ".pem";
             sshService.executeCommand(session, chmodCmd);
             log.info("권한 설정 완료");
 

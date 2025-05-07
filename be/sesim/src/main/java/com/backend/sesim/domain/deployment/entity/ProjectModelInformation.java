@@ -56,6 +56,11 @@ public class ProjectModelInformation extends TimeStampEntity {
         this.modelApiKey = apiKey;
     }
 
+    // 상태 변경 메서드
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     // API 키 확인 메서드
     public void checkModelApiKey(String apiKey) {
         this.isApiKeyCheck=true;

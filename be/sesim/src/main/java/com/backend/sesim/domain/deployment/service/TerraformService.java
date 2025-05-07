@@ -16,6 +16,8 @@ import com.backend.sesim.domain.resourcemanagement.repository.InfrastructureSpec
 import com.backend.sesim.domain.resourcemanagement.repository.ModelRepository;
 import com.backend.sesim.domain.resourcemanagement.repository.RegionRepository;
 import com.backend.sesim.global.exception.GlobalException;
+
+import java.io.File;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -46,6 +49,7 @@ public class TerraformService {
     private final ModelRepository modelRepository;
     private final InfrastructureSpecRepository infrastructureSpecRepository;
     private final RegionRepository regionRepository;
+    private final SqlService sqlService;
 
     // 고정 리전 상수 추가
     private static final String FIXED_REGION = "ap-northeast-2";
@@ -125,13 +129,28 @@ public class TerraformService {
             List<String> ec2PublicIps = (List<String>) outputs.get("ec2_public_ips");
             String pemKeyPath = (String) outputs.get("pem_file_path");
 
+            // db 에 project 정보 저장
+            Project project = null;
+            List<ProjectModelInformation> projectModelInformations = null;
+            if (request.getProjectName() != null && request.getModelConfigs() != null && !request.getModelConfigs()
+                .isEmpty()) {
+                project = saveProjectAndModelInfo(roleArn, request, ec2PublicIps);
+                projectModelInformations = saveModelInformation(request, project);
+            } else {
+                throw new GlobalException(TerraformErrorCode.PROJECT_INSUFFICIENT_DATA);
+            }
+
+            // init.sql 파일 생성
+            File initSql = sqlService.makeInitSql(project, projectModelInformations);
+
             // K3S 클러스터 설치 (비동기로 실행)
             log.info("K3S 클러스터 설치 시작 (비동기)");
             Future<Boolean> k3sFuture = k3sSetupService.setupK3sClusterAsync(
                     ec2PublicIps,
                     pemKeyPath,
                     deploymentId,
-                    customerId
+                    customerId,
+                    initSql
             );
 
             boolean k3sSetupSuccess = false;
@@ -146,11 +165,16 @@ public class TerraformService {
                 log.error("K3S 클러스터 설치 예외 발생: {}", e.getMessage(), e);
             }
 
-            // 프로젝트 및 모델 정보를 DB에 저장
-            if (request.getProjectName() != null && request.getModelConfigs() != null && !request.getModelConfigs().isEmpty()) {
-                saveProjectAndModelInfo(roleArn, request, ec2PublicIps, k3sSetupSuccess);
+            // k3 설치 성공시에 상태 업데이트
+            if (k3sSetupSuccess) {
+                projectModelInformations.forEach(p -> p.setStatus("DEPLOYED"));
             }
 
+            // k3 설치 실패시에 DB 에서 제거
+            if (!k3sSetupSuccess) {
+				projectModelInfoRepository.deleteAll(projectModelInformations);
+                projectRepository.delete(project);
+            }
 
         } catch (IOException e) {
             log.error("Terraform 파일 생성 실패: {}", e.getMessage(), e);
@@ -161,7 +185,8 @@ public class TerraformService {
     /**
      * 프로젝트 및 모델 정보를 데이터베이스에 저장합니다.
      */
-    private void saveProjectAndModelInfo(RoleArn roleArn, TerraformDeployRequest request, List<String> ec2PublicIps, boolean isDeploySuccess) {
+    private Project saveProjectAndModelInfo(RoleArn roleArn, TerraformDeployRequest request, List<String> ec2PublicIps) {
+        Project savedProject;
         try {
             String albAddress = null;
             if (ec2PublicIps != null && !ec2PublicIps.isEmpty()) {
@@ -177,47 +202,51 @@ public class TerraformService {
                     .albAddress(albAddress)
                     .build();
 
-            Project savedProject = projectRepository.save(project);
-
-            // 각 모델 구성 정보를 저장
-            if (request.getModelConfigs() != null && !request.getModelConfigs().isEmpty()) {
-                for (TerraformDeployRequest.ModelConfig config : request.getModelConfigs()) {
-                    // 모델, 사양, 리전 엔티티 조회
-                    Model model = modelRepository.findById(config.getModelId())
-                            .orElseThrow(() -> new GlobalException(TerraformErrorCode.INVALID_MODEL_ID));
-
-                    InfrastructureSpec spec = infrastructureSpecRepository.findById(config.getSpecId())
-                            .orElseThrow(() -> new GlobalException(TerraformErrorCode.INVALID_SPEC_ID));
-
-                    Region region = regionRepository.findById(config.getRegionId())
-                            .orElseThrow(() -> new GlobalException(TerraformErrorCode.INVALID_REGION_ID));
-
-                    // 고유한 API 키 생성
-                    String apiKey = generateApiKey();
-
-                    // 모델 정보 생성 및 저장
-                    ProjectModelInformation modelInfo = ProjectModelInformation.builder()
-                            .project(savedProject)
-                            .model(model)
-                            .spec(spec)
-                            .region(region)
-                            .status(isDeploySuccess ? "DEPLOYED" : "FAILED")
-                            .modelApiKey(apiKey)
-                            .isApiKeyCheck(false)
-                            .build();
-
-                    projectModelInfoRepository.save(modelInfo);
-                }
-            }
-
+            savedProject = projectRepository.save(project);
             log.info("프로젝트 및 모델 정보 DB 저장 완료 - 프로젝트 ID: {}", savedProject.getId());
 
         } catch (Exception e) {
             log.error("프로젝트 및 모델 정보 DB 저장 실패: {}", e.getMessage(), e);
-            // 저장 실패해도 배포 자체는 계속 진행
+            throw new GlobalException(TerraformErrorCode.PROJECT_INSUFFICIENT_DATA);
         }
+        return savedProject;
     }
 
+    private List<ProjectModelInformation> saveModelInformation(TerraformDeployRequest request, Project savedProject) {
+
+        List<ProjectModelInformation> projectModelInformations = new ArrayList<>();
+        // 각 모델 구성 정보를 저장
+        if (request.getModelConfigs() != null && !request.getModelConfigs().isEmpty()) {
+            for (TerraformDeployRequest.ModelConfig config : request.getModelConfigs()) {
+                // 모델, 사양, 리전 엔티티 조회
+                Model model = modelRepository.findById(config.getModelId())
+                        .orElseThrow(() -> new GlobalException(TerraformErrorCode.INVALID_MODEL_ID));
+
+                InfrastructureSpec spec = infrastructureSpecRepository.findById(config.getSpecId())
+                        .orElseThrow(() -> new GlobalException(TerraformErrorCode.INVALID_SPEC_ID));
+
+                Region region = regionRepository.findById(config.getRegionId())
+                        .orElseThrow(() -> new GlobalException(TerraformErrorCode.INVALID_REGION_ID));
+
+                // 고유한 API 키 생성
+                String apiKey = generateApiKey();
+
+                // 모델 정보 생성 및 저장
+                ProjectModelInformation modelInfo = ProjectModelInformation.builder()
+                        .project(savedProject)
+                        .model(model)
+                        .spec(spec)
+                        .region(region)
+                        .status("PENDING")
+                        .modelApiKey(apiKey)
+                        .isApiKeyCheck(false)
+                        .build();
+
+                projectModelInformations.add(projectModelInfoRepository.save(modelInfo));
+            }
+        }
+        return projectModelInformations;
+    }
 
     /**
      * 고객 ID 추출 (IAM Role ARN에서)
