@@ -1,16 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FirstStep } from "../components/CreateProject/FirstStep";
 import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+import { getDeployOptions } from "../services/createProjectService";
 
 export const CreateProjectPage = () => {
     const [selectedModels, setSelectedModels] = useState<string[]>([]);
     const [firstStepDone, setFirstStepDone] = useState(false);
     const [secondStepDone, setSecondStepDone] = useState(false);
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
+
+    // ForthStep 데이터
+    const [regions, setRegions] = useState<any[]>([]);
+    const [infrastructure, setInfrastructure] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchDeployOptions = async () => {
+            const deployOptions = await getDeployOptions();
+            console.log(deployOptions);
+            
+            // ForthStep 데이터 설정
+            setRegions(deployOptions.data.regions);
+            setInfrastructure(deployOptions.data.infrastructureSpecs);
+        };
+        fetchDeployOptions();
+    }, []);
 
     return (
         <div>
@@ -34,9 +51,11 @@ export const CreateProjectPage = () => {
                     selectedModels={selectedModels} 
                     setSelectedModels={setSelectedModels} 
                 />
-                <ForthStep 
-                    show={selectedModels.length > 0} 
-                    selectedModels={selectedModels} 
+                <ForthStep
+                    show={selectedModels.length > 0}
+                    regions={regions}
+                    infrastructure={infrastructure}
+                    selectedModels={selectedModels}
                     setSelectedInstancePrice={setSelectedInstancePrice} 
                 />
             </div>

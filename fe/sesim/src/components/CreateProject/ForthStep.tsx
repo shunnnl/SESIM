@@ -10,37 +10,23 @@ const CLOUD_PROVIDERS = ["Amazon Web Services", "Microsoft Azure", "Google Cloud
 interface ForthStepProps {
     selectedModels: string[];
     show: boolean;
+    regions: any[];
+    infrastructure: any[];
     setSelectedInstancePrice: (price: number) => void;
 }
 
-export const ForthStep = ({ selectedModels, show, setSelectedInstancePrice }: ForthStepProps) => {
+export const ForthStep = ({ selectedModels, show, regions, infrastructure, setSelectedInstancePrice }: ForthStepProps) => {
     const [selectedModel, setSelectedModel] = useState<string>("")
     const [selectedAwsIdx, setSelectedAwsIdx] = useState<number>(0);
     const [selectedType, setSelectedType] = useState("CPU");
-    const regions = [
-        { name: "N.Virginia", code: "us-east-1" },
-        { name: "Ohio", code: "us-east-2" },
-        { name: "Seoul", code: "ap-northeast-2" },
-    ];
-    const [selectedRegion, setSelectedRegion] = useState(regions[0]);
-    const instances = [
-        {
-            name: "Intel Sapphire Rapids",
-            spec: "1 vCPU / 2GB",
-            price: 0.033
-        },
-        {
-            name: "Intel Sapphire Rapids",
-            spec: "2 vCPUs / 4GB",
-            price: 0.067
-        },
-        {
-            name: "Intel Sapphire Rapids",
-            spec: "4 vCPUs / 8GB",
-            price: 0.134
-        }
-    ]
+    const [selectedRegion, setSelectedRegion] = useState<any>(null);
     const [selectedInstanceIdx, setSelectedInstanceIdx] = useState<number>(-1);
+
+    useEffect(() => {
+        if (regions && regions.length > 0) {
+            setSelectedRegion(regions[0]);
+        }
+    }, [regions]);
 
     useEffect(() => {
         if (selectedModels.length > 0) {
@@ -49,7 +35,6 @@ export const ForthStep = ({ selectedModels, show, setSelectedInstancePrice }: Fo
             setSelectedModel("");
         }
     }, [selectedModels]);
-
 
     const handleModelClick = (model: string) => {
         if (selectedModel === model) {
@@ -62,7 +47,7 @@ export const ForthStep = ({ selectedModels, show, setSelectedInstancePrice }: Fo
 
     const handleInstanceClick = (idx: number) => {
         setSelectedInstanceIdx(idx);
-        setSelectedInstancePrice(instances[idx].price);
+        setSelectedInstancePrice(infrastructure[idx].specPricePerHour);
     }
     
     return (
@@ -135,18 +120,21 @@ export const ForthStep = ({ selectedModels, show, setSelectedInstancePrice }: Fo
                                 style={{ boxShadow: "inset 0 2px 4px rgba(0,0,0,0.70)" }}
                             >
                                 {[
-                                    "CPU", "GPU", "INF2"
-                                ].map((type) => (
+                                    { type: "CPU", disabled: false },
+                                    { type: "GPU", disabled: true },
+                                    { type: "INF2", disabled: true }
+                                ].map(({ type, disabled }) => (
                                     <div
                                         key={type}
                                         className={`
                                             px-[22px] py-[6px] rounded-full text-[16px] font-medium
-                                            cursor-pointer transition-colors
-                                            ${selectedType === type
+                                            ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+                                            transition-colors
+                                            ${selectedType === type && !disabled
                                                 ? "bg-[#3887FE] text-white"
                                                 : "text-[#A3A3A3]"}
                                         `}
-                                        onClick={() => setSelectedType(type)}
+                                        onClick={() => !disabled && setSelectedType(type)}
                                     >
                                         {type}
                                     </div>
@@ -154,7 +142,7 @@ export const ForthStep = ({ selectedModels, show, setSelectedInstancePrice }: Fo
                             </div>
                             <select
                                 className="ml-2 px-3 py-2 rounded-full border border-[#D9D9D9] text-[16px] font-medium text-black bg-white"
-                                value={selectedRegion.code}
+                                value={selectedRegion?.code}
                                 onChange={e => {
                                     const region = regions.find(r => r.code === e.target.value);
                                     if (region) setSelectedRegion(region);
@@ -169,12 +157,12 @@ export const ForthStep = ({ selectedModels, show, setSelectedInstancePrice }: Fo
                             <div className="w-full h-[1px] bg-[#D9D9D9] mt-[20px]"></div>
                         </div>
 
-                        <div className="flex gap-[20px] mt-[30px]">
-                            {instances.map((item, idx) => (
+                        <div className="grid grid-cols-4 gap-[20px] mt-[30px]">
+                            {infrastructure.map((item, idx) => (
                                 <div
                                     key={idx}
                                     className={`
-                                        w-[240px] h-[140px] bg-[#F7F8FA] rounded-[16px] p-[20px] flex flex-col items-center justify-between cursor-pointer
+                                        w-full h-[140px] bg-[#F7F8FA] rounded-[16px] p-[20px] flex flex-col items-center justify-between cursor-pointer
                                         border transition-all
                                         ${selectedInstanceIdx === idx
                                             ? "border-[3px] border-[#F97316] shadow-[0_0_0_4px_rgba(249,115,22,0.08)]"
@@ -184,10 +172,10 @@ export const ForthStep = ({ selectedModels, show, setSelectedInstancePrice }: Fo
                                 >
                                     <div className="w-full flex flex-col items-center">
                                         <div className="w-[36px] h-[6px] rounded-full bg-[#FBBF75] mb-[10px]" />
-                                        <div className="text-[15px] font-bold text-black text-center">{item.name}</div>
+                                        <div className="text-[15px] font-bold text-black text-center">{item.ec2Spec}</div>
                                     </div>
-                                    <div className="text-[15px] font-medium text-[#7B7B7B] mt-[8px]">{item.spec}</div>
-                                    <div className="text-[15px] font-bold text-[#A3A3A3] mt-[8px]">$ {item.price}/h</div>
+                                    <div className="text-[15px] font-medium text-[#7B7B7B] mt-[8px]">{item.ec2Info}</div>
+                                    <div className="text-[15px] font-bold text-[#A3A3A3] mt-[8px]">$ {item.specPricePerHour}/h</div>
                                 </div>
                             ))}
                         </div>
