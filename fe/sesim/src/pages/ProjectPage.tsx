@@ -58,8 +58,8 @@ export const ProjectPage = () => {
             <div
                 className="absolute top-[45%] right-[30%] -translate-y-1/2 w-[50px] h-[50px] rounded-full -z-10"
                 style={{
-                    background: "#00235D",
-                    boxShadow: "0 0 160px 120px #00235D, 0 0 320px 240px #00235D",
+                    background: "#00215A",
+                    boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
                     opacity: 0.4,
                     zIndex: 0
                 }}
