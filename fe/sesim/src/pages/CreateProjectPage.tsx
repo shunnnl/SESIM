@@ -24,6 +24,10 @@ export const CreateProjectPage = () => {
     // ForthStep 데이터
     const [regions, setRegions] = useState<any[]>([]);
     const [infrastructure, setInfrastructure] = useState<any[]>([]);
+    const [combinedPrices, setCombinedPrices] = useState<any[]>([]);
+    const [selectedInstanceIdxMap, setSelectedInstanceIdxMap] = useState<{ [modelId: string]: number }>({});
+
+    const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined);
 
     useEffect(() => {
         const fetchDeployOptions = async () => {
@@ -39,6 +43,7 @@ export const CreateProjectPage = () => {
             // ForthStep 데이터 설정
             setRegions(deployOptions.data.regions);
             setInfrastructure(deployOptions.data.infrastructureSpecs);
+            setCombinedPrices(deployOptions.data.combinedPrices);
         };
         fetchDeployOptions();
     }, []);
@@ -52,7 +57,7 @@ export const CreateProjectPage = () => {
                 backgroundImage={backgroundImage}
             />
 
-            <div className="container-padding text-white pt-[120px]">
+            <div className="container-padding text-white pt-[120px] ">
                 <FirstStep
                     roleArns={roleArns}
                     setFirstStepDone={setFirstStepDone} 
@@ -70,7 +75,9 @@ export const CreateProjectPage = () => {
                     regions={regions}
                     infrastructure={infrastructure}
                     selectedModels={selectedModels}
-                    setSelectedInstancePrice={setSelectedInstancePrice} 
+                    combinedPrices={combinedPrices}
+                    setSelectedInstancePrice={setSelectedInstancePrice}
+                    onInstanceMapChange={setSelectedInstanceIdxMap}
                 />
             </div>
             
@@ -78,10 +85,16 @@ export const CreateProjectPage = () => {
                 <div className={`transition-all duration-500 ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}>
                     <div className="container-padding flex justify-between items-center border-t border-[#3C3D5C] bg-[#242C4D] py-[20px] mt-[40px]">
                         <div>
-                            <p className="text-[30px] font-bold text-[#3893FF]">$ {selectedInstancePrice} / h</p>
+                            <p className="text-[30px] font-bold text-[#3893FF]">$ {selectedInstancePrice.toFixed(2)} / h</p>
                             <p className="text-[16px] font-medium text-[#A3A3A3]">활성화된 인스턴스(서버) 당 요금</p>
                         </div>
-                        <button className="bg-[#3893FF] text-white font-bold py-[10px] px-[20px] rounded-[5px] w-[200px]">
+                        <button
+                            className={`bg-[#3893FF] text-white font-bold py-[10px] px-[20px] rounded-[5px] w-[200px]
+                                transition-all duration-200
+                                ${!isAllSelected ? "opacity-50 cursor-not-allowed bg-gray-400" : ""}
+                            `}
+                            disabled={!isAllSelected}
+                        >
                             프로젝트 생성
                         </button>
                     </div>

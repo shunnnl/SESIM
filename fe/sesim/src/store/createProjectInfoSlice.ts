@@ -1,5 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface ModelConfig {
+    modelId: number;
+    specId: number;
+    regionId: number;
+}
+
 interface CreateProjectInfoState {
     accessKey: string;
     secretKey: string;
@@ -8,6 +14,7 @@ interface CreateProjectInfoState {
     projectName: string;
     projectDescription: string;
     selectedModels: any[];
+    modelConfigs: ModelConfig[];
 }
 
 const initialState: CreateProjectInfoState = {
@@ -18,6 +25,7 @@ const initialState: CreateProjectInfoState = {
     projectName: "",
     projectDescription: "",
     selectedModels: [],
+    modelConfigs: [],
 };
 
 export const createProjectInfoSlice = createSlice({
@@ -50,9 +58,17 @@ export const createProjectInfoSlice = createSlice({
         clearSelectedModels: (state) => {
             state.selectedModels = [];
         },
-        
+        setModelConfigs: (state, action: PayloadAction<ModelConfig[]>) => {
+            state.modelConfigs = action.payload;
+        },
+        setModelConfig: (state, action: PayloadAction<ModelConfig>) => {
+            state.modelConfigs.push(action.payload);
+        },
+        clearModelConfig: (state) => {
+            state.modelConfigs = [];
+        },
     },
 });
 
-export const { setAwsSession, clearAwsSession, setProjectInfo, clearProjectInfo, setSelectedModels, clearSelectedModels } = createProjectInfoSlice.actions;
+export const { setAwsSession, clearAwsSession, setProjectInfo, clearProjectInfo, setSelectedModels, clearSelectedModels, setModelConfigs, setModelConfig, clearModelConfig } = createProjectInfoSlice.actions;
 export default createProjectInfoSlice.reducer;
