@@ -33,7 +33,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
         } else {
             setValidationStatus("fail")
             setValidationMessage(response.error.message)
-            setFirstStepDone(false)
+            setFirstStepDone(true)
         }
     }
 

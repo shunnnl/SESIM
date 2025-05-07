@@ -10,13 +10,22 @@ interface SecondStepProps {
 }
 
 export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
-    // 임시 입력값 상태
+    const [isNameValid, setIsNameValid] = useState<"none" | "success" | "fail">("none");
     const [tempName, setTempName] = useState("");
     const [tempDesc, setTempDesc] = useState("");
 
     const dispatch = useDispatch();
 
     const handleSave = () => {
+
+        if (tempName.trim() === "") {
+            setIsNameValid("fail");
+            return;
+        }
+        else {
+            setIsNameValid("success");
+        }
+
         dispatch(setProjectInfo({
             projectName: tempName,
             projectDescription: tempDesc,
@@ -42,6 +51,9 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                             value={tempName}
                             onChange={(e) => setTempName(e.target.value)}
                         />
+                        {isNameValid === "fail" && 
+                            <p className="text-[16px] font-medium text-[#FF7F7F] mt-[5px]">프로젝트 이름을 입력해주세요.</p>
+                        }
                     </div>
                     <div className="mt-[15px]">
                         <p className="text-[16px] font-bold">프로젝트 설명</p>

@@ -24,7 +24,7 @@ export const createProjectInfoSlice = createSlice({
     name: "createProjectInfo",
     initialState,
     reducers: {
-        setAwsSession: (state, action: PayloadAction<Omit<CreateProjectInfoState, "projectName" | "projectDescription">>) => {
+        setAwsSession: (state, action: PayloadAction<{accessKey: string, secretKey: string, sessionToken: string, arnId: number | null}>) => {
             state.accessKey = action.payload.accessKey;
             state.secretKey = action.payload.secretKey;
             state.sessionToken = action.payload.sessionToken;
