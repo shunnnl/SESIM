@@ -1,8 +1,16 @@
 import re
+import json
 import pandas as pd
+import numpy as np
 from urllib.parse import unquote
+from app.core.config import DATA_DIR
+from app.core.registry import get_available_model_versions
+import logging
+
+logger = logging.getLogger(__name__)
 
 def preprocess_url(url: str) -> str:
+
     if not url:
         return ""
     url = unquote(str(url))
@@ -10,6 +18,7 @@ def preprocess_url(url: str) -> str:
     return url
 
 def extract_url_features(df: pd.DataFrame, url_column: str = "url") -> pd.DataFrame:
+
     if url_column not in df.columns:
         raise ValueError(f"URL 컬럼 '{url_column}'이 데이터프레임에 없습니다.")
     
@@ -32,3 +41,41 @@ def extract_url_features(df: pd.DataFrame, url_column: str = "url") -> pd.DataFr
     df['has_admin'] = df[url_column].str.contains(r'\badmin\b', case=False).fillna(False).astype(int)
 
     return df
+
+def track_model_performance(model, eval_data, model_version):
+
+    from app.services.trainer import ModelPerformanceTracker
+    tracker = ModelPerformanceTracker()
+    return tracker.track_model_performance(model, eval_data, model_version)
+
+def evaluate_model(model, eval_data):
+
+    from app.services.trainer import ModelPerformanceTracker
+    tracker = ModelPerformanceTracker()
+    return tracker._evaluate_model(model, eval_data)
+
+def save_json(data, file_path):
+
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        logger.error(f"JSON 저장 오류: {str(e)}")
+        return False
+
+def load_json(file_path):
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"JSON 로드 오류: {str(e)}")
+        return None
+
+def chunk_dataframe(df, chunk_size=10000):
+
+    chunks = []
+    for i in range(0, len(df), chunk_size):
+        chunks.append(df.iloc[i:i+chunk_size].copy())
+    return chunks

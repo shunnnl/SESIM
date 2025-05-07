@@ -11,3 +11,8 @@ DATA_DIR.mkdir(exist_ok=True)
 
 MODEL_PATH = MODEL_DIR / f"model_v{MODEL_VERSION}" / f"xgboost_nginx_model_v{MODEL_VERSION}.pkl"
 VECTORIZER_PATH = MODEL_DIR / f"model_v{MODEL_VERSION}" / f"tfidf_vectorizer_v{MODEL_VERSION}.pkl"
+
+# 증분 학습
+TRAINING_HISTORY_DIR = DATA_DIR / "training_history"
+FULL_RETRAIN_CYCLE = 5  # 이 주기마다 완전 재학습 수행
+RETENTION_RATIO = 0.7   # 기존 데이터에서 유지할 비율 (재앙적 망각 방지)
