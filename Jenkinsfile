@@ -19,7 +19,23 @@ pipeline {
     }
 
     stages {
+        stage('Check Branch') {
+            when {
+                expression {
+                    env.BRANCH_NAME == 'be'
+                }
+            }
+            steps {
+                echo "✅ 브랜치 이름 확인: ${env.BRANCH_NAME} → 백엔드 배포 진행"
+            }
+        }
+
         stage('Clone BE Branch') {
+            when {
+                expression {
+                    env.BRANCH_NAME == 'be'
+                }
+            }
             steps {
                 git branch: 'be',
                     url: 'https://lab.ssafy.com/s12-final/S12P31S109.git',
@@ -28,6 +44,11 @@ pipeline {
         }
 
         stage('Build with Gradle') {
+            when {
+                expression {
+                    env.BRANCH_NAME == 'be'
+                }
+            }
             steps {
                 dir('be/sesim') {
                     echo '🪄 Gradle 빌드 시작'
@@ -42,6 +63,11 @@ pipeline {
         }
 
         stage('Docker Build & Deploy') {
+            when {
+                expression {
+                    env.BRANCH_NAME == 'be'
+                }
+            }
             steps {
                 dir('be/sesim') {
                     withCredentials([
@@ -118,9 +144,44 @@ pipeline {
     post {
         failure {
             echo '❌ 백엔드 빌드 또는 배포 실패!'
+
+            script {
+                def reason = currentBuild.getLog(10).join("\\n").replaceAll('"', '\\"')
+                sh """
+                curl -X POST -H 'Content-Type: application/json' \
+                -d '{
+                    "username": "Jenkins 배포 봇",
+                    "icon_url": "https://img.icons8.com/fluency/48/server.png",
+                    "attachments": [
+                        {
+                            "fallback": "배포 실패!",
+                            "color": "#D72638",
+                            "title": "🔥 백엔드 배포 실패!",
+                            "text": "브랜치: ${BRANCH_NAME} \\n\\n사유:\\n${reason}"
+                        }
+                    ]
+                }' https://meeting.ssafy.com/hooks/1wgxo7nc9td3zeedzh49yc61or
+                """
+            }
         }
         success {
             echo '✅ 백엔드 빌드 및 배포 성공!'
+
+            sh '''
+            curl -X POST -H 'Content-Type: application/json' \
+            -d '{
+                "username": "Jenkins 배포 봇",
+                "icon_url": "https://img.icons8.com/fluency/48/server.png",
+                "attachments": [
+                    {
+                        "fallback": "배포 성공!",
+                        "color": "#2EB886",
+                        "title": "🎉 백엔드 배포 성공!",
+                        "text": "브랜치: ${BRANCH_NAME} \\n서버에 정상적으로 배포 완료되었습니다."
+                    }
+                ]
+            }' https://meeting.ssafy.com/hooks/1wgxo7nc9td3zeedzh49yc61or
+            '''
         }
     }
 }
