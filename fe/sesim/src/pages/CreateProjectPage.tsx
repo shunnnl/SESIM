@@ -13,6 +13,9 @@ export const CreateProjectPage = () => {
     const [secondStepDone, setSecondStepDone] = useState(false);
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
 
+    // ThirdStep 데이터
+    const [models, setModels] = useState<any[]>([]);
+
     // ForthStep 데이터
     const [regions, setRegions] = useState<any[]>([]);
     const [infrastructure, setInfrastructure] = useState<any[]>([]);
@@ -21,7 +24,10 @@ export const CreateProjectPage = () => {
         const fetchDeployOptions = async () => {
             const deployOptions = await getDeployOptions();
             console.log(deployOptions);
-            
+
+            //ThirdStep 데이터 설정
+            setModels(deployOptions.data.models);
+
             // ForthStep 데이터 설정
             setRegions(deployOptions.data.regions);
             setInfrastructure(deployOptions.data.infrastructureSpecs);
@@ -48,6 +54,7 @@ export const CreateProjectPage = () => {
                 />
                 <ThirdStep 
                     show={secondStepDone} 
+                    models={models}
                     selectedModels={selectedModels} 
                     setSelectedModels={setSelectedModels} 
                 />
