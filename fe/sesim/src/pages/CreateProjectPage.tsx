@@ -1,15 +1,20 @@
-import { RootState } from "../store";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store";
 import { FirstStep } from "../components/CreateProject/FirstStep";
 import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
+import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
+import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
 
 export const CreateProjectPage = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const selectedModels = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
     const createProjectInfo = useSelector((state: RootState) => state.createProjectInfo);
     const [firstStepDone, setFirstStepDone] = useState(false);
@@ -22,6 +27,7 @@ export const CreateProjectPage = () => {
     const [combinedPrices, setCombinedPrices] = useState<any[]>([]);
     const [selectedInstanceIdxMap, setSelectedInstanceIdxMap] = useState<{ [modelId: string]: number }>({});
     const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
     const handleCreateProject = async () => {
         const projectInfo = {
@@ -37,9 +43,19 @@ export const CreateProjectPage = () => {
         const response = await createProject(projectInfo);
         if (response.success === true) {
             console.log("프로젝트 생성 성공");
+            dispatch(clearAwsSession());
+            dispatch(clearProjectInfo());
+            dispatch(clearSelectedModels());
+            dispatch(clearModelConfig());
+            setShowSuccessModal(true);
         } else {
             console.log("프로젝트 생성 실패");
         }
+    };
+
+    const handleModalConfirm = () => {
+        setShowSuccessModal(false);
+        navigate("/keyinfo");
     };
 
     useEffect(() => {
@@ -108,6 +124,11 @@ export const CreateProjectPage = () => {
                     </div>
                 </div>
             </div>
+
+            <ProjectStartModal 
+                isOpen={showSuccessModal}
+                onConfirm={handleModalConfirm}
+            />
         </div>
     );
 };
