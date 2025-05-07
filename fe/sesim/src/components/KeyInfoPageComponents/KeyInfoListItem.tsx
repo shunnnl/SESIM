@@ -3,6 +3,7 @@ import Lottie from "react-lottie-player";
 import { IoIosCheckmarkCircleOutline, IoIosInformationCircleOutline } from "react-icons/io";
 import loading from "../../assets/lotties/Loading.json";
 import { APIKeyModal } from "../../components/Popup/APIKeyModal";
+import { logo } from "../../assets/images/logo-sesim.png";
 
 interface ListItem {
     id: number;
@@ -120,7 +121,10 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
                         return (
                             <div key={item.id} className={`flex flex-col p-4 ${index < items.length - 1 ? "border-b border-gray-600" : ""}`}>
                                 <p className="text-xl font-semibold text-white flex items-center mb-2">
-                                    <img src="src/assets/images/logo-sesim.png" alt="icon" className="inline-block w-8 h-8" />
+                                    <img
+                                        src={logo}
+                                        alt="icon"
+                                        className="inline-block w-8 h-8" />
                                     {item.modelName}
                                 </p>
 

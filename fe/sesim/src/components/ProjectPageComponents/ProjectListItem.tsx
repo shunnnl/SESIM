@@ -1,4 +1,5 @@
 import { FiArrowUpRight } from "react-icons/fi";
+import logo from "../../assets/images/logo-sesim.png";
 import bgImage from "../../assets/images/project-bg.png";
 import bgImage2 from "../../assets/images/project-bg2.png";
 import bgImage3 from "../../assets/images/project-bg3.png";
@@ -38,7 +39,10 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                         <div className="relative z-10 p-6">
                             <p className="text-sm ml-2 mb-1">{item.description}</p>
                             <p className="text-xl font-semibold mb-2">
-                                <img src="src/assets/images/logo-sesim.png" alt="icon" className="inline-block w-6 h-6" />
+                                <img
+                                    src={logo} alt="icon"
+                                    className="inline-block w-6 h-6"
+                                />
                                 {item.modelName}
                             </p>
 

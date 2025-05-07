@@ -3,7 +3,7 @@ import { Sidebar } from "../components/Sidebar";
 const InfoField = ({ label, value }: { label: string; value: string }) => (
   <div className="mt-6 mb-6">
     <p className="text-lg text-gray-300 font-semibold">{label}</p>
-    <div className="border border-gray-300 p-2 rounded-lg mt-3 w-4/12 h-10 flex items-center">
+    <div className="border border-gray-300 p-2 rounded-lg mt-3 w-7/12 h-10 flex items-center">
       <p className="text-lg m-1">{value}</p>
     </div>
   </div>
