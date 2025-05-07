@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SqlService {
 
-	@Transactional
 	public File makeInitSql(Project project, List<ProjectModelInformation> projectModelInformations) {
 
 		User user = project.getRoleArn().getUser();

@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -70,6 +71,7 @@ public class TerraformService {
      * @param request 배포 요청 정보
      * @return 배포 결과
      */
+    @Transactional
     public void deployToSaasAccount(TerraformDeployRequest request) {
         // arnId 유효성 검증
         if (request.getArnId() == null) {
