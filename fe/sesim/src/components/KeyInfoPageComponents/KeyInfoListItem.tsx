@@ -1,27 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Lottie from "react-lottie-player";
 import { IoIosCheckmarkCircleOutline, IoIosInformationCircleOutline } from "react-icons/io";
+import { Model } from "../../types/keyinfoTypes";
 import logo from "../../assets/images/sesim-logo.png";
 import loading from "../../assets/lotties/Loading.json";
 import { APIKeyModal } from "../../components/Popup/APIKeyModal";
-import { fetchApiKey } from "../../services/apiKeyService"; // API Key 가져오는 함수
+import { createDeploymentApiKey } from "../../services/apiKeyService";
 
-// Model 타입 정의 (예시)
-interface Model {
-    id: number;
-    name: string;
-    albAddress: string;
-    deployStatus: "DEPLOYED" | "NOT_DEPLOYED" | "DEPLOYING" | string;
-    isApiKeyCheck: boolean;
-    APIKey: string;
-}
-
-// props 타입 정의
 interface ItemListProps {
-    items: Model[]; // Model 배열을 전달
+    items: Model[];
+    projectId: number;
 }
 
-// 배포 상태 및 버튼 텍스트 관련 설정
 const stateConfig: Record<"DEPLOYED" | "DEPLOYING" | "FAILED", {
     label: string;
     icon: React.ReactNode;
@@ -54,7 +44,6 @@ const stateConfig: Record<"DEPLOYED" | "DEPLOYING" | "FAILED", {
     },
 };
 
-// Model을 ListItem으로 변환하는 함수
 const mapModelToListItem = (model: Model): Model => {
     return {
         id: model.id,
@@ -62,39 +51,44 @@ const mapModelToListItem = (model: Model): Model => {
         albAddress: model.albAddress,
         isApiKeyCheck: model.isApiKeyCheck,
         deployStatus: model.deployStatus,
-        APIKey: model.APIKey,
     };
 };
 
-const ItemList: React.FC<ItemListProps> = ({ items }) => {
+const ItemList: React.FC<ItemListProps> = ({ items, projectId }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const [selectedItem, setSelectedItem] = useState<Model | null>(null);
-    const [apiKey, setApiKey] = useState<string | null>(null);  // API Key를 저장할 상태
+
+    const [apiKey, setApiKey] = useState<string | null>(null);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleOpenModal = async (item: Model) => {
         setSelectedItem(item);
+        setIsLoading(true);
 
-        if (item.deployStatus === "DEPLOYED") {
-            try {
-                const fetchedApiKey = await fetchApiKey({ projectId: 1, modelId: item.id });
-                setApiKey(fetchedApiKey);  // 가져온 API Key를 상태에 저장
-            } catch (error) {
-                if (error instanceof Error) {
-                    console.error("API Key fetch failed:", error.message);  // 오류 메시지 출력
-                } else {
-                    console.error("API Key fetch failed:", error);  // 객체 자체 출력
-                }
-                setApiKey(null);  // 오류 발생 시 null로 설정
+        try {
+            const result = await createDeploymentApiKey({ projectId: projectId, modelId: item.id });
+            if (result.success) {
+                console.log("API 키로드 성공공", result.data.apiKey);
+                setApiKey(result.data.apiKey);
+                setIsModalOpen(true);
+            } else {
+                console.error("API 키 로드 실패:", result.error);
+                alert("API 키를 가져오는 데 실패했습니다.");
             }
+        } catch (error) {
+            console.error("API 키 로드 중 오류 발생:", error);
+            alert("API 키를 가져오는 중 오류가 발생했습니다.");
+        } finally {
+            setIsLoading(false);
         }
-
-        setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedItem(null);
-        setApiKey(null);  // 모달 닫을 때 API Key 초기화
+        setApiKey(null);
     };
 
     const renderState = (state: string) => {
@@ -107,41 +101,62 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
 
     const renderButton = (item: Model) => {
         const isDeployed = item.deployStatus === "DEPLOYED";
+        const isChecked = item.isApiKeyCheck;
+        const isClickable = isDeployed && !isChecked;
+
         return (
             <button
-                className={`text-base rounded-full px-3 py-1 w-32 ml-4 relative z-0 ${isDeployed
-                    ? "text-white hover:bg-gradient-to-r hover:from-gradientpink30 hover:via-gradientpurple30 hover:to-gradientblue30"
-                    : "text-gray-300 bg-gray-500 border border-gray-300 cursor-not-allowed"}`}
-                style={isDeployed ? {
-                    position: "relative",
-                    border: "2px solid transparent",
-                    borderRadius: "9999px",
-                    backgroundImage: "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
-                    backgroundOrigin: "border-box",
-                    backgroundClip: "padding-box, border-box",
-                    color: "white",
-                } : undefined}
+                className={`text-base rounded-full px-3 py-1 w-32 ml-4 relative z-0 ${isClickable
+                        ? "text-white hover:bg-gradient-to-r hover:from-gradientpink30 hover:via-gradientpurple30 hover:to-gradientblue30"
+                        : "text-gray-300 bg-gray-500 border border-gray-300 cursor-not-allowed"
+                    }`}
+                style={
+                    isClickable
+                        ? {
+                            position: "relative",
+                            border: "2px solid transparent",
+                            borderRadius: "9999px",
+                            backgroundImage:
+                                "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
+                            backgroundOrigin: "border-box",
+                            backgroundClip: "padding-box, border-box",
+                            color: "white",
+                        }
+                        : undefined
+                }
                 onMouseEnter={(e) => {
-                    if (isDeployed) {
-                        e.currentTarget.style.backgroundImage = "linear-gradient(to right, #5A316C, #513176, #2C3273), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
+
+                    if (isClickable) {
+                        e.currentTarget.style.backgroundImage =
+                            "linear-gradient(to right, #5A316C, #513176, #2C3273), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
                     }
                 }}
                 onMouseLeave={(e) => {
-                    if (isDeployed) {
-                        e.currentTarget.style.backgroundImage = "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
+                    if (isClickable) {
+                        e.currentTarget.style.backgroundImage =
+                            "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
                     }
                 }}
                 onClick={() => {
-                    if (isDeployed && item) {
+                    if (isClickable) {
                         handleOpenModal(item);
                     }
                 }}
-                disabled={!isDeployed}
+                disabled={!isClickable || isLoading}
             >
-                <span>{isDeployed ? "API Key 확인" : renderState(item.deployStatus).label}</span>
+                <span>
+                    {isLoading && selectedItem?.id === item.id
+                        ? "로딩 중..."
+                        : isChecked
+                            ? "확인 완료"
+                            : isDeployed
+                                ? "API Key 확인"
+                                : renderState(item.deployStatus).label}
+                </span>
             </button>
         );
     };
+
 
     return (
         <>
@@ -154,7 +169,7 @@ const ItemList: React.FC<ItemListProps> = ({ items }) => {
                 }}>
                 <div className="flex flex-col w-full">
                     {items.map((item, index) => {
-                        const listItem = mapModelToListItem(item); // Model을 ListItem으로 변환
+                        const listItem = mapModelToListItem(item);
                         const config = renderState(listItem.deployStatus);
                         return (
                             <div key={listItem.id} className={`flex flex-col p-4 ${index < items.length - 1 ? "border-b border-gray-600" : ""}`}>

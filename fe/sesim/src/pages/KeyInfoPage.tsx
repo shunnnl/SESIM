@@ -1,25 +1,24 @@
-import { motion } from "framer-motion";
-import { Sidebar } from "../components/Sidebar";
-import ItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchKeyInfo } from "../services/keyinfoService";
-import { RootState, AppDispatch } from "../store"; // AppDispatch 추가
+import { Sidebar } from "../components/Sidebar";
 import { Project } from "../store/keyinfoSlice";
+import { RootState, AppDispatch } from "../store";
+import { fetchKeyInfo } from "../services/keyinfoService";
+import ItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
+
 export const KeyInfoPage = () => {
     const dispatch = useDispatch<AppDispatch>();
 
-    // Redux 상태에서 projects, loading, error를 불러옴
-    const { loading, error} = useSelector((state: RootState) => state.keyinfo);
+    const { loading, error } = useSelector((state: RootState) => state.keyinfo);
+
     const { projects } = useSelector((state: RootState) => state.keyinfo);
 
     useEffect(() => {
-        dispatch(fetchKeyInfo()); // createAsyncThunk로 자동 상태 처리
+        dispatch(fetchKeyInfo());
     }, [dispatch]);
 
-    console.log("Projects:", projects);  // projects 데이터 확인
-    console.log(typeof projects);
-
+    console.log("Projects:", projects);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -63,7 +62,6 @@ export const KeyInfoPage = () => {
                     </p>
                 </motion.div>
 
-                {/* 데이터 로딩 중 처리 */}
                 {loading && (
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -74,7 +72,6 @@ export const KeyInfoPage = () => {
                     </motion.div>
                 )}
 
-                {/* 오류 처리 */}
                 {error && (
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -85,15 +82,9 @@ export const KeyInfoPage = () => {
                     </motion.div>
                 )}
 
-                {/* 프로젝트 데이터가 있을 때만 렌더링 */}
                 <>
-
-                <p>{Array.isArray(projects)}</p>
-
-                    {/* projects가 배열인지 확인 후, 배열이면 map 실행 */}
                     {Array.isArray(projects) && projects.map((project: Project, index: number) => {
-                    
-                        console.log("Project Data:", project); // 각 프로젝트 데이터 확인
+                        console.log("Project Data:", project);
                         return (
                             <motion.div
                                 key={index}
@@ -105,13 +96,11 @@ export const KeyInfoPage = () => {
                                 <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
                                     {project.name}
                                 </h2>
-                                <ItemList items={project.models} />
+                                <ItemList items={project.models} projectId={project.id} />
                             </motion.div>
                         );
                     })}
-
                 </>
-
             </motion.div>
         </div>
     );

@@ -58,7 +58,7 @@ export const APIKeyModal: React.FC<APIKeyModalProps> = ({
                 onClick={handleClose}
             >
                 <div
-                    className={`relative w-[90%] sm:w-[80%] md:w-[60%] lg:w-[35%] max-h-[750px] rounded-[30px] transform transition-all duration-300 ${isOpen ? "opacity-100 translate-y-0 animate-slideIn" : "opacity-0 translate-y-4 animate-slideOut"}`}
+                    className={`relative w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] max-h-[750px] rounded-[30px] transform transition-all duration-300 ${isOpen ? "opacity-100 translate-y-0 animate-slideIn" : "opacity-0 translate-y-4 animate-slideOut"}`}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div
