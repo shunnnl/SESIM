@@ -51,14 +51,25 @@ public class DeploymentOptionService {
         // 모델 정보 조회
         List<Model> models = modelRepository.findAll();
         List<DeployOptionsResponse.ModelOptionDto> modelOptions = models.stream()
-                .map(model -> DeployOptionsResponse.ModelOptionDto.builder()
-                        .id(model.getId())
-                        .name(model.getName())
-                        .description(model.getDescription())
-                        .version(model.getVersion())
-                        .framework(model.getFramework())
-                        .modelPricePerHour(model.getModelPricePerHour())
-                        .build())
+                .map(model -> {
+
+                    String firstDescription = "";
+                    if (model.getShortDescription() != null && !model.getShortDescription().isEmpty()) {
+                        String[] descriptionLines = model.getShortDescription().split("\\n");
+                        if (descriptionLines.length > 0) {
+                            firstDescription = descriptionLines[0];
+                        }
+                    }
+
+                    return DeployOptionsResponse.ModelOptionDto.builder()
+                            .id(model.getId())
+                            .name(model.getName())
+                            .description(firstDescription)
+                            .version(model.getVersion())
+                            .framework(model.getFramework())
+                            .modelPricePerHour(model.getModelPricePerHour())
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         // 모든 모델과 인프라 스펙 조합에 대한 가격 정보 생성

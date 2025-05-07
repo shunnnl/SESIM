@@ -28,6 +28,9 @@ public enum SecurityPath {
     SEND_CODE("/api/mail/send-code"),
     VERIFY("/api/mail/verify"),
 
+    // Model 관련 경로
+    MODEL("/api/model/**"),
+
     // Health check 관련 경로
     HEALTH("/health");
 
