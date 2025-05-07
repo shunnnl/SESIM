@@ -42,8 +42,9 @@ class Model(Base):
     project_id = Column(Integer, ForeignKey("projects.project_id"), nullable=False)
     name = Column(String(255), nullable=False)
     api_key = Column(String(2000), nullable=False)
-    url = Column(String(255), nullable=False)
     dashboard = Column(Text, nullable=False)
+    ec2_spec = Column(String(50), nullable=False)
+    ec2_info = Column(String(255), nullable=False)
     created_at = Column(DateTime, nullable=False)
 
 
@@ -52,8 +53,9 @@ class Project(Base):
 
     project_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    url = Column(String(255), nullable=False)
     name = Column(String(100), nullable=False)
-    field = Column(String(255))
+    desc = Column(String(2000))
 
 
 class APILog(Base):
