@@ -132,9 +132,11 @@ public class K3sSetupService {
 			// 파일 전송 - initSql 전송
 			sshService.copyFile(session, initSql.getAbsolutePath(), "k3s-setup/init.sql");
 			log.info("init.sql 전송 완료");
+            sshService.copyFile(session, initSql.getAbsolutePath(), "/home/ubuntu/init.sql");
+            log.info("init.sql 전송 완료");
 
             // 권한 설정
-            String chmodCmd = "chmod 644 k3s-setup/init.sql && chmod +x k3s-setup/*.sh && chmod 600 k3s-setup/client-key-" + customerId + ".pem";
+            String chmodCmd = "chmod 644 /home/ubuntu/init.sql && chmod 644 k3s-setup/init.sql && chmod +x k3s-setup/*.sh && chmod 600 k3s-setup/client-key-" + customerId + ".pem";
             sshService.executeCommand(session, chmodCmd);
             log.info("권한 설정 완료");
 
