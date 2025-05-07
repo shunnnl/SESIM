@@ -2,12 +2,13 @@ import { SmallAnimatedButton } from "./SmallAnimatedButton"
 import sesimImage from "../../assets/images/sesim-logo.png"
 
 interface AiModelCardProps {
+    id: number;
     name: string;
     featureTitle: string;
     featureList: string[];
 }
 
-export const AiModelCard = ({ name, featureTitle, featureList }: AiModelCardProps) => {
+export const AiModelCard = ({ id, name, featureTitle, featureList }: AiModelCardProps) => {
     return (
         <div className="bg-[#2C304B] rounded-[10px] border-[1px] border-[#505671] px-[50px] py-[40px] w-[320px] h-[310px] relative">
             <p className="text-[12px] font-medium pl-[10px]">{featureTitle}</p>
@@ -31,7 +32,7 @@ export const AiModelCard = ({ name, featureTitle, featureList }: AiModelCardProp
             <div className="absolute bottom-0 left-0 w-full px-[60px] pb-[40px]">
                 <SmallAnimatedButton
                     text="자세히 보기"
-                    link={`/ai-model/${name}`}
+                    link={`/ai-model/${id}`}
                     onClick={() => { window.scrollTo(0, 0); }}
                 />
             </div>

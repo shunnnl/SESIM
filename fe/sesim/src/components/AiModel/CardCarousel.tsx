@@ -30,7 +30,7 @@ function CardItem({ model, style, extraStyle, isLink = false }: any) {
     if (isLink) {
         return (
             <Link
-                to={`/ai-model/${model.name}`}
+                to={`/ai-model/${model.id}`}
                 className={`${CARD_BASE_CLASS} ${style}`}
                 style={mergedStyle}
                 onClick={() => { window.scrollTo(0, 0); }}

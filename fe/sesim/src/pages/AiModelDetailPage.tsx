@@ -1,18 +1,33 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import infoIcon from "../assets/images/info.png";
 import { BlueCircle } from "../components/common/BlueCircle";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
 import { ImageTitleBannerWithNav } from "../components/AiModelDetail/ImageTitleBannerWithNav";
+import { getAiModelDetail } from "../services/aiModelService";
 
 export const AiModelDetailPage = () => {
+    const { modelId } = useParams();
     const [selectedTab, setSelectedTab] = useState<"description" | "examplecode">("description");
+    const [features, setFeatures] = useState<any[]>([]);
+    const [modelName, setModelName] = useState<string>("");
+
+    useEffect(() => {
+        const fetchAiModelDetail = async () => {
+            if (!modelId) return;
+            const response = await getAiModelDetail(Number(modelId));
+            setFeatures(response.data.features);
+            setModelName(response.data.name);
+        };
+        fetchAiModelDetail();
+    }, [modelId]);
     
     return (
         <div>
             <ImageTitleBannerWithNav
-                modelName="AI 모델 이름!!"
+                modelName={modelName}
                 description="웹 요청에서 해킹 시도와 이상 접근을 식별합니다."
                 selectedTab={selectedTab}
                 setSelectedTab={setSelectedTab}
@@ -27,9 +42,19 @@ export const AiModelDetailPage = () => {
                     >
                         <BlueCircle />
                         <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">특징</h1>
-                        <p>
-                            여기에 모델 특징 설명
-                        </p>
+                        <div>
+                            <div className="flex gap-[30px] mt-[30px]">
+                                {features.map((feature, index) => (
+                                    <div key={index} className="flex flex-col gap-[10px]">
+                                        <div className="bg-gradient-to-l from-transparent to-[#367DF8] px-[30px] py-[10px] mb-[10px] rounded-[10px]">
+                                            <h2 className="text-[25px] font-bold">{feature.featureSummary}</h2>
+                                        </div>
+                                        <p className="text-[16px] font-medium">* {feature.featureOverview}</p>
+                                        <p className="text-[16px] font-medium">* {feature.featureDetail}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </motion.div>
                 )}
                 { selectedTab === "examplecode" && (
