@@ -18,13 +18,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/model")
 @RequiredArgsConstructor
-@Tag(name = "모델 컨트롤러", description = "AI 모델의 기본 정보 및 기능 목록을 제공하는 컨트롤러")
+@Tag(name = "모델 컨트롤러", description = "AI 모델의 기본 정보 및 목록을 제공하는 컨트롤러")
 @Slf4j
 public class ModelController {
 
     private final ModelService modelService;
 
-    @Operation(summary = "모델 기능 목록 조회", description = "전체 모델의 기능 목록을 조회합니다.")
+    @Operation(summary = "모델 리스트 조회", description = "전체 모델의 목록을 조회합니다.")
     @GetMapping("/features")
     public CommonResponseDto<List<ModelFeaturesResponse>> getAllModelsFeaturesList() {
         List<ModelFeaturesResponse> features = modelService.getAllModelsFeaturesList();
