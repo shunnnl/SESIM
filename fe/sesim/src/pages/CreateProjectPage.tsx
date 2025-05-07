@@ -5,13 +5,16 @@ import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
-import { getDeployOptions } from "../services/createProjectService";
+import { getDeployOptions, getRoleArns } from "../services/createProjectService";
 
 export const CreateProjectPage = () => {
     const [selectedModels, setSelectedModels] = useState<string[]>([]);
     const [firstStepDone, setFirstStepDone] = useState(false);
     const [secondStepDone, setSecondStepDone] = useState(false);
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
+
+    // FirstStep 데이터
+    const [roleArn, setRoleArn] = useState<any[]>([]);
 
     // SecondStep 데이터
     const [projectName, setProjectName] = useState<string>("");
@@ -27,7 +30,12 @@ export const CreateProjectPage = () => {
     useEffect(() => {
         const fetchDeployOptions = async () => {
             const deployOptions = await getDeployOptions();
+            const roleArns = await getRoleArns();
             console.log(deployOptions);
+            console.log(roleArns);
+
+            // FirstStep 데이터 설정
+            setRoleArn(roleArns.data);
 
             //ThirdStep 데이터 설정
             setModels(deployOptions.data.models);
@@ -49,7 +57,8 @@ export const CreateProjectPage = () => {
             />
 
             <div className="container-padding text-white pt-[120px]">
-                <FirstStep 
+                <FirstStep
+                    roleArn={roleArn}
                     setFirstStepDone={setFirstStepDone} 
                 />
                 <SecondStep 

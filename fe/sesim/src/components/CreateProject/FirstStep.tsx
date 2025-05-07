@@ -5,10 +5,11 @@ import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
 import { motion } from "framer-motion"
 
 interface FirstStepProps {
+    roleArn: { id: number; roleArn: string }[];
     setFirstStepDone: (done: boolean) => void;
 }
 
-export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
+export const FirstStep = ({ setFirstStepDone, roleArn }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
     const [arn, setArn] = useState("")
 
@@ -61,9 +62,9 @@ export const FirstStep = ({ setFirstStepDone }: FirstStepProps) => {
                         <p className="text-[16px] font-normal text-[#979797]">* 기존에 발급한 ARN이 있다면 아래에서 확인해 선택해 주세요.</p>
                         <select className="mt-[10px] w-[500px] bg-[#FFFFFF] border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#000000]">
                             <option value="" disabled selected>ARN을 선택해주세요</option>
-                            <option value="arn1">arn:aws:iam::123456789012:role/example-role-1</option>
-                            <option value="arn2">arn:aws:iam::123456789012:role/example-role-2</option>
-                            <option value="arn3">arn:aws:iam::123456789012:role/example-role-3</option>
+                            {roleArn.map((arn) => (
+                                <option value={arn.id}>{arn.roleArn}</option>
+                            ))}
                         </select>
                     </div>
 
