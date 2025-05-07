@@ -1,15 +1,31 @@
 from contextlib import asynccontextmanager
 
+from app.api import model_table
 from app.api import predict
+from app.api import train
 from app.api import train_data
-from app.db.database import init_db
+from app.db.database import init_db, execute_sql_file, create_dynamic_ai_result_tables
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()  # 서버 시작할 때 DB 테이블 생성
+    try:
+        init_db()
+    except Exception as e:
+        print(f"❌ init_db() 실패: {e}")
+
+    try:
+        execute_sql_file("/init.sql")
+    except Exception as e:
+        print(f"❌ execute_sql_file 실패: {e}")
+
+    try:
+        create_dynamic_ai_result_tables()
+    except Exception as e:
+        print(f"❌ create_dynamic_ai_result_tables 실패: {e}")
+
     yield
 
 
@@ -32,4 +48,11 @@ app.add_middleware(
 
 # API 라우터 등록
 app.include_router(predict.router)
-app.include_router(train_data.router, prefix="/admin", tags=["Train Data"])
+app.include_router(train_data.router)
+app.include_router(model_table.router)
+app.include_router(train.router)
+
+
+@app.get("/")
+def health_check():
+    return {"status": "ok"}

@@ -1,3 +1,4 @@
+from app.db.database import engine
 from sqlalchemy import Table, MetaData
 
 

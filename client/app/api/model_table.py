@@ -3,40 +3,46 @@ from app.core.config import settings
 from app.db.database import engine, SessionLocal
 from app.models.models import Model
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import Table, Column, MetaData
-from sqlalchemy.dialects.postgresql import VARCHAR, BOOLEAN, FLOAT, TIMESTAMP
+from sqlalchemy import Table, Column, MetaData, Integer
+from sqlalchemy.dialects.postgresql import VARCHAR, BOOLEAN, FLOAT, TIMESTAMP, INTEGER, CHAR
 
 router = APIRouter()
 metadata = MetaData()
 
-TYPE_MAP = {
-    "String(15)": VARCHAR(15),
-    "String(255)": VARCHAR(255),
-    "Boolean": BOOLEAN,
-    "Float": FLOAT,
-    "DateTime": TIMESTAMP
-}
+
+def parse_type(type_str: str):
+    if type_str.startswith("VARCHAR("):
+        length = int(type_str.replace("VARCHAR(", "").replace(")", ""))
+        return VARCHAR(length)
+    elif type_str.startswith("CHAR("):
+        length = int(type_str.replace("CHAR(", "").replace(")", ""))
+        return CHAR(length)
+    elif type_str.upper() in {"BOOLEAN", "FLOAT", "DATETIME", "INTEGER"}:
+        return {
+            "BOOLEAN": BOOLEAN,
+            "FLOAT": FLOAT,
+            "DATETIME": TIMESTAMP,
+            "INTEGER": INTEGER
+        }[type_str.upper()]
+    else:
+        return None
 
 
 def create_result_table_for_model(model_id: int):
-    """
-    모델 ID를 기반으로 AI 서버에 스키마 요청 후
-    ai_results_{model_id} 테이블을 동적으로 생성
-    """
     try:
-        resp = requests.get(f"{settings.AI_SERVER_BASE_URL}{model_id}:{settings.AI_SERVER_PORT}/result/schema")
+        # resp = requests.get(f"http://ai-server:8000/api/schema")
+        resp = requests.get(f"{settings.AI_SERVER_BASE_URL}{model_id}:{settings.AI_SERVER_PORT}/api/schema")
         schema = resp.json()
     except Exception as e:
         raise Exception(f"[모델 {model_id}] AI 서버 스키마 요청 실패: {str(e)}")
 
     table_name = f"ai_results_{model_id}"
-    columns = [Column("id", VARCHAR(36), primary_key=True)]
+    columns = [Column("ai_result_id", Integer, primary_key=True, autoincrement=True)]
 
-    for field in schema["fields"]:
-        name = field["name"]
-        col_type = TYPE_MAP.get(field["type"])
+    for name, col_type_str in schema["columns"].items():
+        col_type = parse_type(col_type_str)
         if not col_type:
-            raise Exception(f"[모델 {model_id}] 알 수 없는 컬럼 타입: {field['type']}")
+            raise Exception(f"[모델 {model_id}] 알 수 없는 컬럼 타입: {col_type_str}")
         columns.append(Column(name, col_type))
 
     table = Table(table_name, metadata, *columns)
