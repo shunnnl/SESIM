@@ -115,7 +115,6 @@ pipeline {
         success {
             script {
                 def author = sh(script: "git log -1 --pretty=format:'%an'", returnStdout: true).trim()
-                def commit = sh(script: "git log -1 --pretty=format:'%s'", returnStdout: true).trim()
 
                 sh """
                 curl -X POST -H 'Content-Type: application/json' \\
@@ -125,8 +124,8 @@ pipeline {
                     "attachments": [{
                         "fallback": "백엔드 배포 성공!",
                         "color": "#00C851",
-                        "title": ":jenkins7: 배포 성공의 기쁨이 세심을 감쌌습니다! 🎉",
-                        "text": "• **👨‍💻 브랜치**: ${env.BRANCH_NAME}\n• **📦 서버**: ${env.BE_SERVER_1}, ${env.BE_SERVER_2}\n• **🛠️ 빌드 번호**: #${env.BUILD_NUMBER}\n• 🔗 [Jenkins 보러가기](${env.BUILD_URL})"
+                        "title": ":jenkins7: 배포 성공의 기쁨이 세심을 감쌌습니다!",
+                        "text": "• **🧑🏻‍💻작성자**: ${author}\n• **📦 서버**: ${env.BE_SERVER_1}, ${env.BE_SERVER_2}\n• **🛠️ 빌드 번호**: #${env.BUILD_NUMBER}\n• 🔗 [Jenkins 보러가기](${env.BUILD_URL})"
                     }]
                 }' https://meeting.ssafy.com/hooks/1wgxo7nc9td3zeedzh49yc61or
                 """
@@ -136,7 +135,6 @@ pipeline {
         failure {
             script {
                 def author = sh(script: "git log -1 --pretty=format:'%an'", returnStdout: true).trim()
-                def commit = sh(script: "git log -1 --pretty=format:'%s'", returnStdout: true).trim()
                 def reason = currentBuild.getLog(10).collect { it.replaceAll('"', '\\"') }.join("\\n")
 
                 sh """
@@ -148,8 +146,8 @@ pipeline {
                         {
                         "fallback": ":jenkins7: 백엔드 배포 실패!",
                         "color": "#ff4444",
-                        "title": ":jenkins7: 긴급속보: 배포에 실패했습니다. 🔥",
-                        "text": "• **🧨 브랜치**: ${env.BRANCH_NAME}\\n• **💥 빌드 번호**: #${env.BUILD_NUMBER}\\n• **🧪 로그 요약**: ${reason}\\n• 🔧 [Jenkins로 디버깅](${env.BUILD_URL})\\n\\n> 누군가... Jenkins를... 말려줘... 😱"
+                        "title": "🔥 긴급속보: 배포에 실패했습니다.",
+                        "text": "• **🧑🏻‍💻작성자**: ${author} \n• **💥 빌드 번호**: #${env.BUILD_NUMBER}\n• **🧪 로그 요약**: ${reason}\n• 🔧 [Jenkins로 디버깅](${env.BUILD_URL})\n\n> 누군가... Jenkins를... 말려줘... 😱"
                         }
                     ]
                 }' https://meeting.ssafy.com/hooks/1wgxo7nc9td3zeedzh49yc61or
