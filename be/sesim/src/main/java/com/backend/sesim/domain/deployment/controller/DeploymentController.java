@@ -2,6 +2,7 @@ package com.backend.sesim.domain.deployment.controller;
 
 import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
 import com.backend.sesim.domain.deployment.dto.response.DeployOptionsResponse;
+import com.backend.sesim.domain.deployment.dto.response.ProjectDeploymentStatusResponse;
 import com.backend.sesim.domain.deployment.dto.response.ProjectListResponse;
 import com.backend.sesim.domain.deployment.service.DeploymentOptionService;
 import com.backend.sesim.domain.deployment.service.ProjectService;
@@ -41,5 +42,12 @@ public class DeploymentController {
     @GetMapping("/projects")
     public CommonResponseDto<ProjectListResponse> getUserProjects() {
         return CommonResponseDto.ok(projectService.getUserProjects());
+    }
+
+    @Operation(summary = "프로젝트 배포 상태 조회", description = "현재 로그인한 사용자의 프로젝트 및 모델 배포 상태를 조회합니다.")
+    @GetMapping("/status")
+    public CommonResponseDto<ProjectDeploymentStatusResponse> getProjectDeploymentStatus() {
+        ProjectDeploymentStatusResponse response = projectService.getProjectDeploymentStatus();
+        return CommonResponseDto.ok(response);
     }
 }
