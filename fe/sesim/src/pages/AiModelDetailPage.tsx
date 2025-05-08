@@ -125,7 +125,7 @@ export const AiModelDetailPage = () => {
                                         alt="info" 
                                         className=" w-[30px] h-[30px]" 
                                     />
-                                    <p className="text-[16px] font-bold">SESIM을 처음이용하신다면, [마이페이지]에서 SESIM SDK를 먼저 다운로드 하세요!</p>
+                                    <p className="text-[16px] font-bold">SESIM을 처음이용하신다면, SESIM SDK를 먼저 다운로드 하세요!</p>
                                 </p>
                                 
                                 <AnimatedButton
