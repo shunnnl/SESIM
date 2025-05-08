@@ -1,52 +1,19 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
 import { Sidebar } from "../components/Sidebar";
+import { RootState, AppDispatch } from "../store/index"; 
+import { fetchProjectList } from "../store/projectSlice";  
 import ProjectItemList from "../components/ProjectPageComponents/ProjectListItem";
 
 export const ProjectPage = () => {
-    const allItems = [
-        [
-            {
-                id: 1,
-                modelName: "AuthGaurd",
-                description: "비정상적 로그인 패턴을 감지",
-                link: "http://localhost:5173/userinfo",
-            },
-            {
-                id: 2,
-                modelName: "DataWatch",
-                description: "비정상적 로그인 패턴을 감지",
-                link: "http://localhost:5173/userinfo",
-            },
-            {
-                id: 3,
-                modelName: "WebSentinel",
-                description: "비정상적 로그인 패턴을 감지",
-                link: "http://localhost:5173/userinfo",
-            }
-        ],
-        [
-            {
-                id: 4,
-                modelName: "FileGuard",
-                description: "비정상적 로그인 패턴을 감지",
-                link: "http://localhost:5173/userinfo",
-            },
-            {
-                id: 5,
-                modelName: "CloudWatch",
-                description: "비정상적 로그인 패턴을 감지",
-                link: "http://localhost:5173/userinfo",
-            },
-            {
-                id: 6,
-                modelName: "NetworkSentinel",
-                description: "비정상적 로그인 패턴을 감지",
-                link: "http://localhost:5173/userinfo",
-            }
-        ]
-    ];
-    {/*FIXME api연동시 받아올 리스트 입니다! 그라파나 링크는 그냥 내정보링크로 들어있습니다 클릭시 이동만 구현됨*/ }
+    const dispatch = useDispatch<AppDispatch>(); 
 
+    const { projects, loading, error } = useSelector((state: RootState) => state.project);
+
+    useEffect(() => {
+        dispatch(fetchProjectList());
+    }, [dispatch]);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -54,7 +21,6 @@ export const ProjectPage = () => {
                 <Sidebar />
             </div>
 
-            {/* 배경 빛 효과 */}
             <div
                 className="absolute top-[45%] right-[30%] -translate-y-1/2 w-[50px] h-[50px] rounded-full -z-10"
                 style={{
@@ -65,7 +31,6 @@ export const ProjectPage = () => {
                 }}
             ></div>
 
-            {/* 메인 콘텐츠에 애니메이션 적용 */}
             <motion.div
                 className="flex flex-col flex-1 p-6 mt-4"
                 style={{ zIndex: 1 }}
@@ -87,8 +52,10 @@ export const ProjectPage = () => {
                     </p>
                 </motion.div>
 
-                {/* 각 프로젝트 그룹 등장 애니메이션 */}
-                {allItems.map((itemsArray, index) => (
+                {loading && <p>Loading...</p>}
+                {error && <p>Error: {error}</p>}
+
+                {projects.map((project, index) => (
                     <motion.div
                         key={index}
                         className="mb-8"
@@ -97,9 +64,12 @@ export const ProjectPage = () => {
                         transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
                     >
                         <h2 className="text-2xl font-semibold text-white mb-3">
-                            sesim project
+                            <span>
+                                {project.name}
+                                <p className="text-lg font-normal inline ml-3">{project.description}</p>
+                            </span>
                         </h2>
-                        <ProjectItemList items={itemsArray} />
+                        <ProjectItemList items={project.models} />
                     </motion.div>
                 ))}
             </motion.div>

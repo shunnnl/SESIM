@@ -38,11 +38,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
 
         if (!email) {
             setEmailError("이메일을 입력해주세요.");
-            isValid = false;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setEmailError("유효한 이메일 형식이 아닙니다.");
-            isValid = false;
-        }
+            isValid = false;}
+        // } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        //     setEmailError("유효한 이메일 형식이 아닙니다.");
+        //     isValid = false;
+        // }
 
         if (!password) {
             setPasswordError("비밀번호를 입력해주세요.");
