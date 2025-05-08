@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import pythonIcon from "../../assets/images/python-icon.svg";
-import { useState } from "react";
 
 const codeString = `
 from sesiem_hub import InferenceClient
@@ -38,7 +38,11 @@ export const ExampleCodeBox = () => {
             <div className="bg-gradient-to-tr from-[#2C426B] to-[#0B234F] rounded-[18px] w-full h-full min-w-[516px] min-h-[316px] p-[18px] text-white">
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-1 bg-[#1E1E1E] rounded-[10px] px-3 py-2 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-                        <img src={pythonIcon} alt="python" className="w-[24px] h-[24px]" />
+                        <img 
+                            src={pythonIcon} 
+                            alt="python" 
+                            className="w-[24px] h-[24px]" 
+                        />
                         <p className="text-[16px] font-medium">Python</p>
                     </div>
                     <button
