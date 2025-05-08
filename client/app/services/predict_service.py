@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-import aiofiles
 from app.core.config import settings
 from app.core.extractors.nginx_extractor import parse_log_lines
 from app.dependencies.auth import verify_api_key
@@ -58,6 +57,7 @@ def handle_prediction(request: PredictRequest, db: Session, api_key: str) -> Pre
 
 
 UPLOAD_DIR = "/mnt/data/input_data"
+
 
 def handle_prediction_from_file(model_id: int, file: UploadFile, db: Session, api_key: str):
     """
