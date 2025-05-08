@@ -19,7 +19,7 @@ def create_ai_result_table():
         metadata,
         Column("logged_at", DateTime, nullable=False),
         Column("client_ip", String(15), nullable=False),
-        Column("method", String(10)),
+        Column("method", String(50)),
         Column("url", String(2000)),
         Column("status_code", CHAR(3)),
         Column("is_attack", Boolean, nullable=False),
