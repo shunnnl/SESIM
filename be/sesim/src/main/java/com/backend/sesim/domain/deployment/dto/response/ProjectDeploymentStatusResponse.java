@@ -47,7 +47,6 @@ public class ProjectDeploymentStatusResponse {
         private Long id;
         private String name;
         private String albAddress;
-        private String deployStatus;
         private Boolean isApiKeyCheck;
 
         public static DeployedModelDto from(ProjectModelInformation modelInfo) {
@@ -55,7 +54,6 @@ public class ProjectDeploymentStatusResponse {
                     .id(modelInfo.getModel().getId())
                     .name(modelInfo.getModel().getName())
                     .albAddress(modelInfo.getProject().getAlbAddress())
-                    .deployStatus(modelInfo.getStatus())
                     .isApiKeyCheck(modelInfo.getIsApiKeyCheck())
                     .build();
         }

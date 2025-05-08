@@ -1,8 +1,6 @@
 package com.backend.sesim.domain.deployment.entity;
 
-import com.amazonaws.arn.Arn;
 import com.backend.sesim.domain.iam.entity.RoleArn;
-import com.backend.sesim.domain.user.entity.User;
 import com.backend.sesim.global.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

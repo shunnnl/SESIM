@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.sesim.domain.deployment.entity.Project;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SqlService {
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public File makeInitSql(Project project, List<ProjectModelInformation> projectModelInformations) {
 
 		User user = project.getRoleArn().getUser();
