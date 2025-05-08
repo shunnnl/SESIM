@@ -7,7 +7,7 @@ const indicatorClass = "absolute -top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounde
 
 export const NavbarMenu: React.FC = () => {
     return (
-        <div className="nav-menu flex lg:gap-[60px] md:gap-[20px] text-[18px] text-white px-8 items-center justify-center text-center">
+        <div className="z-20 nav-menu flex lg:gap-[60px] md:gap-[20px] text-[18px] text-white px-8 items-center justify-center text-center">
             <div className={menuClass}>
                 <Link to="/about" className={linkClass}>소개</Link>
                 <div className={indicatorClass}></div>
