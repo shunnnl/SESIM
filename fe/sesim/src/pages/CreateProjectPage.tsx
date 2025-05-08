@@ -47,11 +47,7 @@ export const CreateProjectPage = () => {
         };
         const response = await createProject(projectInfo);
         
-        const fakeresponse = {
-            success: true,
-        }
-        // TODO: response.success 로 바꾸기
-        if (fakeresponse.success === true) {
+        if (response.success === true) {
             setIsLoading(false);
             dispatch(clearAwsSession());
             dispatch(clearProjectInfo());
@@ -95,7 +91,6 @@ export const CreateProjectPage = () => {
                 description2=""
                 backgroundImage={backgroundImage}
             />
-
             <div className="container-padding text-white pt-[120px] ">
                 <FirstStep
                     roleArns={roleArns}
