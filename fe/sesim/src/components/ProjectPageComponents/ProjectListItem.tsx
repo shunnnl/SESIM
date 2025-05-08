@@ -72,7 +72,7 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                                         "linear-gradient(#020207, #020207), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
                                 }}
                             >
-                                결과보기
+                                대시보드 확인
                                 <span className="bg-blue-500 p-0.5 rounded-full flex items-center justify-center overflow-hidden ml-1">
                                     <FiArrowUpRight className="text-xs text-white" />
                                 </span>

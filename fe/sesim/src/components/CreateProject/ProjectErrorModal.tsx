@@ -1,12 +1,13 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface ProjectStartModalProps {
+interface ProjectErrorModalProps {
     isOpen: boolean;
     onConfirm: () => void;
+    errorMessage?: string;
 }
 
-export const ProjectStartModal: React.FC<ProjectStartModalProps> = ({ isOpen, onConfirm }) => {
+export const ProjectErrorModal: React.FC<ProjectErrorModalProps> = ({ isOpen, onConfirm, errorMessage = "프로젝트 생성에 실패했습니다" }) => {
     return (
         <AnimatePresence>
             {isOpen && (
@@ -34,13 +35,13 @@ export const ProjectStartModal: React.FC<ProjectStartModalProps> = ({ isOpen, on
                             transition={{ delay: 0.2 }}
                             className="text-center mb-8"
                         >
-                            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[#3893FF]/10 flex items-center justify-center">
-                                <svg className="w-10 h-10 text-[#3893FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[#FF3838]/10 flex items-center justify-center">
+                                <svg className="w-10 h-10 text-[#FF3838]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             </div>
-                            <h2 className="text-3xl font-bold text-white mb-4">프로젝트 생성 시작</h2>
-                            <div className="w-20 h-1 bg-gradient-to-r from-[#3893FF] to-[#2C7CD6] mx-auto rounded-full"></div>
+                            <h2 className="text-3xl font-bold text-white mb-4">프로젝트 생성 실패</h2>
+                            <div className="w-20 h-1 bg-gradient-to-r from-[#FF3838] to-[#FF6B6B] mx-auto rounded-full"></div>
                         </motion.div>
                         
                         <motion.div 
@@ -53,29 +54,18 @@ export const ProjectStartModal: React.FC<ProjectStartModalProps> = ({ isOpen, on
                                 initial={{ x: -20, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 transition={{ delay: 0.4 }}
-                                className="bg-[#2C304B] p-5 rounded-xl border border-[#3C3D5C] hover:border-[#3893FF] transition-colors duration-300"
+                                className="bg-[#2C304B] p-5 rounded-xl border border-[#3C3D5C] hover:border-[#FF3838] transition-colors duration-300"
                             >
-                                <p className="text-white text-xl font-medium">프로젝트 생성이 시작되었습니다.</p>
+                                <p className="text-white text-xl font-medium">{errorMessage}</p>
                             </motion.div>
                             
                             <motion.div 
                                 initial={{ x: -20, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 transition={{ delay: 0.5 }}
-                                className="bg-[#2C304B] p-5 rounded-xl border border-[#3C3D5C] hover:border-[#3893FF] transition-colors duration-300"
+                                className="bg-[#2C304B] p-5 rounded-xl border border-[#3C3D5C] hover:border-[#FF3838] transition-colors duration-300"
                             >
-                                <p className="text-white text-lg">프로젝트 생성에는 몇 분 정도 소요될 수 있습니다.</p>
-                            </motion.div>
-                            
-                            <motion.div 
-                                initial={{ x: -20, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                transition={{ delay: 0.6 }}
-                                className="bg-[#2C304B] p-5 rounded-xl border-2 border-[#3893FF] shadow-lg shadow-[#3893FF]/20"
-                            >
-                                <p className="text-[#3893FF] text-lg font-medium">
-                                    키 정보 페이지에서 생성 진행 상황과 API 키를 확인하실 수 있습니다.
-                                </p>
+                                <p className="text-white text-lg">입력하신 정보를 확인하고 다시 시도해주세요</p>
                             </motion.div>
                         </motion.div>
 
@@ -83,15 +73,15 @@ export const ProjectStartModal: React.FC<ProjectStartModalProps> = ({ isOpen, on
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.7 }}
-                            className="flex justify-center"
+                            className="flex justify-center gap-4"
                         >
                             <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={onConfirm}
-                                className="bg-gradient-to-r from-[#3893FF] to-[#2C7CD6] text-white px-10 py-4 rounded-xl hover:from-[#2C7CD6] hover:to-[#3893FF] transition-all duration-300 font-medium text-lg shadow-lg shadow-[#3893FF]/20 hover:shadow-xl hover:shadow-[#3893FF]/30"
+                                className="bg-gradient-to-r from-[#FF3838] to-[#FF6B6B] text-white px-10 py-4 rounded-xl hover:from-[#FF6B6B] hover:to-[#FF3838] transition-all duration-300 font-medium text-lg shadow-lg shadow-[#FF3838]/20 hover:shadow-xl hover:shadow-[#FF3838]/30"
                             >
-                                키 정보 확인하기
+                                확인
                             </motion.button>
                         </motion.div>
                     </motion.div>

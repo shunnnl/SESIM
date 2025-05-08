@@ -8,6 +8,8 @@ import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
 import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
+import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingModal";
+import { ProjectErrorModal } from "../components/CreateProject/ProjectErrorModal";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
@@ -28,8 +30,12 @@ export const CreateProjectPage = () => {
     const [selectedInstanceIdxMap, setSelectedInstanceIdxMap] = useState<{ [modelId: string]: number }>({});
     const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const handleCreateProject = async () => {
+        setIsLoading(true);
         const projectInfo = {
             arnId: createProjectInfo.arnId,
             projectName: createProjectInfo.projectName,
@@ -39,23 +45,33 @@ export const CreateProjectPage = () => {
             secretKey: createProjectInfo.secretKey,
             sessionToken: createProjectInfo.sessionToken
         };
-
         const response = await createProject(projectInfo);
-        if (response.success === true) {
-            console.log("프로젝트 생성 성공");
+        
+        const fakeresponse = {
+            success: true,
+        }
+        // TODO: response.success 로 바꾸기
+        if (fakeresponse.success === true) {
+            setIsLoading(false);
             dispatch(clearAwsSession());
             dispatch(clearProjectInfo());
             dispatch(clearSelectedModels());
             dispatch(clearModelConfig());
             setShowSuccessModal(true);
         } else {
-            console.log("프로젝트 생성 실패");
+            setIsLoading(false);
+            setErrorMessage("프로젝트 생성에 실패했습니다");
+            setShowErrorModal(true);
         }
     };
 
     const handleModalConfirm = () => {
         setShowSuccessModal(false);
         navigate("/keyinfo");
+    };
+
+    const handleErrorModalConfirm = () => {
+        setShowErrorModal(false);
     };
 
     useEffect(() => {
@@ -90,15 +106,15 @@ export const CreateProjectPage = () => {
                     setSecondStepDone={setSecondStepDone} 
                 />
                 <ThirdStep
-                    show={secondStepDone} 
                     models={models}
+                    show={secondStepDone} 
                 />
                 <ForthStep
-                    show={selectedModels.length > 0}
                     regions={regions}
                     infrastructure={infrastructure}
                     selectedModels={selectedModels}
                     combinedPrices={combinedPrices}
+                    show={selectedModels.length > 0}
                     setSelectedInstancePrice={setSelectedInstancePrice}
                     onInstanceMapChange={setSelectedInstanceIdxMap}
                 />
@@ -128,6 +144,14 @@ export const CreateProjectPage = () => {
             <ProjectStartModal 
                 isOpen={showSuccessModal}
                 onConfirm={handleModalConfirm}
+            />
+            <ProjectLoadingModal 
+                isOpen={isLoading}
+            />
+            <ProjectErrorModal
+                isOpen={showErrorModal}
+                onConfirm={handleErrorModalConfirm}
+                errorMessage={errorMessage}
             />
         </div>
     );
