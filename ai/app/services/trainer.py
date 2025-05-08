@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 import json
 import joblib
@@ -6,7 +7,6 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from xgboost import XGBClassifier
-from __future__ import annotations
 from sklearn.utils import resample
 from app.core.encoder import SafeEncoder
 from typing import Any, Dict, List, Optional, Tuple
