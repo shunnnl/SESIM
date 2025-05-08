@@ -6,7 +6,7 @@ VALUES
 ON CONFLICT (user_id) DO NOTHING;
 
 -- Projects
-INSERT INTO projects (project_id, user_id, name, url, desc)
+INSERT INTO projects (project_id, user_id, name, url, "desc")
 VALUES
 (1, 1, '보안 로그 분석 프로젝트', 'http://ec2-url', '보안 로그 기반 이상 탐지 시스템 개발')
 ON CONFLICT (project_id) DO NOTHING;
