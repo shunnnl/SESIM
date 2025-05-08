@@ -1,6 +1,6 @@
-import { SmallAnimatedButton } from "./SmallAnimatedButton"
-import { BsCircleFill } from "react-icons/bs";
 import { useState } from "react";
+import { BsCircleFill } from "react-icons/bs";
+import { SmallAnimatedButton } from "./SmallAnimatedButton"
 
 interface AiModelCardProps {
     id: number;
