@@ -35,7 +35,7 @@ export const Sidebar: React.FC = () => {
 
                 <NavLink to="/project" className={getNavLinkClass}>
                     <FaFolder className="text-xl text-gray-400" />
-                    프로젝트
+                    대시보드
                 </NavLink>
 
                 <NavLink to="/keyinfo" className={getNavLinkClass}>

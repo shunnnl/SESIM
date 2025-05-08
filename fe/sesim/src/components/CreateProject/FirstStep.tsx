@@ -19,8 +19,8 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
     const dispatch = useDispatch();
 
     const handleValidation = async () => {
-        const response = await verifyRoleArn(arn);
-        if (response.success & response.data) {
+        const response = await verifyRoleArn({ roleArn: arn });
+        if (response.success && response.data) {
             dispatch(setAwsSession({
                 accessKey: response.data.accessKey,
                 secretKey: response.data.secretKey,
@@ -32,8 +32,8 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
             setFirstStepDone(true)
         } else {
             setValidationStatus("fail")
-            setValidationMessage(response.error.message)
-            setFirstStepDone(true)
+            setValidationMessage(response.error)
+            setFirstStepDone(false)
         }
     }
 
@@ -94,7 +94,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
                                 className="mt-[10px] w-[500px] bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3]" 
                                 placeholder="ARN을 입력해주세요"
                                 value={arn}
-                                onChange={(e) => setArn(e.target.value)}
+                                onChange={(e) => setArn(e.target.value.trim())}
                             />
                             <button 
                                 className="mt-[10px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200 disabled:bg-[#44485e] disabled:text-[#A3A3A3] disabled:cursor-not-allowed"
