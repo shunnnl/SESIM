@@ -17,6 +17,8 @@ const models: Model[] = [
     { id: 6, name: 'RecommendX', path: '/ai-model/6' }
 ];
 
+const linkClass = "text-white transition-colors duration-200 group-hover:font-bold font-medium transform transition-transform group-hover:scale-110";
+
 export const ModelDropdown: React.FC = () => {
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -26,9 +28,10 @@ export const ModelDropdown: React.FC = () => {
             onMouseEnter={() => setIsOpen(true)}
             onMouseLeave={() => setIsOpen(false)}
         >
+            
             <Link 
-                to="/ai-model" 
-                className="text-white hover:text-[#3893FF] transition-colors duration-200"
+                to="/ai-model"
+                className={linkClass}
             >
                 AI모델
             </Link>
