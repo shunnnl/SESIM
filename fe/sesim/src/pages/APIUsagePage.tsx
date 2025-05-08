@@ -1,35 +1,21 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { RootState, AppDispatch } from "../store";
+import { useDispatch, useSelector } from "react-redux";
 import { Sidebar } from "../components/Sidebar";
+import { fetchAPIUsageList } from "../store/APIUsageSlice";
 import { APIUsageListItem } from "../components/APIUsagePageComponents/APIUsageListItem";
 
 export const APIUsagePage: React.FC = () => {
-    const projectData = {
-        projectName: "sesim project",
-        usageTime: "10h",
-        totalCost: "$3000",
-        totalApiRequests: 500,
-        modelCosts: [
-            {
-                modelName: "AuthGuard",
-                cost: "$1000",
-                usageTime: "5h",
-                apiRequests: 250,
-            },
-            {
-                modelName: "DataWatch",
-                cost: "$1000",
-                usageTime: "3h",
-                apiRequests: 150,
-            },
-            {
-                modelName: "WebSentinel",
-                cost: "$1000",
-                usageTime: "2h",
-                apiRequests: 100,
-            },
-        ],
-    };
-    {/*FIXME api연동시 받아올 리스트 입니다!소켓통신으로 구현될예정정*/ }
+    const dispatch = useDispatch<AppDispatch>();
+
+    const { projects, loading, error } = useSelector((state: RootState) => state.apiUsage);
+
+    useEffect(() => {
+        dispatch(fetchAPIUsageList());
+    }, [dispatch]);
+
+    console.log("APIUsagePage projects:", projects);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -43,7 +29,7 @@ export const APIUsagePage: React.FC = () => {
                     background: "#00215A",
                     boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
                     opacity: 0.4,
-                    zIndex: 0
+                    zIndex: 0,
                 }}
             ></div>
 
@@ -74,13 +60,34 @@ export const APIUsagePage: React.FC = () => {
                     정량화된 사용 데이터를 기반으로 보안 모델 운영을 효율화하세요.
                 </motion.p>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                >
-                    <APIUsageListItem data={projectData} />
-                </motion.div>
+                {loading && <p>불러오는 중...</p>}
+                {error && <p className="text-red-500">{error}</p>}
+
+                {!loading && !error && projects.map((project) => (
+                    <motion.div
+                        key={project.projectId}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="mb-6"
+                    >
+                        <APIUsageListItem
+                            data={{
+                                projectName: project.projectName,
+                                usageTime: project.projectTotalSeconds / 3600, 
+                                totalCost: `$${project.projectTotalCost.toFixed(2)}`,
+                                totalApiRequests: project.projectTotalRequestCount,
+                                modelCosts: project.models.map((model) => ({
+                                    modelName: model.modelName,
+                                    cost: `$${model.totalCost.toFixed(2)}`,
+                                    usageTime: model.totalSeconds / 3600, 
+                                    apiRequests: model.totalRequestCount,
+                                })),
+                            }}
+                        />
+
+                    </motion.div>
+                ))}
             </motion.div>
         </div>
     );
