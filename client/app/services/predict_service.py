@@ -92,7 +92,7 @@ def handle_prediction_from_file(model_id: int, file: UploadFile, db: Session, ap
             print(f"⚠️ chunk {i} 파싱 실패 또는 유효한 로그 없음", flush=True)
             continue
 
-        ai_url = f"http://ai-server:{settings.AI_SERVER_PORT}"
+        ai_url = f"{settings.AI_SERVER_BASE_URL}{model.model_id}:{settings.AI_SERVER_PORT}"
         results = send_to_ai_model(ai_url, parsed_logs)
 
         insert_data = []
