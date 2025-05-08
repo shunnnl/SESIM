@@ -4,26 +4,20 @@ import bgImage from "../../assets/images/project-bg.png";
 import bgImage2 from "../../assets/images/project-bg2.png";
 import bgImage3 from "../../assets/images/project-bg3.png";
 import bgImage4 from "../../assets/images/project-bg4.png";
-
-interface Item {
-    id: number;
-    modelName: string;
-    description: string;
-    link: string;
-}
+import { Model } from "../../types/ProjectTypes";
 
 interface ProjectItemListProps {
-    items: Item[];
+    items: Model[];
 }
 
 const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
-
     const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4];
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {items.map((item) => {
-                const backgroundImage = BG_IMAGES[item.id % 4]; return (
+                const backgroundImage = BG_IMAGES[item.id % 4];
+                return (
                     <div
                         key={item.id}
                         className="relative rounded-2xl h-44 overflow-hidden"
@@ -43,7 +37,7 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                                     src={logo} alt="icon"
                                     className="inline-block w-6 h-6"
                                 />
-                                {item.modelName}
+                                {item.name}
                             </p>
 
                             <button
@@ -59,8 +53,8 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                                     color: "white",
                                 }}
                                 onClick={() => {
-                                    if (item.link) {
-                                        window.location.href = item.link;
+                                    if (item.grafanaUrl) {  
+                                        window.location.href = item.grafanaUrl; 
                                     }
                                 }}
                                 onMouseEnter={(e) => {

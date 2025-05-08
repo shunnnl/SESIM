@@ -41,13 +41,13 @@ const centerTextPlugin = {
 interface ModelCost {
     modelName: string;
     cost: string;
-    usageTime: string;
+    usageTime: number; 
     apiRequests: number;
 }
 
 interface ProjectData {
     projectName: string;
-    usageTime: string;
+    usageTime: number;
     totalCost: string;
     totalApiRequests: number;
     modelCosts: ModelCost[];
@@ -58,17 +58,18 @@ interface APIUsageListItemProps {
 }
 
 export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
-    const totalUsageTime = data.modelCosts.reduce((acc, model) => acc + parseInt(model.usageTime), 0);
 
     const colors = ["#0038FF", "#CB3CFF", "#00C2FF", "#00FF99", "#FFCC00", "#FF4D4D"];
+
+    const totalUsageTime = data.modelCosts.reduce((acc, model) => acc + model.usageTime, 0);
 
     const chartData = {
         labels: data.modelCosts.map((model) => model.modelName),
         datasets: [
             {
-                data: data.modelCosts.map(
-                    (model) => (parseInt(model.usageTime) / totalUsageTime) * 100
-                ),
+                data: totalUsageTime > 0
+                    ? data.modelCosts.map((model) => (model.usageTime / totalUsageTime) * 100)
+                    : [],
                 backgroundColor: data.modelCosts.map((_, idx) => colors[idx % colors.length]),
                 borderWidth: 0
             }
@@ -92,7 +93,7 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                 }
             },
             centerText: {
-                text: `${totalUsageTime}h`
+                text: `${parseFloat(totalUsageTime.toFixed(1))}h`
             },
             datalabels: {
                 color: "white",
@@ -108,6 +109,11 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                 align: "center",
                 textAlign: "center"
             }
+        },
+        animation: {
+            delay: 300,
+            duration: 1000,
+            easing: 'easeInOutQuad'
         }
     } as unknown as ChartOptions<"doughnut">;
 
@@ -145,7 +151,7 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                             <tr key={index} className="text-lg text-center">
                                 <td className="px-4 py-2 text-center">{model.modelName}</td>
                                 <td className="px-4 py-2 text-center">{model.apiRequests}</td>
-                                <td className="px-4 py-2 text-center">{model.usageTime}</td>
+                                <td className="px-4 py-2 text-center">{model.usageTime.toFixed(1)}h</td> 
                                 <td className="px-4 py-2 text-center">{model.cost}</td>
                             </tr>
                         ))}
@@ -154,7 +160,7 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                         <tr className="border-t border-gray-500 font-semibold text-xl text-center">
                             <td className="px-4 py-2 text-2xl text-center">Total</td>
                             <td className="px-4 py-2 text-center">{data.totalApiRequests}</td>
-                            <td className="px-4 py-2 text-center">{data.usageTime}</td>
+                            <td className="px-4 py-2 text-center">{data.usageTime.toFixed(1)}h</td>
                             <td className="px-4 py-2 text-center">{data.totalCost}</td>
                         </tr>
                     </tfoot>
