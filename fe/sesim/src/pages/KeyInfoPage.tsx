@@ -1,64 +1,24 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
 import { Sidebar } from "../components/Sidebar";
+import { Project } from "../store/keyinfoSlice";
+import { RootState, AppDispatch } from "../store";
+import { fetchKeyInfo } from "../services/keyinfoService";
 import ItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 
 export const KeyInfoPage = () => {
-    const allItems = [
-        [
-            {
-                id: 1,
-                modelName: "AuthGaurd",
-                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
-                APIKeyState: "DEPLOYED",
-                state: "DEPLOYED",
-                APIKey: "sjdlkjdsljd-adjskjlads12"
-            },
-            {
-                id: 2,
-                modelName: "DataWatch",
-                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
-                APIKeyState: "FAILED",
-                state: "FAILED",
-                APIKey: "sjdlkjdsljd-adjskjlads12"
-            },
-            {
-                id: 3,
-                modelName: "WebSentinel",
-                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
-                APIKeyState: "DEPLOYING",
-                state: "DEPLOYING",
-                APIKey: "sjdlkjdsljd-adjskjlads12"
-            }
-        ],
-        [
-            {
-                id: 4,
-                modelName: "FileGuard",
-                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
-                APIKeyState: "DEPLOYED",
-                state: "DEPLOYED",
-                APIKey: "sjdlkjdsljd-adjskjlads12"
-            },
-            {
-                id: 5,
-                modelName: "CloudWatch",
-                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
-                APIKeyState: "FAILED",
-                state: "FAILED",
-                APIKey: "sjdlkjdsljd-adjskjlads12"
-            },
-            {
-                id: 6,
-                modelName: "NetworkSentinel",
-                ALBaddress: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
-                APIKeyState: "DEPLOYING",
-                state: "DEPLOYING",
-                APIKey: "sjdlkjdsljd-adjskjlads12"
-            }
-        ]
-    ];
-    {/*FIXME api연동시 받아올 리스트 입니다! 소켓통신으로 관리될예정(배포진행과정정)*/ }
+    const dispatch = useDispatch<AppDispatch>();
 
+    const { loading, error } = useSelector((state: RootState) => state.keyinfo);
+
+    const { projects } = useSelector((state: RootState) => state.keyinfo);
+
+    useEffect(() => {
+        dispatch(fetchKeyInfo());
+    }, [dispatch]);
+
+    console.log("Projects:", projects);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -102,20 +62,45 @@ export const KeyInfoPage = () => {
                     </p>
                 </motion.div>
 
-                {allItems.map((itemsArray, index) => (
+                {loading && (
                     <motion.div
-                        key={index}
-                        className="mb-6"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
                     >
-                        <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
-                            sesim project
-                        </h2>
-                        <ItemList items={itemsArray} />
+                        <p>Loading...</p>
                     </motion.div>
-                ))}
+                )}
+
+                {error && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <p className="text-red-500">{error}</p>
+                    </motion.div>
+                )}
+
+                <>
+                    {Array.isArray(projects) && projects.map((project: Project, index: number) => {
+                        console.log("Project Data:", project);
+                        return (
+                            <motion.div
+                                key={index}
+                                className="mb-6"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
+                            >
+                                <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
+                                    {project.name}
+                                </h2>
+                                <ItemList items={project.models} projectId={project.id} />
+                            </motion.div>
+                        );
+                    })}
+                </>
             </motion.div>
         </div>
     );
