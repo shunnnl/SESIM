@@ -23,7 +23,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
 
   const menuItems = [
     { id: 'api', label: 'API 사용량', path: '/apiusage' },
-    { id: 'projects', label: '프로젝트', path: '/project' },
+    { id: 'projects', label: '대시보드', path: '/project' },
     { id: 'keys', label: '키 발급', path: '/keyinfo' },
   ]
 
