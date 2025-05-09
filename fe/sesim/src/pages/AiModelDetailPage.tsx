@@ -1,12 +1,22 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { BsCircleFill } from "react-icons/bs";
 import infoIcon from "../assets/images/info.png";
 import { BlueCircle } from "../components/common/BlueCircle";
 import { getAiModelDetail } from "../services/aiModelService";
 import { AnimatedButton } from "../components/common/AnimatedButton";
+import model1DetailImg1 from "../assets/images/model1-detail-img1.svg";
+import model1DetailImg2 from "../assets/images/model1-detail-img2.svg";
+import model1DetailImg3 from "../assets/images/model1-detail-img3.svg";
 import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
 import { ImageTitleBannerWithNav } from "../components/AiModelDetail/ImageTitleBannerWithNav";
+
+const model1DetailImgList = [
+    model1DetailImg1,
+    model1DetailImg2,
+    model1DetailImg3,
+]
 
 export const AiModelDetailPage = () => {
     const { modelId } = useParams();
@@ -35,23 +45,52 @@ export const AiModelDetailPage = () => {
             <div className="container-padding my-[44px] text-white">
                 { selectedTab === "description" && (
                     <motion.div 
-                        className="flex flex-col items-center gap-[15px] py-[44px]"
+                        className="py-[44px]"
                         initial={{ opacity: 0, y: 70 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                     >
-                        <BlueCircle />
-                        <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">특징</h1>
+                        <div className="flex flex-col items-center gap-[15px]">
+                            <BlueCircle />
+                            <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">특징</h1>
+                        </div>
                         <div>
-                            <div className="flex gap-[30px] mt-[30px]">
+                            <div className="mt-[30px]">
                                 {features.map((feature, index) => (
-                                    <div key={index} className="flex flex-col gap-[10px]">
-                                        <div className="bg-gradient-to-l from-transparent to-[#367DF8] px-[30px] py-[10px] mb-[10px] rounded-[10px]">
-                                            <h2 className="text-[25px] font-bold">{feature.featureSummary}</h2>
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 70 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.8, ease: "easeOut" }}
+                                        viewport={{ once: true, amount: 0.2 }}
+                                        className=""
+                                    >
+                                        <h2
+                                            className={`text-[80px] font-bold text-[#0075FF]/50 ${index % 2 === 1 ? 'ml-[370px]' : ''}`}
+                                        >
+                                            0{index + 1}
+                                        </h2>
+                                        <div className={`flex gap-8 items-start w-full mb-12 ${index % 2 === 1 ? 'flex-row-reverse' : ''}`}>
+                                            <div className="flex flex-col gap-4 flex-[2] min-w-0 ml-[50px]">
+                                                <div className="bg-gradient-to-l from-transparent to-[#367DF8] px-8 py-3 mb-2 rounded-[10px]">
+                                                    <p className="text-[30px] font-bold">{feature.featureSummary}</p>
+                                                </div>
+                                                <p className="text-[20px] font-medium flex items-center gap-[10px]">
+                                                    <BsCircleFill className="text-[#0075FF] w-[10px] h-[10px]" /> {feature.featureOverview}
+                                                </p>
+                                                <p className="text-[20px] font-medium flex items-center gap-[10px]">
+                                                    <BsCircleFill className="text-[#0075FF] w-[10px] h-[10px]" /> {feature.featureDetail}
+                                                </p>
+                                            </div>
+                                            <div className="flex-[1] flex items-center justify-center min-w-[1]">
+                                                <img 
+                                                    src={model1DetailImgList[index]}
+                                                    alt="model1-detail-img1" 
+                                                    className="w-[400px] h-[280px] object-contain rounded-xl shadow-lg"
+                                                />
+                                            </div>
                                         </div>
-                                        <p className="text-[16px] font-medium">* {feature.featureOverview}</p>
-                                        <p className="text-[16px] font-medium">* {feature.featureDetail}</p>
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
                         </div>
@@ -86,7 +125,7 @@ export const AiModelDetailPage = () => {
                                         alt="info" 
                                         className=" w-[30px] h-[30px]" 
                                     />
-                                    <p className="text-[16px] font-bold">SESIM을 처음이용하신다면, [마이페이지]에서 SESIM SDK를 먼저 다운로드 하세요!</p>
+                                    <p className="text-[16px] font-bold">SESIM을 처음이용하신다면, SESIM SDK를 먼저 다운로드 하세요!</p>
                                 </p>
                                 
                                 <AnimatedButton

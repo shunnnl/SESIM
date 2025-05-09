@@ -1,28 +1,63 @@
+import { useState } from "react";
+import { FiCopy } from "react-icons/fi";
+import pythonIcon from "../../assets/images/python-icon.svg";
+
+const codeString = `
+from sesiem_hub import InferenceClient
+
+client = InferenceClient(
+    provider="novita",
+    api_key="ss_xxxxxxxxxxxxxxxxxx",
+)
+
+completion = client.chat.completions.create(
+    model="ss-ai/WebSentinal",
+    messages=[
+        {
+            "role": "user",
+            "content": "What is th capital of France?"
+        }
+    ],
+    max_tokens=512,
+)
+
+print(completion.choices[0].message)
+`.trim();
+
 export const ExampleCodeBox = () => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(codeString);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1200);
+    };
+
     return (
-        <div
-            style={{
-                padding: "2px",
-                borderRadius: "20px",
-                background: "linear-gradient(135deg, #45BDD3, #475691, #B888DF)",
-                minWidth: "500px",
-                minHeight: "400px",
-                display: "inline-block"
-            }}
-        >
-            <div
-                style={{
-                    background: "linear-gradient(135deg, #2C426B 0%, #0B234F 100%)",
-                    borderRadius: "18px",
-                    width: "100%",
-                    height: "100%",
-                    minWidth: "496px",
-                    minHeight: "396px",
-                    padding: "24px",
-                    color: "white"
-                }}
-            >
-                예시 코드넣기!!
+        <div className="p-[2px] rounded-[20px] bg-gradient-to-tr from-[#45BDD3] via-[#475691] to-[#B888DF] min-w-[520px] min-h-[320px] inline-block">
+            <div className="bg-gradient-to-tr from-[#2C426B] to-[#0B234F] rounded-[18px] w-full h-full min-w-[516px] min-h-[316px] p-[18px] text-white">
+                <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1 bg-[#1E1E1E] rounded-[10px] px-3 py-2 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+                        <img 
+                            src={pythonIcon} 
+                            alt="python" 
+                            className="w-[24px] h-[24px]" 
+                        />
+                        <p className="text-[16px] font-medium">Python</p>
+                    </div>
+                    <button
+                        onClick={handleCopy}
+                        className="flex items-center gap-1 bg-[#232323] hover:bg-[#333] px-2 py-1 rounded-[8px] text-[13px] font-medium transition"
+                    >
+                        <FiCopy className="w-4 h-4" />
+                        {copied ? "Copied!" : "Copy"}
+                    </button>
+                </div>
+                <pre className="bg-[#1E1E1E] rounded-[10px] mt-2 px-4 py-4 shadow-[0_4px_4px_rgba(0,0,0,0.25)] text-[14px] leading-relaxed overflow-x-auto">
+                    <code className="font-mono">
+                        {codeString}
+                    </code>
+                </pre>
             </div>
         </div>
     );
