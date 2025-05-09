@@ -1,5 +1,3 @@
-import sesimIcon from "../../assets/images/sesim-logo.png"
-
 interface SmallCardProps {  
     description: string;
     modelName: string;
