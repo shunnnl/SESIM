@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
 import { BigCard } from "./BigCard"
+import { motion } from "framer-motion"
 import { FormStepHeader } from "./FormStepHeader"
 import { setAwsSession } from "../../store/createProjectInfoSlice";
 import { verifyRoleArn } from "../../services/createProjectService"
