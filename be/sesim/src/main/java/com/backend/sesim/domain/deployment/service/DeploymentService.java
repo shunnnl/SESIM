@@ -144,10 +144,21 @@ public class DeploymentService {
                 updateStepStatus(projectId, STEP_SERVER_DEPLOYMENT, STATUS_DEPLOYING);
 
                 // 서버 배포 로직 추가 (기존 로직을 여기에 배치)
-                // ...
+                boolean allPodsReady = k3sSetupService.checkAllPodsReady(
+                    ec2PublicIps.get(0),  // master IP
+                    pemKeyPath,           // PEM key path
+                    "client-system",      // namespace
+                    300                   // timeout seconds
+                );
 
                 // 서버 배포 완료
-                updateStepStatus(projectId, STEP_SERVER_DEPLOYMENT, STATUS_DEPLOYED);
+                if(allPodsReady) {
+                    updateStepStatus(projectId, STEP_SERVER_DEPLOYMENT, STATUS_DEPLOYED);
+                }
+
+                if (!allPodsReady) {
+                    updateStepStatus(projectId, STEP_SERVER_DEPLOYMENT, STATUS_FAILED);
+                }
 
                 // 4. 완료 단계 시작
                 updateStepStatus(projectId, STEP_COMPLETION, STATUS_DEPLOYING);
