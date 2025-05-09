@@ -115,7 +115,7 @@ export const CreateProjectPage = () => {
                 <ThirdStep
                     ref={thirdStepRef}
                     models={models}
-                    show={secondStepDone} 
+                    show={secondStepDone}
                 />
                 <ForthStep
                     ref={forthStepRef}

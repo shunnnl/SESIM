@@ -3,16 +3,18 @@ import { SmallCard } from "./smallCard";
 import { RootState } from "../../store";
 import { FormStepHeader } from "./FormStepHeader"
 import { setSelectedModels } from "../../store/createProjectInfoSlice";
-import { useEffect, forwardRef, RefObject } from "react";
+import { useEffect, useState, forwardRef, RefObject } from "react";
 
 interface ThirdStepProps {
     show: boolean;
     models: any[];
+
 }
 
 export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, models }, ref) => {
     const dispatch = useDispatch();
-    const selectedModels = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
+    const selectedModelsFromRedux = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
+    const [selectedModels, setSelectedModelsLocal] = useState<any[]>([]);
 
     useEffect(() => {
         if (show && ref && typeof ref !== "function" && (ref as RefObject<HTMLDivElement>).current) {
@@ -26,12 +28,23 @@ export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, mod
         }
     }, [show, ref]);
 
+    useEffect(() => {
+        // show가 true가 될 때마다 redux에서 선택된 모델을 초기값으로 세팅
+        if (show) {
+            setSelectedModelsLocal(selectedModelsFromRedux);
+        }
+    }, [show, selectedModelsFromRedux]);
+
     const handleModelClick = (model: any) => {
         if (selectedModels.includes(model)) {
-            dispatch(setSelectedModels(selectedModels.filter((name: any) => name !== model)));
+            setSelectedModelsLocal(selectedModels.filter((m: any) => m !== model));
         } else {
-            dispatch(setSelectedModels([...selectedModels, model]));
+            setSelectedModelsLocal([...selectedModels, model]);
         }
+    }
+
+    const handleDone = () => {
+        dispatch(setSelectedModels(selectedModels));
     }
 
     return (
@@ -55,6 +68,13 @@ export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, mod
                         />
                     ))}
                 </div>
+                <button 
+                    className="mt-[30px] px-[20px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200 disabled:bg-[#44485e] disabled:text-[#A3A3A3] disabled:cursor-not-allowed"
+                    onClick={handleDone}
+                    disabled={selectedModels.length < 1}
+                >
+                    <p className="text-[16px] font-medium">모델 선택 완료</p>
+                </button>
             </div>
         </div>
     );
