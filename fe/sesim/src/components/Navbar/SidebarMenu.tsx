@@ -13,6 +13,7 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({ onClickMenu }) => {
             <Link to="/ai-model" onClick={onClickMenu}>AI모델</Link>
             <Link to="/model-inference-service" onClick={onClickMenu}>모델추론 서비스</Link>
             <Link to="/docs" onClick={onClickMenu}>Docs</Link>
+            <Link to="/userinfo" onClick={onClickMenu}>마이페이지</Link>
         </div>
     );
-}; 
+};
