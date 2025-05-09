@@ -39,16 +39,6 @@ export const NavbarMenu: React.FC = () => {
                 </Link>
                 <div className={indicatorClass}></div>
             </div>
-            <div className={`${menuClass} whitespace-nowrap`}>
-                <Link
-                    to="/keyinfo"
-                    className={linkClass}
-                >
-                    apiKey
-                </Link>
-                <div className={indicatorClass}></div>
-            </div>
-            {/*FIXME 이후에 삭제될 요소, 페이지 임시 이동*/}
         </div>
     );
 };
