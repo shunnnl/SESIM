@@ -1,5 +1,5 @@
-import { useState } from "react"
 import { useDispatch } from "react-redux";
+import { useState, useEffect, forwardRef, RefObject } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import { setProjectInfo } from "../../store/createProjectInfoSlice";
@@ -7,9 +7,10 @@ import { setProjectInfo } from "../../store/createProjectInfoSlice";
 interface SecondStepProps {
     show: boolean;
     setSecondStepDone: (done: boolean) => void;
+    currentStep: number;
 }
 
-export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
+export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSecondStepDone, show, currentStep }, ref) => {
     const [isNameValid, setIsNameValid] = useState<"none" | "success" | "fail">("none");
     const [tempName, setTempName] = useState("");
     const [tempDesc, setTempDesc] = useState("");
@@ -33,12 +34,28 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
         setSecondStepDone(true);
     }
 
+    useEffect(() => {
+        if (show && ref && typeof ref !== "function" && (ref as RefObject<HTMLDivElement>).current) {
+            setTimeout(() => {
+                const el = (ref as RefObject<HTMLDivElement>).current!;
+                const top = el.getBoundingClientRect().top + window.scrollY;
+                const offset = 100;
+                const scrollTo = Math.max(0, top - offset);
+                window.scrollTo({ top: scrollTo, behavior: "smooth" });
+            }, 100);
+        }
+    }, [show, ref]);
+
     return (
-        <div className={`mt-[120px] transition-all duration-500 ${show ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}>
+        <div
+            ref={ref}
+            className={`mt-[120px] ${show ? "block" : "hidden"}`}
+        >
             <FormStepHeader
                 step="02"
                 title="프로젝트 기본 정보" 
-                description="생성할 프로젝트의 이름과 설명을 입력해주세요."
+                description="프로젝트는 여러 보안 AI 모델을 관리하는 단위입니다. 프로젝트 이름과 설명을 입력하여 AI 모델들을 체계적으로 관리할 수 있습니다."
+                currentStep={currentStep}
             />
             <div className="mt-[15px]">
                 <BigCard>
@@ -47,7 +64,7 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                         <input 
                             type="text" 
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3]" 
-                            placeholder="프로젝트 이름을 입력해주세요"
+                            placeholder="예: 보안 모니터링 프로젝트, 이상행위 탐지 시스템"
                             value={tempName}
                             onChange={(e) => setTempName(e.target.value)}
                         />
@@ -59,7 +76,7 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                         <p className="text-[16px] font-bold">프로젝트 설명</p>
                         <textarea 
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3] min-h-[200px] resize-y" 
-                            placeholder="프로젝트 설명을 입력해주세요"
+                            placeholder="이 프로젝트에서 관리할 보안 AI 모델들의 목적과 용도를 설명해주세요."
                             value={tempDesc}
                             onChange={(e) => setTempDesc(e.target.value)}
                         />
@@ -71,4 +88,4 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
             </div>
         </div>
     );
-};
+});

@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux"
-import { useState, useEffect } from "react"
+import { useState, useEffect, forwardRef, RefObject } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import awsIcon from "../../assets/images/aws.svg"
@@ -17,15 +17,63 @@ interface ForthStepProps {
     combinedPrices: any[];
     setSelectedInstancePrice: (price: number) => void;
     onInstanceMapChange?: (map: { [modelId: string]: number }) => void;
+    currentStep: number;
 }
 
-export const ForthStep = ({ selectedModels, show, regions, infrastructure, combinedPrices, setSelectedInstancePrice, onInstanceMapChange }: ForthStepProps) => {
+export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedModels, show, regions, infrastructure, combinedPrices, setSelectedInstancePrice, onInstanceMapChange, currentStep }, ref) => {
     const [selectedModel, setSelectedModel] = useState<any>(null);
     const [selectedAwsIdxMap, setSelectedAwsIdxMap] = useState<{ [modelId: string]: number }>({});
     const [selectedTypeMap, setSelectedTypeMap] = useState<{ [modelId: string]: string }>({});
     const [selectedRegionMap, setSelectedRegionMap] = useState<{ [modelId: string]: any }>({});
     const [selectedInstanceIdxMap, setSelectedInstanceIdxMap] = useState<{ [modelId: string]: number }>({});
     const dispatch = useDispatch();
+
+    const handleModelClick = (model: any) => {
+        setSelectedModel(model);
+    };
+
+
+    const handleAwsClick = (model: any, idx: number) => {
+        setSelectedAwsIdxMap(prev => ({
+            ...prev,
+            [model.id]: idx
+        }));
+    };
+
+
+    const handleTypeClick = (model: any, type: string) => {
+        setSelectedTypeMap(prev => ({
+            ...prev,
+            [model.id]: type
+        }));
+    };
+
+
+    const handleRegionChange = (model: any, code: string) => {
+        const region = regions.find(r => r.code === code);
+        if (region) {
+            setSelectedRegionMap(prev => ({
+                ...prev,
+                [model.id]: region
+            }));
+        }
+    };
+
+
+    const handleInstanceClick = (model: any, idx: number) => {
+        setSelectedInstanceIdxMap(prev => {
+            if (prev[model.id] === idx) {
+                const newMap = { ...prev };
+                delete newMap[model.id];
+                return newMap;
+            } else {
+                return {
+                    ...prev,
+                    [model.id]: idx
+                };
+            }
+        });
+    };
 
     useEffect(() => {
         if (selectedModels.length > 0) {
@@ -62,7 +110,6 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
             const specIdx = selectedInstanceIdxMap[model.id];
             const spec = infrastructure[specIdx];
             if (spec) {
-                // combinedPrices에서 해당 모델-사양 조합의 가격 찾기
                 const combinedPrice = combinedPrices.find(
                     (cp) => cp.modelId === model.id && cp.specId === spec.id
                 );
@@ -94,54 +141,30 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
         }
     }, [selectedInstanceIdxMap, onInstanceMapChange]);
 
-    const handleModelClick = (model: any) => {
-        setSelectedModel(model);
-    };
-    const handleAwsClick = (model: any, idx: number) => {
-        setSelectedAwsIdxMap(prev => ({
-            ...prev,
-            [model.id]: idx
-        }));
-    };
-    const handleTypeClick = (model: any, type: string) => {
-        setSelectedTypeMap(prev => ({
-            ...prev,
-            [model.id]: type
-        }));
-    };
-    const handleRegionChange = (model: any, code: string) => {
-        const region = regions.find(r => r.code === code);
-        if (region) {
-            setSelectedRegionMap(prev => ({
-                ...prev,
-                [model.id]: region
-            }));
+    useEffect(() => {
+        if (show && ref && typeof ref !== "function" && (ref as RefObject<HTMLDivElement>).current) {
+            setTimeout(() => {
+                const el = (ref as RefObject<HTMLDivElement>).current!;
+                const top = el.getBoundingClientRect().top + window.scrollY;
+                const offset = 100;
+                const scrollTo = Math.max(0, top - offset);
+                window.scrollTo({ top: scrollTo, behavior: "smooth" });
+            }, 100);
         }
-    };
-    const handleInstanceClick = (model: any, idx: number) => {
-        setSelectedInstanceIdxMap(prev => {
-            // 이미 선택된 사양을 한 번 더 클릭하면 해제
-            if (prev[model.id] === idx) {
-                const newMap = { ...prev };
-                delete newMap[model.id];
-                return newMap;
-            } else {
-                return {
-                    ...prev,
-                    [model.id]: idx
-                };
-            }
-        });
-    };
+    }, [show, ref]);
 
     return (
-        <div className={`transition-all duration-500 ${show ? "opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden mt-[120px]`}>
+        <div 
+            ref={ref} 
+            className={`${show ? "block" : "hidden"} mt-[120px]`}
+        >
             <FormStepHeader
                 step="04"
                 title="서버 사양 선택" 
                 description="AI 모델별 하드웨어 구성 선택"
                 must={true}
                 information="서버 사양은 프로젝트 생성 이후 변경할 수 없습니다."
+                currentStep={currentStep}
             />
             <div className="mt-[15px]">
                 {selectedModels.length > 0 && (
@@ -256,7 +279,6 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
                         {/* 인스턴스 */}
                         <div className="grid grid-cols-4 gap-[20px] mt-[30px]">
                             {infrastructure.map((item, idx) => {
-                                // 현재 모델과 사양에 맞는 totalPricePerHour 찾기
                                 const combinedPrice = combinedPrices.find(
                                     (cp) => cp.modelId === selectedModel.id && cp.specId === item.id
                                 );
@@ -279,7 +301,7 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
                                         </div>
                                         <div className="text-[15px] font-medium text-[#7B7B7B] mt-[8px]">{item.ec2Info}</div>
                                         <div className="text-[15px] font-bold text-[#A3A3A3] mt-[8px]">
-                                            $ {combinedPrice ? combinedPrice.totalPricePerHour.toFixed(2) : '-'} /h
+                                            $ {combinedPrice ? combinedPrice.totalPricePerHour.toFixed(2) : "-"} /h
                                         </div>
                                     </div>
                                 );
@@ -287,41 +309,41 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
                         </div>
                     </BigCard>
                 )}
-            <div className="mt-8">
-                <div className="text-xl font-bold mb-2 text-[#3893FF]">모델별 선택 상세</div>
-                <div className="flex flex-col gap-2">
-                    {[...selectedModels]
-                        .sort((a, b) => Number(a.id) - Number(b.id))
-                        .map((model) => {
-                        const specIdx = selectedInstanceIdxMap[model.id];
-                        const spec = infrastructure[specIdx];
-                        const region = selectedRegionMap[model.id];
-                        const combinedPrice = spec
-                            ? combinedPrices.find(
-                                (cp) => cp.modelId === model.id && cp.specId === spec.id
-                            )
-                            : null;
-                        return (
-                            <div
-                                key={model.id}
-                                className="flex flex-row items-center gap-6 bg-[#23294a] rounded-lg px-6 py-3"
-                            >
-                                <span className="font-bold text-white min-w-[120px] max-w-[180px] flex-1 truncate">{model.name}</span>
-                                <span className="text-[#A3A3A3] min-w-[180px] max-w-[260px] flex-1 truncate">
-                                    {spec ? `${spec.ec2Spec} (${spec.ec2Info})` : "사양 미선택"}
-                                </span>
-                                <span className="text-[#A3A3A3] min-w-[180px] max-w-[260px] flex-1 truncate">
-                                    {region ? `${region.name}` : "리전 미선택"}
-                                </span>
-                                <span className="text-[#3893FF] font-bold min-w-[100px] text-right flex-shrink-0">
-                                    {combinedPrice ? `$ ${combinedPrice.totalPricePerHour.toFixed(2)} / h` : "-"}
-                                </span>
-                            </div>
-                        );
-                    })}
+                <div className="mt-8">
+                    <div className="text-xl font-bold mb-2 text-[#3893FF]">모델별 선택 상세</div>
+                    <div className="flex flex-col gap-2">
+                        {[...selectedModels]
+                            .sort((a, b) => Number(a.id) - Number(b.id))
+                            .map((model) => {
+                            const specIdx = selectedInstanceIdxMap[model.id];
+                            const spec = infrastructure[specIdx];
+                            const region = selectedRegionMap[model.id];
+                            const combinedPrice = spec
+                                ? combinedPrices.find(
+                                    (cp) => cp.modelId === model.id && cp.specId === spec.id
+                                )
+                                : null;
+                            return (
+                                <div
+                                    key={model.id}
+                                    className="flex flex-row items-center gap-6 bg-[#23294a] rounded-lg px-6 py-3"
+                                >
+                                    <span className="font-bold text-white min-w-[120px] max-w-[180px] flex-1 truncate">{model.name}</span>
+                                    <span className="text-[#A3A3A3] min-w-[180px] max-w-[260px] flex-1 truncate">
+                                        {spec ? `${spec.ec2Spec} (${spec.ec2Info})` : "사양 미선택"}
+                                    </span>
+                                    <span className="text-[#A3A3A3] min-w-[180px] max-w-[260px] flex-1 truncate">
+                                        {region ? `${region.name}` : "리전 미선택"}
+                                    </span>
+                                    <span className="text-[#3893FF] font-bold min-w-[100px] text-right flex-shrink-0">
+                                        {combinedPrice ? `$ ${combinedPrice.totalPricePerHour.toFixed(2)} / h` : "-"}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     );
-};
+});

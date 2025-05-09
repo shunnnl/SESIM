@@ -30,9 +30,9 @@ export const Navbar: React.FC = () => {
     
     return (
         <nav className="flex justify-between items-center px-4 border-b-2 border-white/20 md:px-12 h-[86px]">
-            <div className="flex items-center lg:gap-[120px] md:gap-2" >
+            <div className="flex items-center gap-4 md:gap-1 lg:gap-[40px]" >
                 <SesimLogo />
-                <div className="hidden md:flex gap-8">
+                <div className="hidden md:flex">
                     <NavbarMenu />
                 </div>
             </div>

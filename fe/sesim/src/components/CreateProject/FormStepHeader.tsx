@@ -6,12 +6,16 @@ interface FormStepHeaderProps {
     description: string;
     must?: boolean;
     information?: string;
+    currentStep?: number;
 }
 
-export const FormStepHeader : React.FC<FormStepHeaderProps> = ({ step, title, description, information, must }) => {
+export const FormStepHeader : React.FC<FormStepHeaderProps> = ({ step, title, description, information, must, currentStep }) => {
+    const stepNumber = parseInt(step);
+    const isCurrentStep = currentStep === stepNumber - 1;
+
     return (
-        <div className="flex flex-row gap-[20px] items-start">  
-            <p className="text-[50px] font-bold text-[#949494]/50 leading-none select-none">{step}</p>
+        <div className="form-step-header flex flex-row gap-[20px] items-start">
+            <p className={`text-[50px] font-bold leading-none select-none ${isCurrentStep ? "text-white" : "text-[#949494]/50"}`}>{step}</p>
             <div className="flex-1 flex flex-col gap-[2px]">
                 <h2 className="text-[25px] font-bold">{title}</h2>
                 <div className="flex flex-row justify-between tems-center gap-0 text-[16px] font-normal">
@@ -21,7 +25,11 @@ export const FormStepHeader : React.FC<FormStepHeaderProps> = ({ step, title, de
                     </p>
                     {information && (
                         <p className="flex items-center gap-2 text-[15px] text-white">
-                            <img src={infoIcon} alt="info" className=" w-[20px] h-[20px]" />
+                            <img
+                                src={infoIcon}
+                                alt="info"
+                                className=" w-[20px] h-[20px]"
+                            />
                             {information}
                         </p>
                     )}
