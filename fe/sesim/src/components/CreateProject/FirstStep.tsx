@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useDispatch } from "react-redux";
 import { BigCard } from "./BigCard"
@@ -18,6 +18,16 @@ export const FirstStep = ({ setFirstStepDone, roleArns, currentStep }: FirstStep
     const [validationMessage, setValidationMessage] = useState("")
     const [arn, setArn] = useState("")
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const headerElement = document.querySelector('.form-step-header');
+        if (headerElement) {
+            const top = headerElement.getBoundingClientRect().top + window.scrollY;
+            const offset = 100; // 상단 고정바 높이(px)
+            const scrollTo = Math.max(0, top - offset);
+            window.scrollTo({ top: scrollTo, behavior: "smooth" });
+        }
+    }, []);
 
     const handleValidation = async () => {
         const response = await verifyRoleArn({ roleArn: arn });
