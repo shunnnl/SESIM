@@ -1,5 +1,11 @@
 import { motion } from "framer-motion";
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { RootState } from '../store';
+import { LoginModal } from '../components/Popup/LoginModal';
 import { BlueCircle } from "../components/common/BlueCircle";
+import { SignUpModal } from '../components/Popup/SignUpModal';
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import { AiImage } from "../components/ModelInferenceService/AiImage";
 import PageBackground from "../assets/images/model-inference-service-bg.png";
@@ -7,6 +13,33 @@ import { PageTitleImageWithText } from "../components/common/PageTitleImageWithT
 import { ServiceDescriptionList } from "../components/ModelInferenceService/ServiceDescriptionList";
 
 export const ModelInferenceServicePage: React.FC = () => {
+    const navigate = useNavigate();
+    
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+    const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+
+    const handleSignUpClick = () => {
+        setIsLoginModalOpen(false);
+        setIsSignUpModalOpen(true);
+    };
+
+
+    const handleLoginClick = () => {
+        setIsLoginModalOpen(true);
+        setIsSignUpModalOpen(false);
+    };
+
+
+    const handleCreateProject = () => {
+        window.scrollTo(0, 0);
+        if (isLoggedIn) {
+            navigate('/model-inference-service/create-project');
+        } else {
+            setIsLoginModalOpen(true);
+        }
+    };
+
     return (
         <div>
             <PageTitleImageWithText
@@ -79,10 +112,10 @@ export const ModelInferenceServicePage: React.FC = () => {
                             transition={{ duration: 1, delay: 1, ease: "easeOut" }}
                         >
                             <AnimatedButton
-                                text="프로젝트 생성하기" 
-                                link="/model-inference-service/create-project" 
+                                text="프로젝트 생성하기"
+                                link=""
                                 width="250px" 
-                                onClick={() => window.scrollTo(0,0)}
+                                onClick={handleCreateProject}
                             />
                         </motion.div>
                     </motion.div>
@@ -96,6 +129,18 @@ export const ModelInferenceServicePage: React.FC = () => {
                     </motion.div>
                 </motion.div>
             </motion.div>
+
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={() => setIsLoginModalOpen(false)}
+                onSwitchToSignUp={handleSignUpClick}
+            />
+
+            <SignUpModal
+                isOpen={isSignUpModalOpen}
+                onClose={() => setIsSignUpModalOpen(false)}
+                onSwitchToLogin={handleLoginClick}
+            />
         </div>
     );
 };
