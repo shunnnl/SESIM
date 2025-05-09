@@ -30,14 +30,13 @@ import static com.backend.sesim.domain.deployment.constant.DeploymentConstants.*
 @RequiredArgsConstructor
 public class DeploymentService {
 
-    // TerraformService의 의존성을 가지지 않고, 필요한 의존성을 직접 주입
     private final TerraformTemplateService templateService;
     private final TerraformExecutor terraformExecutor;
     private final K3sSetupService k3sSetupService;
     private final ProjectRepository projectRepository;
-    private final ProjectModelInfoRepository projectModelInfoRepository;
     private final DeploymentStepRepository deploymentStepRepository;
     private final SqlService sqlService;
+    private final SSEService sseService;
 
     @Value("${aws.saas.access-key}")
     private String saasAccessKey;
@@ -203,13 +202,16 @@ public class DeploymentService {
         step.updateStatus(status);
         deploymentStepRepository.saveAndFlush(step);
         log.info("배포 단계 상태 업데이트 - 프로젝트 ID: {}, 단계: {}, 상태: {}", projectId, stepName, status);
+
+        // SSE를 통해 상태 업데이트 알림
+        sseService.notifyDeploymentStatusUpdate(step);
     }
 
     /**
      * 현재 진행 중인 단계를 실패로 표시합니다.
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected  void updateCurrentStepToFailed(Long projectId) {
+    protected void updateCurrentStepToFailed(Long projectId) {
         List<DeploymentStep> steps = deploymentStepRepository.findByProjectIdOrderByStepOrder(projectId);
 
         for (DeploymentStep step : steps) {
@@ -217,6 +219,9 @@ public class DeploymentService {
                 step.updateStatus(STATUS_FAILED);
                 deploymentStepRepository.saveAndFlush(step); // 즉시 DB에 반영
                 log.info("현재 진행 중인 단계를 실패로 표시 - 프로젝트 ID: {}, 단계: {}", projectId, step.getStepName());
+
+                // SSE를 통해 상태 업데이트 알림
+                sseService.notifyDeploymentStatusUpdate(step);
                 break;
             }
         }
