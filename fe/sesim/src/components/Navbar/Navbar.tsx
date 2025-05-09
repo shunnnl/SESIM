@@ -46,7 +46,7 @@ export const Navbar: React.FC = () => {
 
     const handleLogout = () => {
         dispatch(logout());
-        navigate('/');
+        navigate("/");
         setIsDropdownOpen(false);
     };
 
