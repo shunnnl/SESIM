@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { login } from "../../services/authService";
 import { EyeIcon, EyeSlashIcon } from "../common/Icons";
 import { login as loginAction } from "../../store/authSlice";
@@ -19,8 +20,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
 
     const [showPassword, setShowPassword] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
+    const [isEmailShaking, setIsEmailShaking] = useState(false);
+    const [isPasswordShaking, setIsPasswordShaking] = useState(false);
     const [isEmailFocused, setIsEmailFocused] = useState(false);
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+    const [showErrorBox, setShowErrorBox] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -31,28 +35,39 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
         setPasswordError("");
         setLoginErrorMessage("");
         setShowPassword(false);
+        setShowErrorBox(false);
         onClose();
     };
 
 
     const validateLoginForm = () => {
         let isValid = true;
+        
         setEmailError("");
         setPasswordError("");
+        setIsEmailShaking(false);
+        setIsPasswordShaking(false);
 
         if (!email) {
             setEmailError("이메일을 입력해주세요.");
+            setIsEmailShaking(true);
+            isValid = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setEmailError("유효한 이메일 형식이 아닙니다.");
+            setIsEmailShaking(true);
             isValid = false;
         }
-        // } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        //     setEmailError("유효한 이메일 형식이 아닙니다.");
-        //     isValid = false;
-        // }
 
         if (!password) {
             setPasswordError("비밀번호를 입력해주세요.");
+            setIsPasswordShaking(true);
             isValid = false;
         }
+
+        setTimeout(() => {
+            setIsEmailShaking(false);
+            setIsPasswordShaking(false);
+        }, 500);
 
         return isValid;
     };
@@ -77,9 +92,21 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                 } else {
                     console.log("로그인 실패:", response.data);
                     setLoginErrorMessage("로그인 정보를 다시 확인해주세요.");
+                    setShowErrorBox(true);
+
+                    setTimeout(() => {
+                        setShowErrorBox(false);
+                    }, 3000);
                 }
             } catch (error) {
                 console.error("로그인 실패:", error);
+
+                setLoginErrorMessage("네트워크 통신 오류가 발생했습니다.");
+                setShowErrorBox(true);
+                
+                setTimeout(() => {
+                    setShowErrorBox(false);
+                }, 3000);
             }
         }
     };
@@ -155,8 +182,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                                     placeholder={isEmailFocused ? "" : "이메일 주소를 입력해주세요."}
                                     className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
                                 />
-                                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 group-focus-within:w-full"></div>
+                                <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isEmailShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
+                                <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] group-focus-within:w-full transition-all duration-300`}></div>
                                 {emailError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{emailError}</p>}
                             </div>
                         </div>
@@ -165,8 +192,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                         <div className="w-full">
                             <div className="relative group">
                                 <label
-                                    className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300
-                                        ${isPasswordFocused || password ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
+                                    className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isPasswordFocused || password ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
                                 >
                                     비밀번호
                                 </label>
@@ -191,8 +217,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                                 >
                                     {showPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
                                 </button>
-                                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 group-focus-within:w-full"></div>
+                                <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isPasswordShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
+                                <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] group-focus-within:w-full transition-all duration-300`}></div>
                                 {passwordError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{passwordError}</p>}
                             </div>
                         </div>
@@ -221,9 +247,68 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                             </button>
                         </form>
 
+                        {/* 에러 메시지 박스 */}
+                        <AnimatePresence>
+                            {showErrorBox && (
+                                <motion.div 
+                                    className="relative w-full mb-2"
+                                    initial={{ opacity: 0, y: -20, scaleY: 0, height: 0 }}
+                                    animate={{ 
+                                        opacity: 1, 
+                                        y: 0, 
+                                        scaleY: 1, 
+                                        height: "auto",
+                                        transition: {
+                                            type: "spring",
+                                            stiffness: 300,
+                                            damping: 20
+                                        }
+                                    }}
+                                    exit={{ 
+                                        opacity: 0, 
+                                        y: -10, 
+                                        scaleY: 0, 
+                                        height: 0,
+                                        transition: {
+                                            duration: 0.3,
+                                            ease: "easeInOut"
+                                        } 
+                                    }}
+                                >
+                                    <motion.div 
+                                        className="absolute inset-0 rounded-[12px] p-[1px]"
+                                        style={{
+                                            background: "linear-gradient(to right, #FF4040, #FF7373)",
+                                            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                                            WebkitMaskComposite: "xor",
+                                            maskComposite: "exclude",
+                                            pointerEvents: "none",
+                                        }}
+                                        animate={{
+                                            opacity: [0.5, 1, 0.5],
+                                        }}
+                                        transition={{
+                                            duration: 2,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        }}
+                                    ></motion.div>
+                                    <div className="w-full py-2 px-4 rounded-[12px] bg-[#3A1A1A]/60 backdrop-blur-md">
+                                        <motion.p 
+                                            className="font-['Pretendard'] text-red-400 text-sm text-center"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.2 }}
+                                        >
+                                            {loginErrorMessage}
+                                        </motion.p>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         {/* 회원가입 버튼 */}
-                        <div className="flex justify-between">
-                            <p className={`font-['Pretendard'] text-red-500 text-xs mt-1 hidden: ${loginErrorMessage ? false : true}`}>{loginErrorMessage}</p>
+                        <div className="flex justify-end">
                             <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
                                 아직 회원이 아니신가요?{"  "}
                                 <a
