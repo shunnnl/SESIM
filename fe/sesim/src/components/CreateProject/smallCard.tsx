@@ -1,5 +1,3 @@
-import sesimIcon from "../../assets/images/sesim-logo.png"
-
 interface SmallCardProps {  
     description: string;
     modelName: string;
@@ -16,14 +14,7 @@ export const SmallCard : React.FC<SmallCardProps> = ({ description, modelName, i
             }`}
         >
             <p className="text-[12px] font-normal">{description}</p>
-            <div className="flex flex-row items-center">
-                <img 
-                    src={sesimIcon} 
-                    alt="sesimIcon" 
-                    className="w-[30px] h-[30px]"
-                />
-                <p className="text-[20px] font-bold ml-2">{modelName}</p>
-            </div>
+            <p className="text-[22px] font-bold ml-2">{modelName}</p>
         </button>
     );
 };

@@ -43,7 +43,7 @@ export const ModelDropdown: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full -left-16 translate-x-1/2 mt-2 w-48 bg-[#242C4D] rounded-lg shadow-lg border border-[#3C3D5C] overflow-hidden"
+                        className="absolute -left-16 translate-x-1/2 top-1/2 translate-y-1/2 mt-[60px] w-48 bg-[#242C4D] rounded-lg shadow-lg border border-[#3C3D5C] overflow-hidden"
                     >
                         {models.map((model) => (
                             <Link

@@ -1,7 +1,9 @@
+import { useDispatch } from "react-redux";
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { login } from "../../services/authService";
 import { EyeIcon, EyeSlashIcon } from "../common/Icons";
-import { motion, AnimatePresence } from "framer-motion";
+import { login as loginAction } from "../../store/authSlice";
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -23,6 +25,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
     const [isEmailFocused, setIsEmailFocused] = useState(false);
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
     const [showErrorBox, setShowErrorBox] = useState(false);
+
+    const dispatch = useDispatch();
 
     const handleClose = () => {
         setEmail("");
@@ -68,7 +72,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
         return isValid;
     };
 
-
     const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -76,15 +79,18 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
 
         if (isValid) {
             try {
-                const data = await login({ email, password });
+                const response = await login({ email, password });
 
-                if (data.success) {
-                    console.log("로그인 성공:", data);
+                if (response.success) {
+                    const { email, nickname } = response.data;
+                    const { accessToken } = response.data.token;
+                    
+                    console.log("로그인 성공:", response.data);
+                    dispatch(loginAction({ email, nickname, accessToken }));
 
                     handleClose();
                 } else {
-                    console.log("로그인 실패:", data);
-
+                    console.log("로그인 실패:", response.data);
                     setLoginErrorMessage("로그인 정보를 다시 확인해주세요.");
                     setShowErrorBox(true);
 

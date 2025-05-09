@@ -1,7 +1,7 @@
-import { useState } from "react"
-import { motion } from "framer-motion"
 import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react"
 import { BigCard } from "./BigCard"
+import { motion } from "framer-motion"
 import { FormStepHeader } from "./FormStepHeader"
 import { setAwsSession } from "../../store/createProjectInfoSlice";
 import { verifyRoleArn } from "../../services/createProjectService"
@@ -10,29 +10,38 @@ import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
 interface FirstStepProps {
     roleArns: { id: number; roleArn: string }[];
     setFirstStepDone: (done: boolean) => void;
+    currentStep: number;
 }
 
-export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
+export const FirstStep = ({ setFirstStepDone, roleArns, currentStep }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
     const [validationMessage, setValidationMessage] = useState("")
     const [arn, setArn] = useState("")
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        const headerElement = document.querySelector('.form-step-header');
+        if (headerElement) {
+            const top = headerElement.getBoundingClientRect().top + window.scrollY;
+            const offset = 100;
+            const scrollTo = Math.max(0, top - offset);
+            window.scrollTo({ top: scrollTo, behavior: "smooth" });
+        }
+    }, []);
+
     const handleValidation = async () => {
         const response = await verifyRoleArn({ roleArn: arn });
         if (response.success && response.data) {
             dispatch(setAwsSession({
-                accessKey: response.data.accessKey,
-                secretKey: response.data.secretKey,
-                sessionToken: response.data.sessionToken,
-                arnId: response.data.arnId,
+                arnId: response.data.id,
+                roleArn: response.data.roleArn,
             }))
             setValidationStatus("success")
             setValidationMessage("검증 완료")
             setFirstStepDone(true)
         } else {
             setValidationStatus("fail")
-            setValidationMessage(response.error)
+            setValidationMessage(response.error.message)
             setFirstStepDone(false)
         }
     }
@@ -48,6 +57,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
                 title="IAM Role 연결" 
                 description="SaaS 포털이 고객 AWS에 접근하려면 IAM Role 연결이 필요합니다."
                 must={true}
+                currentStep={currentStep}
             />
             <div className="mt-[15px]">
                 <BigCard>
@@ -87,7 +97,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
 
                     <div className="mt-[30px]">
                         <p className="text-[16px] font-normal text-[#979797]">* 검증할 IAM Role의 ARN을 입력하고 Assume Role 권한을 확인합니다.</p>
-                        <p className="mt-[5px] text-[16px] font-bold">ARN 검증</p>
+                        <p className="mt-[5px] text-[16px] font-bold">IAM Role 검증</p>
                         <div className="flex flex-row items-center gap-[20px]">
                             <input 
                                 type="text" 
@@ -101,7 +111,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
                                 onClick={handleValidation}
                                 disabled={validationStatus === "success"}
                             >
-                                <p className="text-[16px] font-medium">Assume Role 검증</p>
+                                <p className="text-[16px] font-medium">IAM Role 검증</p>
                             </button>
                         </div>
                         {validationStatus === "success" && (
