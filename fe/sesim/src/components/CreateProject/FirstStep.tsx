@@ -10,9 +10,10 @@ import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
 interface FirstStepProps {
     roleArns: { id: number; roleArn: string }[];
     setFirstStepDone: (done: boolean) => void;
+    currentStep: number;
 }
 
-export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
+export const FirstStep = ({ setFirstStepDone, roleArns, currentStep }: FirstStepProps) => {
     const [validationStatus, setValidationStatus] = useState<"none" | "success" | "fail">("none")
     const [validationMessage, setValidationMessage] = useState("")
     const [arn, setArn] = useState("")
@@ -46,6 +47,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
                 title="IAM Role 연결" 
                 description="SaaS 포털이 고객 AWS에 접근하려면 IAM Role 연결이 필요합니다."
                 must={true}
+                currentStep={currentStep}
             />
             <div className="mt-[15px]">
                 <BigCard>

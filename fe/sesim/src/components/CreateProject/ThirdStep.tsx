@@ -8,10 +8,10 @@ import { useEffect, useState, forwardRef, RefObject } from "react";
 interface ThirdStepProps {
     show: boolean;
     models: any[];
-
+    currentStep: number;
 }
 
-export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, models }, ref) => {
+export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, models, currentStep }, ref) => {
     const dispatch = useDispatch();
     const selectedModelsFromRedux = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
     const [selectedModels, setSelectedModelsLocal] = useState<any[]>([]);
@@ -55,6 +55,7 @@ export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, mod
                 description="사용할 보안 AI 모델을 선택해 주세요 (1개이상)"
                 must={true}
                 information="모델은 프로젝트 생성 이후 변경할 수 없습니다."
+                currentStep={currentStep}
             />
             <div className="px-[20px] pb-[20px]">
                 <div className="mt-[15px] mr-[200px] grid grid-cols-3 gap-[20px]">

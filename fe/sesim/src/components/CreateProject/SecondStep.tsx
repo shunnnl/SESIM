@@ -7,9 +7,10 @@ import { setProjectInfo } from "../../store/createProjectInfoSlice";
 interface SecondStepProps {
     show: boolean;
     setSecondStepDone: (done: boolean) => void;
+    currentStep: number;
 }
 
-export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSecondStepDone, show }, ref) => {
+export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSecondStepDone, show, currentStep }, ref) => {
     const [isNameValid, setIsNameValid] = useState<"none" | "success" | "fail">("none");
     const [tempName, setTempName] = useState("");
     const [tempDesc, setTempDesc] = useState("");
@@ -51,6 +52,7 @@ export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSeco
                 step="02"
                 title="프로젝트 기본 정보" 
                 description="프로젝트는 여러 보안 AI 모델을 관리하는 단위입니다. 프로젝트 이름과 설명을 입력하여 AI 모델들을 체계적으로 관리할 수 있습니다."
+                currentStep={currentStep}
             />
             <div className="mt-[15px]">
                 <BigCard>

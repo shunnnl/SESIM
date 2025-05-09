@@ -17,9 +17,10 @@ interface ForthStepProps {
     combinedPrices: any[];
     setSelectedInstancePrice: (price: number) => void;
     onInstanceMapChange?: (map: { [modelId: string]: number }) => void;
+    currentStep: number;
 }
 
-export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedModels, show, regions, infrastructure, combinedPrices, setSelectedInstancePrice, onInstanceMapChange }, ref) => {
+export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedModels, show, regions, infrastructure, combinedPrices, setSelectedInstancePrice, onInstanceMapChange, currentStep }, ref) => {
     const [selectedModel, setSelectedModel] = useState<any>(null);
     const [selectedAwsIdxMap, setSelectedAwsIdxMap] = useState<{ [modelId: string]: number }>({});
     const [selectedTypeMap, setSelectedTypeMap] = useState<{ [modelId: string]: string }>({});
@@ -154,6 +155,7 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
                 description="AI 모델별 하드웨어 구성 선택"
                 must={true}
                 information="서버 사양은 프로젝트 생성 이후 변경할 수 없습니다."
+                currentStep={currentStep}
             />
             <div className="mt-[15px]">
                 {selectedModels.length > 0 && (

@@ -105,17 +105,20 @@ export const CreateProjectPage = () => {
             <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? ' pb-[200px]' : ''}`}>
                 <FirstStep
                     roleArns={roleArns}
-                    setFirstStepDone={setFirstStepDone} 
+                    setFirstStepDone={setFirstStepDone}
+                    currentStep={!firstStepDone ? 0 : -1}
                 />
                 <SecondStep 
                     ref={secondStepRef}
                     show={firstStepDone}
-                    setSecondStepDone={setSecondStepDone} 
+                    setSecondStepDone={setSecondStepDone}
+                    currentStep={firstStepDone && !secondStepDone ? 1 : -1}
                 />
                 <ThirdStep
                     ref={thirdStepRef}
                     models={models}
                     show={secondStepDone}
+                    currentStep={secondStepDone && selectedModels.length === 0 ? 2 : -1}
                 />
                 <ForthStep
                     ref={forthStepRef}
@@ -126,6 +129,7 @@ export const CreateProjectPage = () => {
                     show={selectedModels.length > 0}
                     setSelectedInstancePrice={setSelectedInstancePrice}
                     onInstanceMapChange={setSelectedInstanceIdxMap}
+                    currentStep={selectedModels.length > 0 ? 3 : -1}
                 />
             </div>
             
