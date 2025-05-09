@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react"
-import { BigCard } from "./BigCard"
 import { motion } from "framer-motion"
+import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import { setAwsSession } from "../../store/createProjectInfoSlice";
 import { verifyRoleArn } from "../../services/createProjectService"
@@ -23,7 +23,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns, currentStep }: FirstStep
         const headerElement = document.querySelector('.form-step-header');
         if (headerElement) {
             const top = headerElement.getBoundingClientRect().top + window.scrollY;
-            const offset = 100; // 상단 고정바 높이(px)
+            const offset = 100;
             const scrollTo = Math.max(0, top - offset);
             window.scrollTo({ top: scrollTo, behavior: "smooth" });
         }

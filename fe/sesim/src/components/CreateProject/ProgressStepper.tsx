@@ -20,10 +20,10 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({ currentStep })
                 <div className="flex flex-col items-center min-w-[160px]">
                 <div className={`w-9 h-9 flex items-center justify-center rounded-full border-2
                     ${currentStep === idx
-                    ? 'bg-[#3893FF] border-[#3893FF] text-white font-bold shadow-lg'
+                    ? "bg-[#3893FF] border-[#3893FF] text-white font-bold shadow-lg"
                     : currentStep > idx
-                        ? 'bg-[#A3D8FF] border-[#3893FF] text-[#3893FF]'
-                        : 'bg-[#23294a] border-[#505671] text-[#A3A3A3]'}
+                        ? "bg-[#A3D8FF] border-[#3893FF] text-[#3893FF]"
+                        : "bg-[#23294a] border-[#505671] text-[#A3A3A3]"}
                 `}>
                     {currentStep > idx ? (
                     <svg 
@@ -43,11 +43,11 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({ currentStep })
                     idx + 1
                     )}
                 </div>
-                <span className={`mt-2 text-[15px] font-semibold ${currentStep === idx ? 'text-[#3893FF]' : 'text-[#A3A3A3]'}`}>{step.label}</span>
+                <span className={`mt-2 text-[15px] font-semibold ${currentStep === idx ? "text-[#3893FF]" : "text-[#A3A3A3]"}`}>{step.label}</span>
                 </div>
                 <div className="mt-4">
                     {idx < steps.length - 1 && (
-                    <div className={`h-1 w-24 md:w-32 ${currentStep > idx ? 'bg-[#3893FF]' : 'bg-[#505671]'}`}></div>
+                    <div className={`h-1 w-24 md:w-32 ${currentStep > idx ? "bg-[#3893FF]" : "bg-[#505671]"}`}></div>
                     )}
                 </div>
             </React.Fragment>

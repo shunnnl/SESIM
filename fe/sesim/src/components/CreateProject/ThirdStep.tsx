@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState, forwardRef, RefObject } from "react";
 import { SmallCard } from "./smallCard";
 import { RootState } from "../../store";
 import { FormStepHeader } from "./FormStepHeader"
 import { setSelectedModels } from "../../store/createProjectInfoSlice";
-import { useEffect, useState, forwardRef, RefObject } from "react";
 
 interface ThirdStepProps {
     show: boolean;
@@ -14,14 +14,14 @@ interface ThirdStepProps {
 export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, models, currentStep }, ref) => {
     const dispatch = useDispatch();
     const selectedModelsFromRedux = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
-    const [selectedModels, setSelectedModelsLocal] = useState<any[]>([]);
+    const [selectedModelList, setSelectedModelList] = useState<any[]>([]);
 
     useEffect(() => {
         if (show && ref && typeof ref !== "function" && (ref as RefObject<HTMLDivElement>).current) {
             setTimeout(() => {
                 const el = (ref as RefObject<HTMLDivElement>).current!;
                 const top = el.getBoundingClientRect().top + window.scrollY;
-                const offset = 100; // 상단 고정바 높이(px)
+                const offset = 100;
                 const scrollTo = Math.max(0, top - offset);
                 window.scrollTo({ top: scrollTo, behavior: "smooth" });
             }, 100);
@@ -29,26 +29,28 @@ export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, mod
     }, [show, ref]);
 
     useEffect(() => {
-        // show가 true가 될 때마다 redux에서 선택된 모델을 초기값으로 세팅
         if (show) {
-            setSelectedModelsLocal(selectedModelsFromRedux);
+            setSelectedModelList(selectedModelsFromRedux);
         }
     }, [show, selectedModelsFromRedux]);
 
     const handleModelClick = (model: any) => {
-        if (selectedModels.includes(model)) {
-            setSelectedModelsLocal(selectedModels.filter((m: any) => m !== model));
+        if (selectedModelList.includes(model)) {
+            setSelectedModelList(selectedModelList.filter((selectedModel: any) => selectedModel !== model));
         } else {
-            setSelectedModelsLocal([...selectedModels, model]);
+            setSelectedModelList([...selectedModelList, model]);
         }
     }
 
     const handleDone = () => {
-        dispatch(setSelectedModels(selectedModels));
+        dispatch(setSelectedModels(selectedModelList));
     }
 
     return (
-        <div ref={ref} className={`${show ? "block" : "hidden"} mt-[120px]`}>
+        <div
+            ref={ref}
+            className={`${show ? "block" : "hidden"} mt-[120px]`}
+        >
             <FormStepHeader
                 step="03"
                 title="보안 AI 모델 선택" 
@@ -64,7 +66,7 @@ export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, mod
                             key={idx}
                             description={model.description}
                             modelName={model.name}
-                            isSelected={selectedModels.includes(model)}
+                            isSelected={selectedModelList.includes(model)}
                             onClick={() => handleModelClick(model)}
                         />
                     ))}
@@ -72,7 +74,7 @@ export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, mod
                 <button 
                     className="mt-[30px] px-[20px] bg-[#2C304B] border-[#505671] border-[1px] rounded-[10px] p-[10px] flex flex-row items-center gap-[10px] h-[50px] hover:bg-[#3C4061] transition-colors duration-200 disabled:bg-[#44485e] disabled:text-[#A3A3A3] disabled:cursor-not-allowed"
                     onClick={handleDone}
-                    disabled={selectedModels.length < 1}
+                    disabled={selectedModelList.length < 1}
                 >
                     <p className="text-[16px] font-medium">모델 선택 완료</p>
                 </button>

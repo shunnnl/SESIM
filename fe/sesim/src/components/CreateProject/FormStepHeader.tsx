@@ -15,7 +15,7 @@ export const FormStepHeader : React.FC<FormStepHeaderProps> = ({ step, title, de
 
     return (
         <div className="form-step-header flex flex-row gap-[20px] items-start">
-            <p className={`text-[50px] font-bold leading-none select-none ${isCurrentStep ? 'text-white' : 'text-[#949494]/50'}`}>{step}</p>
+            <p className={`text-[50px] font-bold leading-none select-none ${isCurrentStep ? "text-white" : "text-[#949494]/50"}`}>{step}</p>
             <div className="flex-1 flex flex-col gap-[2px]">
                 <h2 className="text-[25px] font-bold">{title}</h2>
                 <div className="flex flex-row justify-between tems-center gap-0 text-[16px] font-normal">

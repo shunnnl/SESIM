@@ -1,5 +1,5 @@
-import { useState, useEffect, forwardRef, RefObject } from "react"
 import { useDispatch } from "react-redux";
+import { useState, useEffect, forwardRef, RefObject } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import { setProjectInfo } from "../../store/createProjectInfoSlice";
@@ -39,7 +39,7 @@ export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSeco
             setTimeout(() => {
                 const el = (ref as RefObject<HTMLDivElement>).current!;
                 const top = el.getBoundingClientRect().top + window.scrollY;
-                const offset = 100; // 상단 고정바 높이(px)
+                const offset = 100;
                 const scrollTo = Math.max(0, top - offset);
                 window.scrollTo({ top: scrollTo, behavior: "smooth" });
             }, 100);
@@ -47,7 +47,10 @@ export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSeco
     }, [show, ref]);
 
     return (
-        <div ref={ref} className={`mt-[120px] ${show ? "block" : "hidden"}`}>
+        <div
+            ref={ref}
+            className={`mt-[120px] ${show ? "block" : "hidden"}`}
+        >
             <FormStepHeader
                 step="02"
                 title="프로젝트 기본 정보" 

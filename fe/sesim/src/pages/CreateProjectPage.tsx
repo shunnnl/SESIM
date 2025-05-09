@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
 import { FirstStep } from "../components/CreateProject/FirstStep";
@@ -102,7 +102,7 @@ export const CreateProjectPage = () => {
                     3
                 }
             />
-            <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? ' pb-[200px]' : ''}`}>
+            <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? " pb-[200px]" : ""}`}>
                 <FirstStep
                     roleArns={roleArns}
                     setFirstStepDone={setFirstStepDone}
@@ -132,11 +132,9 @@ export const CreateProjectPage = () => {
                     currentStep={selectedModels.length > 0 ? 3 : -1}
                 />
             </div>
-            
-            {/* 요금/버튼 영역: 조건 만족 시 하단 고정, 자연스러운 등장 */}
             <div
                 className={`fixed left-0 bottom-0 w-full z-50 transition-all duration-500
-                    ${selectedModels.length > 0 && selectedInstancePrice > 0 ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
+                    ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
                 `}
                 style={{ maxHeight: "1000px" }}
             >
