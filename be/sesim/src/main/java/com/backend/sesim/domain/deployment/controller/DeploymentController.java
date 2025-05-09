@@ -5,6 +5,7 @@ import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
 import com.backend.sesim.domain.deployment.dto.response.*;
 import com.backend.sesim.domain.deployment.service.DeploymentOptionService;
 import com.backend.sesim.domain.deployment.service.ProjectService;
+import com.backend.sesim.domain.deployment.service.SSEService;
 import com.backend.sesim.domain.deployment.service.TerraformService;
 import com.backend.sesim.global.dto.CommonResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/deployment")
@@ -23,6 +25,7 @@ public class DeploymentController {
     private final TerraformService terraformDeployService;
     private final DeploymentOptionService deployService;
     private final ProjectService projectService;
+    private final SSEService sseService;
 
     @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
     @PostMapping("/terraform")
@@ -43,19 +46,19 @@ public class DeploymentController {
         return CommonResponseDto.ok(projectService.getUserProjects());
     }
 
-    @Operation(summary = "프로젝트 Alb 주소 조회", description = "현재 로그인한 사용자의 프로젝트 및 Alb주소를 조회합니다.")
-    @GetMapping("/alb")
-    public CommonResponseDto<ProjectDeploymentResponse> getProjectAlbAddress() {
-        ProjectDeploymentResponse response = projectService.getProjectDeploymentStatus();
-        return CommonResponseDto.ok(response);
-    }
-
     @Operation(summary = "API 키 확인", description = "배포된 모델의 API 키를 확인하고 반환합니다.")
     @PostMapping("/apikey")
     public CommonResponseDto<ApiKeyResponse> checkApiKey(@RequestBody ApiKeyCheckRequest request) {
         log.info("API 키 확인 요청: projectId={}, modelId={}", request.getProjectId(), request.getModelId());
         ApiKeyResponse response = projectService.checkAndGetApiKey(request);
         return CommonResponseDto.ok(response);
+    }
+
+    @Operation(summary = "Alb 주소 조회 및 배포 상태 실시간 모니터링", description = "모든 프로젝트의 Alb 주소 및 배포 상태를 실시간으로 모니터링하는 SSE 스트림을 제공합니다.")
+    @GetMapping(value = "/status/stream", produces = "text/event-stream")
+    public SseEmitter streamDeploymentStatus() {
+        log.info("배포 상태 스트림 요청 수신");
+        return sseService.subscribe();
     }
 
     @Operation(summary = "사용자 전체 API 사용량 조회", description = "현재 로그인한 사용자의 모든 프로젝트 API 사용량을 조회합니다.")
