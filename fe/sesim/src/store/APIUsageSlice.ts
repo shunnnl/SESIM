@@ -29,7 +29,11 @@ export const fetchAPIUsageList = createAsyncThunk<APIUsageProject[]>(
 const apiUsageSlice = createSlice({
     name: "apiUsage",
     initialState,
-    reducers: {},
+    reducers: {
+        updateAPIUsageProjects: (state, action: PayloadAction<APIUsageProject[]>) => {
+            state.projects = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchAPIUsageList.pending, (state) => {
@@ -46,5 +50,10 @@ const apiUsageSlice = createSlice({
             });
     },
 });
+
+// export 액션 추가
+export const { updateAPIUsageProjects } = apiUsageSlice.actions;
+
+
 
 export default apiUsageSlice.reducer;

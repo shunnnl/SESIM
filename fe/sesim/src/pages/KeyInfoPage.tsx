@@ -2,23 +2,19 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { Sidebar } from "../components/Sidebar";
-import { Project } from "../store/keyinfoSlice";
+import { Project } from "../types/keyinfoTypes";
 import { RootState, AppDispatch } from "../store";
-import { fetchKeyInfo } from "../services/keyinfoService";
+import { fetchKeyInfo } from "../store/keyinfoSlice"; // 수정된 액션 import
 import ItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 
 export const KeyInfoPage = () => {
     const dispatch = useDispatch<AppDispatch>();
 
-    const { loading, error } = useSelector((state: RootState) => state.keyinfo);
-
-    const { projects } = useSelector((state: RootState) => state.keyinfo);
+    const { loading, error, projects } = useSelector((state: RootState) => state.keyinfo);
 
     useEffect(() => {
-        dispatch(fetchKeyInfo());
+        dispatch(fetchKeyInfo()); // 데이터 불러오기
     }, [dispatch]);
-
-    console.log("Projects:", projects);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -84,7 +80,6 @@ export const KeyInfoPage = () => {
 
                 <>
                     {Array.isArray(projects) && projects.map((project: Project, index: number) => {
-                        console.log("Project Data:", project);
                         return (
                             <motion.div
                                 key={index}
@@ -96,7 +91,7 @@ export const KeyInfoPage = () => {
                                 <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
                                     {project.name}
                                 </h2>
-                                <ItemList items={project.models} projectId={project.id} />
+                                <ItemList items={project.models} projectId={project.id} steps={project.steps} />
                             </motion.div>
                         );
                     })}

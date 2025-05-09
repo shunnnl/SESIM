@@ -5,17 +5,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { Sidebar } from "../components/Sidebar";
 import { fetchAPIUsageList } from "../store/APIUsageSlice";
 import { APIUsageListItem } from "../components/APIUsagePageComponents/APIUsageListItem";
+import { useAPIUsageSSE } from "../hooks/useAPIUsageSSE"; // ✅ 추가
 
 export const APIUsagePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-
     const { projects, loading, error } = useSelector((state: RootState) => state.apiUsage);
 
+    // ✅ 실시간 데이터 반영
+    useAPIUsageSSE();
+
+    // 초기 데이터 로드
     useEffect(() => {
         dispatch(fetchAPIUsageList());
     }, [dispatch]);
-
-    console.log("APIUsagePage projects:", projects);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -74,18 +76,17 @@ export const APIUsagePage: React.FC = () => {
                         <APIUsageListItem
                             data={{
                                 projectName: project.projectName,
-                                usageTime: project.projectTotalSeconds / 3600, 
+                                usageTime: project.projectTotalSeconds / 3600,
                                 totalCost: `$${project.projectTotalCost.toFixed(2)}`,
                                 totalApiRequests: project.projectTotalRequestCount,
                                 modelCosts: project.models.map((model) => ({
                                     modelName: model.modelName,
                                     cost: `$${model.totalCost.toFixed(2)}`,
-                                    usageTime: model.totalSeconds / 3600, 
+                                    usageTime: model.totalSeconds / 3600,
                                     apiRequests: model.totalRequestCount,
                                 })),
                             }}
                         />
-
                     </motion.div>
                 ))}
             </motion.div>
