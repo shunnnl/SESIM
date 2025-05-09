@@ -38,6 +38,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
 
     const validateLoginForm = () => {
         let isValid = true;
+        
         setEmailError("");
         setPasswordError("");
         setIsEmailShaking(false);
@@ -301,7 +302,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                         </AnimatePresence>
 
                         {/* 회원가입 버튼 */}
-                        <div className="flex justify-between">
+                        <div className="flex justify-end">
                             <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
                                 아직 회원이 아니신가요?{"  "}
                                 <a
