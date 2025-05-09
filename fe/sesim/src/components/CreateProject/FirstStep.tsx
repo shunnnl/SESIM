@@ -22,17 +22,15 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
         const response = await verifyRoleArn({ roleArn: arn });
         if (response.success && response.data) {
             dispatch(setAwsSession({
-                accessKey: response.data.accessKey,
-                secretKey: response.data.secretKey,
-                sessionToken: response.data.sessionToken,
-                arnId: response.data.arnId,
+                arnId: response.data.id,
+                roleArn: response.data.roleArn,
             }))
             setValidationStatus("success")
             setValidationMessage("검증 완료")
             setFirstStepDone(true)
         } else {
             setValidationStatus("fail")
-            setValidationMessage(response.error)
+            setValidationMessage(response.error.message)
             setFirstStepDone(false)
         }
     }
@@ -87,7 +85,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
 
                     <div className="mt-[30px]">
                         <p className="text-[16px] font-normal text-[#979797]">* 검증할 IAM Role의 ARN을 입력하고 Assume Role 권한을 확인합니다.</p>
-                        <p className="mt-[5px] text-[16px] font-bold">ARN 검증</p>
+                        <p className="mt-[5px] text-[16px] font-bold">IAM Role 검증</p>
                         <div className="flex flex-row items-center gap-[20px]">
                             <input 
                                 type="text" 
@@ -101,7 +99,7 @@ export const FirstStep = ({ setFirstStepDone, roleArns }: FirstStepProps) => {
                                 onClick={handleValidation}
                                 disabled={validationStatus === "success"}
                             >
-                                <p className="text-[16px] font-medium">Assume Role 검증</p>
+                                <p className="text-[16px] font-medium">IAM Role 검증</p>
                             </button>
                         </div>
                         {validationStatus === "success" && (

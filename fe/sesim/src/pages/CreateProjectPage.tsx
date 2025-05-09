@@ -41,9 +41,7 @@ export const CreateProjectPage = () => {
             projectName: createProjectInfo.projectName,
             projectDescription: createProjectInfo.projectDescription,
             modelConfigs: createProjectInfo.modelConfigs,
-            accessKey: createProjectInfo.accessKey,
-            secretKey: createProjectInfo.secretKey,
-            sessionToken: createProjectInfo.sessionToken
+            roleArn: createProjectInfo.roleArn
         };
         const response = await createProject(projectInfo);
         
