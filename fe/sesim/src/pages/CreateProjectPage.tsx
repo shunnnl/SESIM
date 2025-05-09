@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
 import { FirstStep } from "../components/CreateProject/FirstStep";
@@ -7,10 +7,11 @@ import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
-import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
-import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingModal";
+import { ProgressStepper } from "../components/CreateProject/ProgressStepper";
 import { ProjectErrorModal } from "../components/CreateProject/ProjectErrorModal";
+import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingModal";
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
 
@@ -33,6 +34,9 @@ export const CreateProjectPage = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const secondStepRef = useRef<HTMLDivElement>(null);
+    const thirdStepRef = useRef<HTMLDivElement>(null);
+    const forthStepRef = useRef<HTMLDivElement>(null);
 
     const handleCreateProject = async () => {
         setIsLoading(true);
@@ -41,10 +45,8 @@ export const CreateProjectPage = () => {
             projectName: createProjectInfo.projectName,
             projectDescription: createProjectInfo.projectDescription,
             modelConfigs: createProjectInfo.modelConfigs,
-            accessKey: createProjectInfo.accessKey,
-            secretKey: createProjectInfo.secretKey,
-            sessionToken: createProjectInfo.sessionToken
         };
+
         const response = await createProject(projectInfo);
         
         if (response.success === true) {
@@ -91,20 +93,35 @@ export const CreateProjectPage = () => {
                 description2=""
                 backgroundImage={backgroundImage}
             />
-            <div className="container-padding text-white pt-[120px] ">
+            {/* 진행 단계 표시 */}
+            <ProgressStepper
+                currentStep={
+                    !firstStepDone ? 0 :
+                    !secondStepDone ? 1 :
+                    selectedModels.length === 0 ? 2 :
+                    3
+                }
+            />
+            <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? " pb-[200px]" : ""}`}>
                 <FirstStep
                     roleArns={roleArns}
-                    setFirstStepDone={setFirstStepDone} 
+                    setFirstStepDone={setFirstStepDone}
+                    currentStep={!firstStepDone ? 0 : -1}
                 />
                 <SecondStep 
+                    ref={secondStepRef}
                     show={firstStepDone}
-                    setSecondStepDone={setSecondStepDone} 
+                    setSecondStepDone={setSecondStepDone}
+                    currentStep={firstStepDone && !secondStepDone ? 1 : -1}
                 />
                 <ThirdStep
+                    ref={thirdStepRef}
                     models={models}
-                    show={secondStepDone} 
+                    show={secondStepDone}
+                    currentStep={secondStepDone && selectedModels.length === 0 ? 2 : -1}
                 />
                 <ForthStep
+                    ref={forthStepRef}
                     regions={regions}
                     infrastructure={infrastructure}
                     selectedModels={selectedModels}
@@ -112,12 +129,17 @@ export const CreateProjectPage = () => {
                     show={selectedModels.length > 0}
                     setSelectedInstancePrice={setSelectedInstancePrice}
                     onInstanceMapChange={setSelectedInstanceIdxMap}
+                    currentStep={selectedModels.length > 0 ? 3 : -1}
                 />
             </div>
-            
-            <div className="mt-[100px]">
-                <div className={`transition-all duration-500 ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}>
-                    <div className="container-padding flex justify-between items-center border-t border-[#3C3D5C] bg-[#242C4D] py-[20px] mt-[40px]">
+            <div
+                className={`fixed left-0 bottom-0 w-full z-50 transition-all duration-500
+                    ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
+                `}
+                style={{ maxHeight: "1000px" }}
+            >
+                <div className="border-t border-[#3C3D5C] bg-[#242C4D] py-[20px]">
+                    <div className="flex justify-between items-center px-4 md:px-12">
                         <div>
                             <p className="text-[30px] font-bold text-[#3893FF]">$ {selectedInstancePrice.toFixed(2)} / h</p>
                             <p className="text-[16px] font-medium text-[#A3A3A3]">활성화된 인스턴스(서버) 당 요금</p>

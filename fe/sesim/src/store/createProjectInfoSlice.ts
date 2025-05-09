@@ -7,10 +7,8 @@ interface ModelConfig {
 }
 
 interface CreateProjectInfoState {
-    accessKey: string;
-    secretKey: string;
-    sessionToken: string;
     arnId: number | null;
+    roleArn: string;
     projectName: string;
     projectDescription: string;
     selectedModels: any[];
@@ -18,10 +16,8 @@ interface CreateProjectInfoState {
 }
 
 const initialState: CreateProjectInfoState = {
-    accessKey: "",
-    secretKey: "",
-    sessionToken: "",
     arnId: null,
+    roleArn: "",
     projectName: "",
     projectDescription: "",
     selectedModels: [],
@@ -32,16 +28,12 @@ export const createProjectInfoSlice = createSlice({
     name: "createProjectInfo",
     initialState,
     reducers: {
-        setAwsSession: (state, action: PayloadAction<{accessKey: string, secretKey: string, sessionToken: string, arnId: number | null}>) => {
-            state.accessKey = action.payload.accessKey;
-            state.secretKey = action.payload.secretKey;
-            state.sessionToken = action.payload.sessionToken;
+        setAwsSession: (state, action: PayloadAction<{arnId: number | null, roleArn: string}>) => {
             state.arnId = action.payload.arnId;
+            state.roleArn = action.payload.roleArn;
         },
         clearAwsSession: (state) => {
-            state.accessKey = '';
-            state.secretKey = '';
-            state.sessionToken = '';
+            state.roleArn = '';
             state.arnId = null;
         },
         setProjectInfo: (state, action: PayloadAction<{projectName: string, projectDescription: string}>) => {

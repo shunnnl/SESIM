@@ -78,7 +78,7 @@ export const ModelInferenceServicePage: React.FC = () => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
                     >
-                        <p className="text-[16px] md:text-[20px] lg:text-[22px] font-normal">
+                        <p className="text-[18px] md:text-[20px] lg:text-[22px] font-normal">
                             SESIM이 제공하는 다양한 보안 AI 모델 중 원하는 모델을 선택하고,
                             <br />
                             VPC(개인망)에 안전하게 설치할 수 있습니다.
