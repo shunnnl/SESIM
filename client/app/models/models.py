@@ -67,3 +67,14 @@ class APILog(Base):
     latency_ms = Column(Integer, nullable=False)
     usage_date = Column(DateTime, nullable=False)
     created_at = Column(DateTime, nullable=False)
+
+
+class AIResultFailure(Base):
+    __tablename__ = "ai_result_failures"
+
+    ai_result_failure_id = Column(Integer, primary_key=True, autoincrement=True)
+    model_id = Column(Integer, ForeignKey("models.model_id"), nullable=False)
+    file_path = Column(String(2000), nullable=False)
+    error_message = Column(Text, nullable=False)
+    retry_count = Column(Integer, default=0, nullable=False)
+    created_at = Column(DateTime, nullable=False)

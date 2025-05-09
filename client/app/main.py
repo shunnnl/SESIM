@@ -4,6 +4,7 @@ from app.api import model_table
 from app.api import predict
 from app.api import train
 from app.api import upload
+from app.core.retry_scheduler import start_retry_scheduler
 from app.db.database import init_db, execute_sql_file, create_dynamic_ai_result_tables
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -45,6 +46,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 스케줄러 시작
+start_retry_scheduler()
 
 # API 라우터 등록
 app.include_router(predict.router)
