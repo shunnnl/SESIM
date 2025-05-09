@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface User {
   email: string;
@@ -12,9 +12,9 @@ interface AuthState {
 }
 
 const loadStateFromLocalStorage = (): AuthState => {
-  const email = localStorage.getItem('email');
-  const nickname = localStorage.getItem('nickname');
-  const accessToken = localStorage.getItem('accessToken');
+  const email = localStorage.getItem("email");
+  const nickname = localStorage.getItem("nickname");
+  const accessToken = localStorage.getItem("accessToken");
 
   if (!email || !nickname || !accessToken) {
     return { isLoggedIn: false, user: null, accessToken: null };
@@ -30,7 +30,7 @@ const loadStateFromLocalStorage = (): AuthState => {
 const initialState: AuthState = loadStateFromLocalStorage();
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     login: (
@@ -42,18 +42,18 @@ const authSlice = createSlice({
       state.user = { email, nickname };
       state.accessToken = accessToken;
 
-      localStorage.setItem('email', email);
-      localStorage.setItem('nickname', nickname);
-      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem("email", email);
+      localStorage.setItem("nickname", nickname);
+      localStorage.setItem("accessToken", accessToken);
     },
     logout: (state) => {
       state.isLoggedIn = false;
       state.user = null;
       state.accessToken = null;
 
-      localStorage.removeItem('email');
-      localStorage.removeItem('nickname');
-      localStorage.removeItem('accessToken');
+      localStorage.removeItem("email");
+      localStorage.removeItem("nickname");
+      localStorage.removeItem("accessToken");
     },
   },
 });

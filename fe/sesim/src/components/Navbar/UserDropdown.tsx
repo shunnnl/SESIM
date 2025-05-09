@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface UserDropdownProps {
   isOpen: boolean;
@@ -7,28 +7,24 @@ interface UserDropdownProps {
   onLogout: () => void;
 }
 
-export const UserDropdown: React.FC<UserDropdownProps> = ({
-  isOpen,
-  onClose,
-  onLogout,
-}) => {
+export const UserDropdown: React.FC<UserDropdownProps> = ({ isOpen, onClose, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
   if (!isOpen) return null;
 
-  const InfoPage = ['/userinfo', '/apiusage', '/project', '/keyinfo'];
+  const InfoPage = ["/userinfo", "/apiusage", "/project", "/keyinfo"];
   const isUserInfoPage = InfoPage.includes(currentPath);
 
   const menuItems = [
-    { id: 'api', label: 'API 사용량', path: '/apiusage' },
-    { id: 'projects', label: '대시보드', path: '/project' },
-    { id: 'keys', label: '키 발급', path: '/keyinfo' },
-  ]
+    { id: "api", label: "API 사용량", path: "/apiusage" },
+    { id: "projects", label: "대시보드", path: "/project" },
+    { id: "keys", label: "키 발급", path: "/keyinfo" },
+  ];
 
   const handleUserInfoClick = () => {
-    navigate('/userinfo');
+    navigate("/userinfo");
     onClose();
   };
 
@@ -41,7 +37,6 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
   return (
     <div className="absolute right-0 top-1/2 translate-y-[60px] w-[180px] h-fit bg-[#07142B] rounded-[20px] shadow-[0px_0px_15px_rgba(116,208,244,0.4)] text-white font-['Pretendard'] z-50">
       <div className="flex flex-col items-start gap-[16px] my-[20px]">
-
         {!isUserInfoPage && (
           <>
             <button
