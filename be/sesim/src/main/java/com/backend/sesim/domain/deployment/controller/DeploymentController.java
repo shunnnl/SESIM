@@ -45,8 +45,8 @@ public class DeploymentController {
 
     @Operation(summary = "프로젝트 Alb 주소 조회", description = "현재 로그인한 사용자의 프로젝트 및 Alb주소를 조회합니다.")
     @GetMapping("/alb")
-    public CommonResponseDto<ProjectDeploymentStatusResponse> getProjectDeploymentStatus() {
-        ProjectDeploymentStatusResponse response = projectService.getProjectDeploymentStatus();
+    public CommonResponseDto<ProjectDeploymentResponse> getProjectAlbAddress() {
+        ProjectDeploymentResponse response = projectService.getProjectDeploymentStatus();
         return CommonResponseDto.ok(response);
     }
 

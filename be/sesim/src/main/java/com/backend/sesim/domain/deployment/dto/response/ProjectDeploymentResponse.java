@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProjectDeploymentStatusResponse {
+public class ProjectDeploymentResponse {
     private List<ProjectStatusDto> projects;
 
     @Getter
@@ -59,12 +59,12 @@ public class ProjectDeploymentStatusResponse {
         }
     }
 
-    public static ProjectDeploymentStatusResponse from(List<Project> projects) {
+    public static ProjectDeploymentResponse from(List<Project> projects) {
         List<ProjectStatusDto> projectDtos = projects.stream()
                 .map(ProjectStatusDto::from)
                 .collect(Collectors.toList());
 
-        return ProjectDeploymentStatusResponse.builder()
+        return ProjectDeploymentResponse.builder()
                 .projects(projectDtos)
                 .build();
     }

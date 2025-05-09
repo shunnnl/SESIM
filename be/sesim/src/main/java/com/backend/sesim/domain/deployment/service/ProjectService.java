@@ -4,9 +4,8 @@ import com.backend.sesim.domain.auth.exception.AuthErrorCode;
 import com.backend.sesim.domain.deployment.dto.request.ApiKeyCheckRequest;
 import com.backend.sesim.domain.deployment.dto.response.ApiKeyResponse;
 import com.backend.sesim.domain.deployment.dto.response.ApiUsageResponse;
-import com.backend.sesim.domain.deployment.dto.response.ProjectDeploymentStatusResponse;
+import com.backend.sesim.domain.deployment.dto.response.ProjectDeploymentResponse;
 import com.backend.sesim.domain.deployment.dto.response.ProjectListResponse;
-import com.backend.sesim.domain.deployment.entity.ApiUsage;
 import com.backend.sesim.domain.deployment.entity.Project;
 import com.backend.sesim.domain.deployment.entity.ProjectModelInformation;
 import com.backend.sesim.domain.deployment.exception.DeploymentErrorCode;
@@ -62,7 +61,7 @@ public class ProjectService {
     /**
      * 현재 로그인한 사용자의 프로젝트 배포 상태 조회
      */
-    public ProjectDeploymentStatusResponse getProjectDeploymentStatus() {
+    public ProjectDeploymentResponse getProjectDeploymentStatus() {
         // 현재 로그인한 사용자 ID 가져오기
         Long userId = securityUtils.getCurrentUsersId();
 
@@ -77,7 +76,7 @@ public class ProjectService {
         List<Project> projects = projectRepository.findAllByRoleArnIn(roleArns);
 
         // 응답 DTO 변환
-        return ProjectDeploymentStatusResponse.from(projects);
+        return ProjectDeploymentResponse.from(projects);
     }
 
     @Transactional
