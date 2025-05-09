@@ -157,7 +157,9 @@ public class DeploymentService {
                 }
 
                 if (!allPodsReady) {
+                    log.error("서버 배포 실패");
                     updateStepStatus(projectId, STEP_SERVER_DEPLOYMENT, STATUS_FAILED);
+                    return;
                 }
 
                 // 4. 완료 단계 시작
