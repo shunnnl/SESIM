@@ -1,22 +1,30 @@
-import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
 import { SesimLogo } from "./SesimLogo";
 import { RootState } from "../../store";
 import { NavbarMenu } from "./NavbarMenu";
 import { SidebarMenu } from "./SidebarMenu";
 import { LoginButton } from "./LoginButton";
+import { UserDropdown } from "./UserDropdown";
 import { logout } from "../../store/authSlice";
 import { LoginModal } from "../Popup/LoginModal";
 import { SignUpModal } from "../Popup/SignUpModal";
-import { useDispatch, useSelector } from "react-redux";
 
 export const Navbar: React.FC = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    
     const user = useSelector((state: RootState) => state.auth.user);
     const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const handleSignUpClick = () => {
         setIsLoginModalOpen(false);
@@ -38,7 +46,28 @@ export const Navbar: React.FC = () => {
 
     const handleLogout = () => {
         dispatch(logout());
+        navigate('/');
+        setIsDropdownOpen(false);
     };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                isDropdownOpen &&
+                triggerRef.current &&
+                !triggerRef.current.contains(event.target as Node) &&
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isDropdownOpen]);
+
 
     return (
         <nav className="flex justify-between items-center px-4 border-b-2 border-white/20 md:px-12 h-[86px]">
@@ -49,17 +78,28 @@ export const Navbar: React.FC = () => {
                 </div>
             </div>
             <div className="hidden md:block">
-                {isLoggedIn ? (
-                    <div
-                        className="flex flex-row items-center justify-between py-[10px] px-[10px] lg:px-[16px] lg:w-[144px] border border-white/80 rounded-[50px] cursor-pointer"
-                    >
-                        <span className="hidden lg:block font-semibold text-[16px] leading-[21px] text-white flex-none order-0">
-                            {user?.nickname}
-                        </span>
-                        <div className="flex flex-row justify-center items-center p-[10px] w-[30px] h-[30px] bg-gradient-to-r from-[#5EA3EC] to-[#6C72F4] rounded-[30px] flex-none order-1">
-                            <span className="font-bold text-[14px] leading-[21px] text-white flex-none order-0">
-                                {user?.nickname.charAt(0)}
+                {isLoggedIn && user ? (
+                    <div className="relative">
+                        <div
+                            ref={triggerRef}
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="flex flex-row items-center py-[10px] px-[10px] lg:px-[16px] gap-[10px] border border-white/80 rounded-[50px] cursor-pointer min-w-fit"
+                        >
+                            <span className="hidden lg:block font-semibold text-[16px] leading-[21px] text-white flex-none order-0">
+                                {user?.nickname}
                             </span>
+                            <div className="flex flex-row justify-center items-center p-[10px] w-[30px] h-[30px] bg-gradient-to-r from-[#5EA3EC] to-[#6C72F4] rounded-[30px] flex-none order-1">
+                                <span className="font-bold text-[14px] leading-[21px] text-white flex-none order-0">
+                                    {user?.nickname?.charAt(0)}
+                                </span>
+                            </div>
+                            <div ref={dropdownRef}>
+                                <UserDropdown
+                                    isOpen={isDropdownOpen}
+                                    onClose={() => setIsDropdownOpen(false)}
+                                    onLogout={handleLogout}
+                                />
+                            </div>
                         </div>
                     </div>
                 ) : (
