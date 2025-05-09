@@ -14,7 +14,7 @@ import { SignUpModal } from "../Popup/SignUpModal";
 export const Navbar: React.FC = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
+
     const user = useSelector((state: RootState) => state.auth.user);
     const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 
@@ -50,6 +50,7 @@ export const Navbar: React.FC = () => {
         setIsDropdownOpen(false);
     };
 
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -63,9 +64,7 @@ export const Navbar: React.FC = () => {
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        return () => { document.removeEventListener("mousedown", handleClickOutside); };
     }, [isDropdownOpen]);
 
 
@@ -83,7 +82,7 @@ export const Navbar: React.FC = () => {
                         <div
                             ref={triggerRef}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="flex flex-row items-center py-[10px] px-[10px] lg:px-[16px] gap-[10px] border border-white/80 rounded-[50px] cursor-pointer min-w-fit"
+                            className={`flex flex-row items-center py-[10px] px-[10px] lg:px-[16px] lg:gap-[10px] border border-white/80 rounded-[50px] cursor-pointer min-w-fit hover:border-white/0 hover:shadow-[0px_0px_20px_#74D0F4] transition-all duration-300 ${isDropdownOpen ? 'border-white/0 shadow-[0px_0px_20px_#74D0F4]' : ''}`}
                         >
                             <span className="hidden lg:block font-semibold text-[16px] leading-[21px] text-white flex-none order-0">
                                 {user?.nickname}
