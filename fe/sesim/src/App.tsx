@@ -1,7 +1,7 @@
-import { BrowserRouter } from "react-router-dom";
+import { store } from "./store";
 import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 import { MainLayout } from "./layouts/MainLayout";
-import { store } from "./store"; // store import
 
 function App() {
   return (

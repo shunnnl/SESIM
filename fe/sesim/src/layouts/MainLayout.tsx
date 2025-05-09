@@ -27,7 +27,7 @@ export const MainLayout = () => {
                         <Route path="/" element={<HomePage />}  />
                         <Route path="/about" element={<AboutPage />} />
                         <Route path="/ai-model" element={<AiModelPage />} />
-                        <Route path="/ai-model/:modelName" element={<AiModelDetailPage />} />
+                        <Route path="/ai-model/:modelId" element={<AiModelDetailPage />} />
                         <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
                         <Route path="/model-inference-service/create-project" element={<CreateProjectPage />} />
                         <Route path="/docs" element={<DocsPage />} />

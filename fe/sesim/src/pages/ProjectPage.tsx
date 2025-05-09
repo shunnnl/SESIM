@@ -45,7 +45,7 @@ export const ProjectPage = () => {
                 >
                     <h1 className="text-2xl font-semibold flex items-center gap-2 mt-3 mb-8">
                         <span className="w-2 h-2 rounded-full bg-blue-500" />
-                        프로젝트
+                        대시보드
                     </h1>
                     <p className="text-lg font-medium m-1 mb-7">
                         프로젝트에 사용된 보안 AI별 시각화 대시보드를 제공합니다.
