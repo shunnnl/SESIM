@@ -14,9 +14,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [loginErrorMessage, setLoginErrorMessage] = useState("");
-
+    
     const [showPassword, setShowPassword] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
+    const [isEmailShaking, setIsEmailShaking] = useState(false);
+    const [isPasswordShaking, setIsPasswordShaking] = useState(false);
     const [isEmailFocused, setIsEmailFocused] = useState(false);
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
@@ -35,9 +37,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
         let isValid = true;
         setEmailError("");
         setPasswordError("");
+        setIsEmailShaking(false);
+        setIsPasswordShaking(false);
 
         if (!email) {
             setEmailError("이메일을 입력해주세요.");
+            setIsEmailShaking(true);
             isValid = false;}
         // } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         //     setEmailError("유효한 이메일 형식이 아닙니다.");
@@ -46,8 +51,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
 
         if (!password) {
             setPasswordError("비밀번호를 입력해주세요.");
+            setIsPasswordShaking(true);
             isValid = false;
         }
+
+        setTimeout(() => {
+            setIsEmailShaking(false);
+            setIsPasswordShaking(false);
+        }, 500);
 
         return isValid;
     };
@@ -146,8 +157,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                                     placeholder={isEmailFocused ? "" : "이메일 주소를 입력해주세요."}
                                     className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
                                 />
-                                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 group-focus-within:w-full"></div>
+                                <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isEmailShaking ? 'bg-red-500 animate-shake' : 'bg-[#848484]/50 group-hover:bg-[#848484]'} transition-all duration-300`}></div>
+                                <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] group-focus-within:w-full transition-all duration-300`}></div>
                                 {emailError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{emailError}</p>}
                             </div>
                         </div>
@@ -182,8 +193,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                                 >
                                     {showPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
                                 </button>
-                                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 group-focus-within:w-full"></div>
+                                <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isPasswordShaking ? 'bg-red-500 animate-shake' : 'bg-[#848484]/50 group-hover:bg-[#848484]'} transition-all duration-300`}></div>
+                                <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] group-focus-within:w-full transition-all duration-300`}></div>
                                 {passwordError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{passwordError}</p>}
                             </div>
                         </div>
