@@ -25,7 +25,11 @@ export const FormStepHeader : React.FC<FormStepHeaderProps> = ({ step, title, de
                     </p>
                     {information && (
                         <p className="flex items-center gap-2 text-[15px] text-white">
-                            <img src={infoIcon} alt="info" className=" w-[20px] h-[20px]" />
+                            <img
+                                src={infoIcon}
+                                alt="info"
+                                className=" w-[20px] h-[20px]"
+                            />
                             {information}
                         </p>
                     )}
