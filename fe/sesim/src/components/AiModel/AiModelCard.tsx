@@ -14,7 +14,7 @@ export const AiModelCard = ({ id, name, featureTitle, featureList }: AiModelCard
 
     return (
         <div
-            className={`bg-[#2C304B] rounded-[10px] border-[1px] border-[#505671] px-[45px] py-[40px] w-[320px] h-[310px] relative transition-all duration-300 hover:-translate-y-2 ${isButtonHover ? 'z-10' : ''}`}
+            className={`bg-[#2C304B] rounded-[10px] border-[1px] border-[#505671] px-[45px] py-[40px] w-[320px] h-[310px] relative transition-all duration-300 hover:-translate-y-2 ${isButtonHover ? "z-10" : ""}`}
             style={isButtonHover ? { boxShadow: "0 0 30px 0 #74D0F4" } : {}}
         >
             <p className="text-[12px] font-medium">{featureTitle}</p>
