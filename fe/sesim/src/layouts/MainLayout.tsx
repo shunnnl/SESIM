@@ -18,6 +18,9 @@ export const MainLayout = () => {
     const location = useLocation();
     const backgroundClass = getPageBackgroundClass(location.pathname);
 
+    // Footer를 숨길 경로
+    const hideFooter = location.pathname === "/model-inference-service/create-project";
+
     return (
         <div className={backgroundClass}>
             <div>
@@ -38,7 +41,7 @@ export const MainLayout = () => {
                     </Routes>
                 </main>
             </div>
-            <Footer />
+            {!hideFooter && <Footer />}
         </div>
     );
 };
