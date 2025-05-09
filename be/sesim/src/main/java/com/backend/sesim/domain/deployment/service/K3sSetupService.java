@@ -219,4 +219,39 @@ public class K3sSetupService {
             }
         }
     }
+
+    public boolean checkAllPodsReady(String masterIp, String pemKeyPath, String namespace, int timeoutSeconds) {
+        Session session = null;
+        try {
+            session = sshService.setupSession(masterIp, "ubuntu", pemKeyPath);
+            String cmd = String.format("sudo kubectl wait --for=condition=Ready pod --all -n %s --timeout=%ds", namespace, timeoutSeconds);
+            log.info("Pod 상태 확인 명령어 실행: {}", cmd);
+            String result = sshService.executeCommand(session, cmd);
+            log.info("kubectl wait 결과: \n{}", result);
+
+            if (result == null || result.isBlank()) return false;
+
+            // 줄 단위로 나눠서 모든 줄이 "condition met"을 포함해야 true
+            String[] lines = result.split("\\r?\\n");
+            for (String line : lines) {
+                if (!line.toLowerCase().contains("condition met")) {
+                    return false;
+                }
+            }
+
+            return true;
+
+        } catch (Exception e) {
+            log.error("Pod 상태 확인 실패: {}", e.getMessage(), e);
+            return false;
+        } finally {
+            if (session != null) {
+                try {
+                    sshService.disconnect(session);
+                } catch (Exception e) {
+                    log.warn("SSH 세션 종료 중 오류: {}", e.getMessage());
+                }
+            }
+        }
+    }
 }
