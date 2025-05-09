@@ -7,6 +7,7 @@ import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
+import { ProgressStepper } from "../components/CreateProject/ProgressStepper";
 import { ProjectErrorModal } from "../components/CreateProject/ProjectErrorModal";
 import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
@@ -88,6 +89,15 @@ export const CreateProjectPage = () => {
                 description1="개인 맞춤형 AI 보안 프로젝트 생성"
                 description2=""
                 backgroundImage={backgroundImage}
+            />
+            {/* 진행 단계 표시 */}
+            <ProgressStepper
+                currentStep={
+                    !firstStepDone ? 0 :
+                    !secondStepDone ? 1 :
+                    selectedModels.length === 0 ? 2 :
+                    3
+                }
             />
             <div className={`container-padding text-white pt-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? ' pb-[200px]' : ''}`}>
                 <FirstStep
