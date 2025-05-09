@@ -1,6 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom"
 import { HomePage } from "../pages/HomePage";
-import { DocsPage } from "../pages/DocsPage";
 import { AboutPage } from "../pages/AboutPage";
 import { AiModelPage } from "../pages/AiModelPage";
 import { KeyInfoPage } from "../pages/KeyInfoPage";
@@ -9,6 +8,7 @@ import { APIUsagePage } from "../pages/APIUsagePage";
 import { UserInfoPage } from "../pages/UserInfoPage";
 import { Footer } from "../components/Footer/Footer";
 import { Navbar } from "../components/Navbar/Navbar";
+import { SDKDownloadPage } from "../pages/SDKDownloadPage";
 import { AiModelDetailPage } from "../pages/AiModelDetailPage";
 import { CreateProjectPage } from "../pages/CreateProjectPage";
 import { getPageBackgroundClass } from "../utils/backgroundUtils";
@@ -30,7 +30,7 @@ export const MainLayout = () => {
                         <Route path="/ai-model/:modelId" element={<AiModelDetailPage />} />
                         <Route path="/model-inference-service" element={<ModelInferenceServicePage />} />
                         <Route path="/model-inference-service/create-project" element={<CreateProjectPage />} />
-                        <Route path="/docs" element={<DocsPage />} />
+                        <Route path="/sdk-download" element={<SDKDownloadPage />} />
                         <Route path="/userinfo" element={<UserInfoPage />} />
                         <Route path="/keyinfo" element={<KeyInfoPage />} />
                         <Route path="/project" element={<ProjectPage />} />
