@@ -48,7 +48,7 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({
               className="font-semibold mx-[32px] text-[16px] hover:text-gray-400"
               onClick={handleUserInfoClick}
             >
-              회원 정보
+              마이페이지
             </button>
             <div className="w-full border-t border-[#3E4865]" />
             <div className="flex flex-col items-start mx-[32px] py-[2px] gap-[22px]">
