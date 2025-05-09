@@ -33,8 +33,8 @@ export const createProjectInfoSlice = createSlice({
             state.roleArn = action.payload.roleArn;
         },
         clearAwsSession: (state) => {
-            state.arnId = null;
             state.roleArn = '';
+            state.arnId = null;
         },
         setProjectInfo: (state, action: PayloadAction<{projectName: string, projectDescription: string}>) => {
             state.projectName = action.payload.projectName;

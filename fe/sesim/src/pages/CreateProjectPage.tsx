@@ -7,10 +7,10 @@ import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import backgroundImage from "../assets/images/create-project-bg.png";
-import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
-import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingModal";
 import { ProjectErrorModal } from "../components/CreateProject/ProjectErrorModal";
+import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingModal";
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
 
@@ -41,8 +41,8 @@ export const CreateProjectPage = () => {
             projectName: createProjectInfo.projectName,
             projectDescription: createProjectInfo.projectDescription,
             modelConfigs: createProjectInfo.modelConfigs,
-            roleArn: createProjectInfo.roleArn
         };
+
         const response = await createProject(projectInfo);
         
         if (response.success === true) {
@@ -89,7 +89,7 @@ export const CreateProjectPage = () => {
                 description2=""
                 backgroundImage={backgroundImage}
             />
-            <div className="container-padding text-white pt-[120px] ">
+            <div className={`container-padding text-white pt-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? ' pb-[200px]' : ''}`}>
                 <FirstStep
                     roleArns={roleArns}
                     setFirstStepDone={setFirstStepDone} 
@@ -113,9 +113,15 @@ export const CreateProjectPage = () => {
                 />
             </div>
             
-            <div className="mt-[100px]">
-                <div className={`transition-all duration-500 ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}>
-                    <div className="container-padding flex justify-between items-center border-t border-[#3C3D5C] bg-[#242C4D] py-[20px] mt-[40px]">
+            {/* 요금/버튼 영역: 조건 만족 시 하단 고정, 자연스러운 등장 */}
+            <div
+                className={`fixed left-0 bottom-0 w-full z-50 transition-all duration-500
+                    ${selectedModels.length > 0 && selectedInstancePrice > 0 ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
+                `}
+                style={{ maxHeight: "1000px" }}
+            >
+                <div className="border-t border-[#3C3D5C] bg-[#242C4D] py-[20px]">
+                    <div className="flex justify-between items-center px-4 md:px-12">
                         <div>
                             <p className="text-[30px] font-bold text-[#3893FF]">$ {selectedInstancePrice.toFixed(2)} / h</p>
                             <p className="text-[16px] font-medium text-[#A3A3A3]">활성화된 인스턴스(서버) 당 요금</p>
