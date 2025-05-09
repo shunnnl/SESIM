@@ -9,7 +9,12 @@ export const NavbarMenu: React.FC = () => {
     return (
         <div className="z-20 nav-menu flex lg:gap-[60px] md:gap-[20px] text-[18px] text-white px-8 items-center justify-center text-center">
             <div className={menuClass}>
-                <Link to="/about" className={linkClass}>소개</Link>
+                <Link
+                    to="/about"
+                    className={linkClass}
+                >
+                    소개
+                </Link>
                 <div className={indicatorClass}></div>
             </div>
             <div className={menuClass}>
@@ -17,15 +22,30 @@ export const NavbarMenu: React.FC = () => {
                 <div className={indicatorClass}></div>
             </div>
             <div className={menuClass}>
-                <Link to="/model-inference-service" className={linkClass}>모델추론 서비스</Link>
+                <Link
+                    to="/model-inference-service"
+                    className={linkClass}
+                >
+                    모델추론 서비스
+                </Link>
                 <div className={indicatorClass}></div>
             </div>
             <div className={menuClass}>
-                <Link to="/sdk-download" className={linkClass}>SDK 다운로드</Link>
+                <Link
+                    to="/sdk-download"
+                    className={linkClass}
+                >
+                    SDK 다운로드
+                </Link>
                 <div className={indicatorClass}></div>
             </div>
             <div className={menuClass}>
-                <Link to="/keyinfo" className={linkClass}>apiKey</Link>
+                <Link
+                    to="/keyinfo"
+                    className={linkClass}
+                >
+                    apiKey
+                </Link>
                 <div className={indicatorClass}></div>
             </div>
             {/*FIXME 이후에 삭제될 요소, 페이지 임시 이동*/}
