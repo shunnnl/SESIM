@@ -1,5 +1,3 @@
-// src/types/keyinfoTypes.ts
-
 export interface Step {
     stepId: number;
     stepOrder: number;
