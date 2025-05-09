@@ -40,24 +40,15 @@ import static com.backend.sesim.domain.deployment.constant.DeploymentConstants.*
 @RequiredArgsConstructor
 public class TerraformService {
 
-    private final TerraformTemplateService templateService;
     private final TerraformExecutor terraformExecutor;
-    private final K3sSetupService k3sSetupService;
     private final RoleArnRepository roleArnRepository;
     private final ProjectRepository projectRepository;
     private final ProjectModelInfoRepository projectModelInfoRepository;
     private final ModelRepository modelRepository;
     private final InfrastructureSpecRepository infrastructureSpecRepository;
     private final RegionRepository regionRepository;
-    private final SqlService sqlService;
     private final DeploymentStepRepository deploymentStepRepository;
     private final DeploymentService deploymentService;
-
-    @Value("${aws.saas.access-key}")
-    private String saasAccessKey;
-
-    @Value("${aws.saas.secret-key}")
-    private String saasSecretKey;
 
     /**
      * SaaS 계정에 AWS 리소스를 배포합니다.
@@ -124,50 +115,34 @@ public class TerraformService {
     private void initializeDeploymentSteps(Project project) {
         List<DeploymentStep> steps = new ArrayList<>();
 
-        // 1. 초기화 단계
+        // 1. 인프라 생성 단계
         steps.add(DeploymentStep.builder()
                 .project(project)
                 .stepOrder(1)
-                .stepName(STEP_INITIALIZATION)
+                .stepName(STEP_INFRASTRUCTURE)
                 .stepStatus(STATUS_PENDING)
                 .build());
 
-        // 2. Terraform 템플릿 준비 단계
+        // 2. 환경 구축 단계
         steps.add(DeploymentStep.builder()
                 .project(project)
                 .stepOrder(2)
-                .stepName(STEP_TERRAFORM_SETUP)
+                .stepName(STEP_ENVIRONMENT)
                 .stepStatus(STATUS_PENDING)
                 .build());
 
-        // 3. Terraform 실행 단계
+        // 3. 서버 배포 단계
         steps.add(DeploymentStep.builder()
                 .project(project)
                 .stepOrder(3)
-                .stepName(STEP_TERRAFORM_EXECUTION)
+                .stepName(STEP_SERVER_DEPLOYMENT)
                 .stepStatus(STATUS_PENDING)
                 .build());
 
-        // 4. 네트워크 설정 단계
+        // 4. 완료 단계
         steps.add(DeploymentStep.builder()
                 .project(project)
                 .stepOrder(4)
-                .stepName(STEP_NETWORK_SETUP)
-                .stepStatus(STATUS_PENDING)
-                .build());
-
-        // 5. K3S 클러스터 설치 단계
-        steps.add(DeploymentStep.builder()
-                .project(project)
-                .stepOrder(5)
-                .stepName(STEP_K3S_SETUP)
-                .stepStatus(STATUS_PENDING)
-                .build());
-
-        // 6. 완료 단계
-        steps.add(DeploymentStep.builder()
-                .project(project)
-                .stepOrder(6)
                 .stepName(STEP_COMPLETION)
                 .stepStatus(STATUS_PENDING)
                 .build());
