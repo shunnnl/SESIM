@@ -3,15 +3,28 @@ import { SmallCard } from "./smallCard";
 import { RootState } from "../../store";
 import { FormStepHeader } from "./FormStepHeader"
 import { setSelectedModels } from "../../store/createProjectInfoSlice";
+import { useEffect, forwardRef, RefObject } from "react";
 
 interface ThirdStepProps {
     show: boolean;
     models: any[];
 }
 
-export const ThirdStep = ({ show, models }: ThirdStepProps) => {
+export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, models }, ref) => {
     const dispatch = useDispatch();
     const selectedModels = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
+
+    useEffect(() => {
+        if (show && ref && typeof ref !== "function" && (ref as RefObject<HTMLDivElement>).current) {
+            setTimeout(() => {
+                const el = (ref as RefObject<HTMLDivElement>).current!;
+                const top = el.getBoundingClientRect().top + window.scrollY;
+                const offset = 100; // 상단 고정바 높이(px)
+                const scrollTo = Math.max(0, top - offset);
+                window.scrollTo({ top: scrollTo, behavior: "smooth" });
+            }, 100);
+        }
+    }, [show, ref]);
 
     const handleModelClick = (model: any) => {
         if (selectedModels.includes(model)) {
@@ -22,7 +35,7 @@ export const ThirdStep = ({ show, models }: ThirdStepProps) => {
     }
 
     return (
-        <div className={`transition-all duration-500 ${show ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden mt-[120px]`}>
+        <div ref={ref} className={`${show ? "block" : "hidden"} mt-[120px]`}>
             <FormStepHeader
                 step="03"
                 title="보안 AI 모델 선택" 
@@ -45,4 +58,4 @@ export const ThirdStep = ({ show, models }: ThirdStepProps) => {
             </div>
         </div>
     );
-};
+});

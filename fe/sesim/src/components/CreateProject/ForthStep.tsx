@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux"
-import { useState, useEffect } from "react"
+import { useState, useEffect, forwardRef, RefObject } from "react"
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
 import awsIcon from "../../assets/images/aws.svg"
@@ -19,7 +19,7 @@ interface ForthStepProps {
     onInstanceMapChange?: (map: { [modelId: string]: number }) => void;
 }
 
-export const ForthStep = ({ selectedModels, show, regions, infrastructure, combinedPrices, setSelectedInstancePrice, onInstanceMapChange }: ForthStepProps) => {
+export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedModels, show, regions, infrastructure, combinedPrices, setSelectedInstancePrice, onInstanceMapChange }, ref) => {
     const [selectedModel, setSelectedModel] = useState<any>(null);
     const [selectedAwsIdxMap, setSelectedAwsIdxMap] = useState<{ [modelId: string]: number }>({});
     const [selectedTypeMap, setSelectedTypeMap] = useState<{ [modelId: string]: string }>({});
@@ -94,6 +94,18 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
         }
     }, [selectedInstanceIdxMap, onInstanceMapChange]);
 
+    useEffect(() => {
+        if (show && ref && typeof ref !== "function" && (ref as RefObject<HTMLDivElement>).current) {
+            setTimeout(() => {
+                const el = (ref as RefObject<HTMLDivElement>).current!;
+                const top = el.getBoundingClientRect().top + window.scrollY;
+                const offset = 100; // 상단 고정바 높이(px)
+                const scrollTo = Math.max(0, top - offset);
+                window.scrollTo({ top: scrollTo, behavior: "smooth" });
+            }, 100);
+        }
+    }, [show, ref]);
+
     const handleModelClick = (model: any) => {
         setSelectedModel(model);
     };
@@ -135,7 +147,7 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
     };
 
     return (
-        <div className={`transition-all duration-500 ${show ? "opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden mt-[120px]`}>
+        <div ref={ref} className={`${show ? "block" : "hidden"} mt-[120px]`}>
             <FormStepHeader
                 step="04"
                 title="서버 사양 선택" 
@@ -324,4 +336,4 @@ export const ForthStep = ({ selectedModels, show, regions, infrastructure, combi
             </div>
         </div>
     );
-};
+});

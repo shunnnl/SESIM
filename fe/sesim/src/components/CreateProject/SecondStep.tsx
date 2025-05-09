@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, forwardRef, RefObject } from "react"
 import { useDispatch } from "react-redux";
 import { BigCard } from "./BigCard"
 import { FormStepHeader } from "./FormStepHeader"
@@ -9,7 +9,7 @@ interface SecondStepProps {
     setSecondStepDone: (done: boolean) => void;
 }
 
-export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
+export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSecondStepDone, show }, ref) => {
     const [isNameValid, setIsNameValid] = useState<"none" | "success" | "fail">("none");
     const [tempName, setTempName] = useState("");
     const [tempDesc, setTempDesc] = useState("");
@@ -33,8 +33,20 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
         setSecondStepDone(true);
     }
 
+    useEffect(() => {
+        if (show && ref && typeof ref !== "function" && (ref as RefObject<HTMLDivElement>).current) {
+            setTimeout(() => {
+                const el = (ref as RefObject<HTMLDivElement>).current!;
+                const top = el.getBoundingClientRect().top + window.scrollY;
+                const offset = 100; // 상단 고정바 높이(px)
+                const scrollTo = Math.max(0, top - offset);
+                window.scrollTo({ top: scrollTo, behavior: "smooth" });
+            }, 100);
+        }
+    }, [show, ref]);
+
     return (
-        <div className={`mt-[120px] transition-all duration-500 ${show ? "max-h-[1000px] opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-10"} overflow-hidden`}>
+        <div ref={ref} className={`mt-[120px] ${show ? "block" : "hidden"}`}>
             <FormStepHeader
                 step="02"
                 title="프로젝트 기본 정보" 
@@ -71,4 +83,4 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
             </div>
         </div>
     );
-};
+});

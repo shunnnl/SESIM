@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
@@ -34,6 +34,9 @@ export const CreateProjectPage = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const secondStepRef = useRef<HTMLDivElement>(null);
+    const thirdStepRef = useRef<HTMLDivElement>(null);
+    const forthStepRef = useRef<HTMLDivElement>(null);
 
     const handleCreateProject = async () => {
         setIsLoading(true);
@@ -99,20 +102,23 @@ export const CreateProjectPage = () => {
                     3
                 }
             />
-            <div className={`container-padding text-white pt-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? ' pb-[200px]' : ''}`}>
+            <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? ' pb-[200px]' : ''}`}>
                 <FirstStep
                     roleArns={roleArns}
                     setFirstStepDone={setFirstStepDone} 
                 />
                 <SecondStep 
+                    ref={secondStepRef}
                     show={firstStepDone}
                     setSecondStepDone={setSecondStepDone} 
                 />
                 <ThirdStep
+                    ref={thirdStepRef}
                     models={models}
                     show={secondStepDone} 
                 />
                 <ForthStep
+                    ref={forthStepRef}
                     regions={regions}
                     infrastructure={infrastructure}
                     selectedModels={selectedModels}
