@@ -6,11 +6,11 @@ import infoIcon from "../assets/images/info.png";
 import { BlueCircle } from "../components/common/BlueCircle";
 import { getAiModelDetail } from "../services/aiModelService";
 import { AnimatedButton } from "../components/common/AnimatedButton";
-import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
-import { ImageTitleBannerWithNav } from "../components/AiModelDetail/ImageTitleBannerWithNav";
 import model1DetailImg1 from "../assets/images/model1-detail-img1.svg";
 import model1DetailImg2 from "../assets/images/model1-detail-img2.svg";
 import model1DetailImg3 from "../assets/images/model1-detail-img3.svg";
+import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
+import { ImageTitleBannerWithNav } from "../components/AiModelDetail/ImageTitleBannerWithNav";
 
 const model1DetailImgList = [
     model1DetailImg1,
