@@ -31,7 +31,7 @@ export const ThirdStep = ({ show, models }: ThirdStepProps) => {
                 information="모델은 프로젝트 생성 이후 변경할 수 없습니다."
             />
             <div className="px-[20px] pb-[20px]">
-                <div className="mt-[15px] grid grid-cols-3 gap-[20px]">
+                <div className="mt-[15px] mr-[200px] grid grid-cols-3 gap-[20px]">
                     {models.map((model, idx) => (
                         <SmallCard
                             key={idx}
