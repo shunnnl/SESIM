@@ -133,12 +133,27 @@ export const Navbar: React.FC = () => {
                         <SidebarMenu onClickMenu={() => setSidebarOpen(false)} />
                         {isLoggedIn ? (
                             <div className="px-8 py-4 mt-auto">
-                                <button
-                                    className="text-white text-[18px] w-full text-left"
-                                    onClick={handleLogout}
-                                >
-                                    로그아웃
-                                </button>
+                                <div className="flex flex-col space-y-2 gap-1 mb-3">
+                                    <div className="w-full border-t border-white/20 my-1"></div>
+                                    <div className="flex flex-row justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex justify-center items-center p-[6px] w-[24px] h-[24px] bg-gradient-to-r from-[#5EA3EC] to-[#6C72F4] rounded-full">
+                                                <span className="font-bold text-[12px] text-white">
+                                                    {user?.nickname?.charAt(0)}
+                                                </span>
+                                            </div>
+                                            <span className="font-semibold text-[18px] text-white">
+                                                {user?.nickname}
+                                            </span>
+                                        </div>
+                                        <button
+                                            className="text-white/70 text-[14px] self-end hover:text-white transition-colors"
+                                            onClick={handleLogout}
+                                        >
+                                            로그아웃
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         ) : (
                             <div className="px-8 py-4 mt-auto">
@@ -153,11 +168,13 @@ export const Navbar: React.FC = () => {
                     </div>
                 </div>
             )}
+
             <LoginModal
                 isOpen={isLoginModalOpen}
                 onClose={() => setIsLoginModalOpen(false)}
                 onSwitchToSignUp={handleSignUpClick}
             />
+            
             <SignUpModal
                 isOpen={isSignUpModalOpen}
                 onClose={() => setIsSignUpModalOpen(false)}
