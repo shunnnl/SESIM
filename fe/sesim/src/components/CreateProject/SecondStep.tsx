@@ -38,7 +38,7 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
             <FormStepHeader
                 step="02"
                 title="프로젝트 기본 정보" 
-                description="생성할 프로젝트의 이름과 설명을 입력해주세요."
+                description="프로젝트는 여러 보안 AI 모델을 관리하는 단위입니다. 프로젝트 이름과 설명을 입력하여 AI 모델들을 체계적으로 관리할 수 있습니다."
             />
             <div className="mt-[15px]">
                 <BigCard>
@@ -47,7 +47,7 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                         <input 
                             type="text" 
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3]" 
-                            placeholder="프로젝트 이름을 입력해주세요"
+                            placeholder="예: 보안 모니터링 프로젝트, 이상행위 탐지 시스템"
                             value={tempName}
                             onChange={(e) => setTempName(e.target.value)}
                         />
@@ -59,7 +59,7 @@ export const SecondStep = ({ setSecondStepDone, show }: SecondStepProps) => {
                         <p className="text-[16px] font-bold">프로젝트 설명</p>
                         <textarea 
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3] min-h-[200px] resize-y" 
-                            placeholder="프로젝트 설명을 입력해주세요"
+                            placeholder="이 프로젝트에서 관리할 보안 AI 모델들의 목적과 용도를 설명해주세요."
                             value={tempDesc}
                             onChange={(e) => setTempDesc(e.target.value)}
                         />
