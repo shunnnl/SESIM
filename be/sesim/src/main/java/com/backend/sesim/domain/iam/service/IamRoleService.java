@@ -8,7 +8,7 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.Credentials;
 import com.backend.sesim.domain.auth.exception.AuthErrorCode;
-import com.backend.sesim.domain.iam.dto.response.AssumeRoleResponse;
+import com.backend.sesim.domain.iam.dto.response.ArnResponse;
 import com.backend.sesim.domain.iam.entity.RoleArn;
 import com.backend.sesim.domain.iam.exception.IamErrorCode;
 import com.backend.sesim.domain.iam.repository.RoleArnRepository;
@@ -46,7 +46,7 @@ public class IamRoleService {
     private String awsRegion;
 
     @Transactional
-    public AssumeRoleResponse verifyAssumeRole(String roleArn) {
+    public ArnResponse verifyAssumeRole(String roleArn) {
         log.info("AssumeRole 검증 시작: {}", roleArn);
 
         validateRoleArn(roleArn);
@@ -55,17 +55,19 @@ public class IamRoleService {
             // AWS SDK v1 사용
             AWSSecurityTokenService stsClient = createStsClient();
             AssumeRoleRequest request = createAssumeRoleRequest(roleArn);
-            AssumeRoleResponse response = executeAssumeRole(stsClient, request);
 
-            // 현재 로그인한 사용자의 ARN 목록에 없는 경우 추가
+            // 검증만 수행하고 값은 저장하지 않음
+            stsClient.assumeRole(request);
+
+            // 검증 성공 후 현재 로그인한 사용자의 ARN 목록에 없는 경우 추가
             Long userId = securityUtils.getCurrentUsersId();
             if (userId != null) {
                 RoleArn savedArn = saveArnIfNotExists(roleArn, userId);
-                // 저장된 ARN의 ID를 응답에 설정
-                response.setArnId(savedArn.getId());
+                // ArnResponse로 반환
+                return new ArnResponse(savedArn.getId(), roleArn);
             }
 
-            return response;
+            return new ArnResponse(null, roleArn);
         } catch (Exception e) {
             log.error("AssumeRole 검증 실패: {}, 오류: {}", roleArn, e.getMessage());
             throw new GlobalException(IamErrorCode.ASSUME_ROLE_FAILED);
@@ -134,24 +136,5 @@ public class IamRoleService {
                 .withRoleArn(roleArn)
                 .withRoleSessionName("SesimVerifySession")
                 .withDurationSeconds(3600); // 유효 시간 1시간
-    }
-
-    private AssumeRoleResponse executeAssumeRole(AWSSecurityTokenService stsClient, AssumeRoleRequest request) {
-        AssumeRoleResult result = stsClient.assumeRole(request);
-        Credentials creds = result.getCredentials();
-
-        if (creds != null) {
-            Date expiration = creds.getExpiration();
-            log.info("⏰ Expiration: {}", expiration);
-
-            return new AssumeRoleResponse(
-                    creds.getAccessKeyId(),
-                    creds.getSecretAccessKey(),
-                    creds.getSessionToken()
-            );
-        } else {
-            log.warn("자격 증명을 찾을 수 없음: {}", request.getRoleArn());
-            throw new GlobalException(IamErrorCode.CREDENTIALS_NOT_FOUND);
-        }
     }
 }

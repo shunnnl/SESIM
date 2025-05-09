@@ -47,20 +47,6 @@ public class ProjectModelInformation extends TimeStampEntity {
     @Column(name = "is_api_key_check")
     private Boolean isApiKeyCheck = false;
 
-    @Builder.Default
-    @Column(name = "status", nullable = false, length = 50)
-    private String status = "PENDING"; // ENUM("PENDING", "DEPLOYING", "DEPLOYED", "FAILED") -> 추후 개발
-
-    // API 키 설정 메서드
-    public void setModelApiKey(String apiKey) {
-        this.modelApiKey = apiKey;
-    }
-
-    // 상태 변경 메서드
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     // API 키 확인 메서드
     public void checkModelApiKey(String apiKey) {
         this.isApiKeyCheck=true;

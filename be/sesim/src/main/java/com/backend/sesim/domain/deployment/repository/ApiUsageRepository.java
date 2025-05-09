@@ -17,6 +17,4 @@ public interface ApiUsageRepository extends JpaRepository<ApiUsage, Long> {
 
     @Query("SELECT COALESCE(SUM(a.totalSeconds), 0) FROM ApiUsage a WHERE a.information.id = :informationId")
     int sumTotalSecondsByInformationId(@Param("informationId") Long informationId);
-
-    List<ApiUsage> findAllByInformationId(Long informationId);
 }

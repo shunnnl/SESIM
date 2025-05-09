@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProjectDeploymentStatusResponse {
+public class ProjectDeploymentResponse {
     private List<ProjectStatusDto> projects;
 
     @Getter
@@ -47,7 +47,6 @@ public class ProjectDeploymentStatusResponse {
         private Long id;
         private String name;
         private String albAddress;
-        private String deployStatus;
         private Boolean isApiKeyCheck;
 
         public static DeployedModelDto from(ProjectModelInformation modelInfo) {
@@ -55,18 +54,17 @@ public class ProjectDeploymentStatusResponse {
                     .id(modelInfo.getModel().getId())
                     .name(modelInfo.getModel().getName())
                     .albAddress(modelInfo.getProject().getAlbAddress())
-                    .deployStatus(modelInfo.getStatus())
                     .isApiKeyCheck(modelInfo.getIsApiKeyCheck())
                     .build();
         }
     }
 
-    public static ProjectDeploymentStatusResponse from(List<Project> projects) {
+    public static ProjectDeploymentResponse from(List<Project> projects) {
         List<ProjectStatusDto> projectDtos = projects.stream()
                 .map(ProjectStatusDto::from)
                 .collect(Collectors.toList());
 
-        return ProjectDeploymentStatusResponse.builder()
+        return ProjectDeploymentResponse.builder()
                 .projects(projectDtos)
                 .build();
     }

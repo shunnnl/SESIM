@@ -19,11 +19,6 @@ public class TerraformDeployRequest {
     // 모델 구성 정보 - 여러 개 선택 가능
     private List<ModelConfig> modelConfigs;
 
-    // AWS 자격 증명 정보 (향후 사용을 위해 유지)
-    private String accessKey;
-    private String secretKey;
-    private String sessionToken;
-
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

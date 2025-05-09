@@ -2,7 +2,6 @@ package com.backend.sesim.domain.iam.controller;
 
 import com.backend.sesim.domain.iam.dto.request.AssumeRoleRequest;
 import com.backend.sesim.domain.iam.dto.response.ArnResponse;
-import com.backend.sesim.domain.iam.dto.response.AssumeRoleResponse;
 import com.backend.sesim.domain.iam.entity.RoleArn;
 import com.backend.sesim.domain.iam.service.IamRoleService;
 import com.backend.sesim.global.dto.CommonResponseDto;
@@ -26,7 +25,7 @@ public class IamRoleController {
 
     @Operation(summary = "역할 검증", description = "AWS IAM 역할(Role) 검증을 처리합니다.")
     @PostMapping("/verify-role")
-    public CommonResponseDto<AssumeRoleResponse> verifyAssumeRole(@RequestBody AssumeRoleRequest request) {
+    public CommonResponseDto<ArnResponse> verifyAssumeRole(@RequestBody AssumeRoleRequest request) {
         log.info("역할 검증 요청: {}", request.getRoleArn());
         return CommonResponseDto.ok(iamRoleService.verifyAssumeRole(request.getRoleArn()));
     }

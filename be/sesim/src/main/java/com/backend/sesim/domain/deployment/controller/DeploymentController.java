@@ -43,10 +43,10 @@ public class DeploymentController {
         return CommonResponseDto.ok(projectService.getUserProjects());
     }
 
-    @Operation(summary = "프로젝트 배포 상태 조회", description = "현재 로그인한 사용자의 프로젝트 및 모델 배포 상태를 조회합니다.")
-    @GetMapping("/status")
-    public CommonResponseDto<ProjectDeploymentStatusResponse> getProjectDeploymentStatus() {
-        ProjectDeploymentStatusResponse response = projectService.getProjectDeploymentStatus();
+    @Operation(summary = "프로젝트 Alb 주소 조회", description = "현재 로그인한 사용자의 프로젝트 및 Alb주소를 조회합니다.")
+    @GetMapping("/alb")
+    public CommonResponseDto<ProjectDeploymentResponse> getProjectAlbAddress() {
+        ProjectDeploymentResponse response = projectService.getProjectDeploymentStatus();
         return CommonResponseDto.ok(response);
     }
 
