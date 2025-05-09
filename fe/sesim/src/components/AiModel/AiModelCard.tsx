@@ -1,5 +1,6 @@
 import { SmallAnimatedButton } from "./SmallAnimatedButton"
-import sesimImage from "../../assets/images/sesim-logo.png"
+import { BsCircleFill } from "react-icons/bs";
+import { useState } from "react";
 
 interface AiModelCardProps {
     id: number;
@@ -9,32 +10,37 @@ interface AiModelCardProps {
 }
 
 export const AiModelCard = ({ id, name, featureTitle, featureList }: AiModelCardProps) => {
+    const [isButtonHover, setIsButtonHover] = useState(false);
+
     return (
-        <div className="bg-[#2C304B] rounded-[10px] border-[1px] border-[#505671] px-[50px] py-[40px] w-[320px] h-[310px] relative">
-            <p className="text-[12px] font-medium pl-[10px]">{featureTitle}</p>
-            <div className="flex items-center mt-[2px] mb-[10px]">
-                <img
-                    src={sesimImage}
-                    alt="global"
-                    className="w-[40px] h-[40px]"
-                />
-                <p className="text-[25px] font-bold">{name}</p>
+        <div
+            className={"bg-[#2C304B] rounded-[10px] border-[1px] border-[#505671] px-[45px] py-[40px] w-[320px] h-[310px] relative transition-all duration-300 hover:-translate-y-2" + (isButtonHover ? " z-10" : "")}
+            style={isButtonHover ? { boxShadow: "0 0 30px 0 #74D0F4" } : {}}
+        >
+            <p className="text-[12px] font-medium">{featureTitle}</p>
+            <p className="text-[24px] font-bold mt-[2px] mb-[10px]">{name}</p>
+            <div className="mt-[20px]">
+                {featureList.map((detail, index) => (
+                    <p 
+                        key={index}
+                        className="text-[15px] font-medium  my-[8px] flex items-center gap-[6px]"
+                    >
+                        <BsCircleFill className="size-[8px] text-white" /> {detail}
+                    </p>
+                ))}
             </div>
-            {featureList.map((detail, index) => (
-                <p 
-                    key={index}
-                    className="text-[14px] font-medium pl-[10px] my-[8px]"
-                >
-                    * {detail}
-                </p>
-            ))}
             
-            <div className="absolute bottom-0 left-0 w-full px-[60px] pb-[40px]">
-                <SmallAnimatedButton
-                    text="자세히 보기"
-                    link={`/ai-model/${id}`}
-                    onClick={() => { window.scrollTo(0, 0); }}
-                />
+            <div className="absolute bottom-0 left-0 w-fit px-[50px] pb-[40px]">
+                <div
+                    onMouseEnter={() => setIsButtonHover(true)}
+                    onMouseLeave={() => setIsButtonHover(false)}
+                >
+                    <SmallAnimatedButton
+                        text="자세히 보기"
+                        link={`/ai-model/${id}`}
+                        onClick={() => { window.scrollTo(0, 0); }}
+                    />
+                </div>
             </div>
         </div>
     );

@@ -14,7 +14,7 @@ const CARD_STYLE = {
     minWidth: 0,
 };
 
-function CardItem({ model, style, extraStyle, isLink = false }: any) {
+function CardItem({ model, style, extraStyle, isLink = false, onClick }: any) {
     const content = (
         <>
             <p className="text-[12px] text-white font-medium">{model.featureTitle}</p>
@@ -43,6 +43,7 @@ function CardItem({ model, style, extraStyle, isLink = false }: any) {
         <div
             className={`${CARD_BASE_CLASS} ${style}`}
             style={mergedStyle}
+            onClick={onClick}
         >
             {content}
         </div>
@@ -91,7 +92,8 @@ export const CardCarousel = () => {
                                 <CardItem
                                     key={idx}
                                     model={model}
-                                    style="opacity-60 scale-95 z-10 relative left-16"
+                                    style="opacity-60 scale-95 z-10 relative left-16 cursor-pointer"
+                                    onClick={() => setCurrent(idx)}
                                 />
                             );
                         } else if (idx === leftIdx) {
@@ -99,7 +101,8 @@ export const CardCarousel = () => {
                                 <CardItem
                                     key={idx}
                                     model={model}
-                                    style="opacity-60 scale-95 z-10 relative -left-16"
+                                    style="opacity-60 scale-95 z-10 relative -left-16 cursor-pointer"
+                                    onClick={() => setCurrent(idx)}
                                 />
                             );
                         }

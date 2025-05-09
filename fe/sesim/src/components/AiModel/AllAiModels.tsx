@@ -9,7 +9,7 @@ export const AllAiModels = () => {
 
     return (
         <motion.div 
-            className="mt-[88px] mb-[300px] text-white"
+            className="mt-[88px] mb-[200px] text-white"
             initial={{ opacity: 0, y: 70 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
@@ -20,8 +20,8 @@ export const AllAiModels = () => {
                 <div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[150px] rounded-full"
                     style={{
-                        background: "#112F5D", 
-                        boxShadow: "0 0 160px 120px #112F5D, 0 0 320px 240px #112F5D",
+                        background: "#1E4073", 
+                        boxShadow: "0 0 160px 120px #1E4073, 0 0 320px 240px #1E4073",
                         opacity: 0.4,
                         zIndex: 1
                     }}
