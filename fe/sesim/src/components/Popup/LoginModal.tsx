@@ -1,6 +1,8 @@
+import { useDispatch } from "react-redux";
 import React, { useState, useEffect } from "react";
 import { login } from "../../services/authService";
 import { EyeIcon, EyeSlashIcon } from "../common/Icons";
+import { login as loginAction } from "../../store/authSlice";
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -20,6 +22,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
     const [isEmailFocused, setIsEmailFocused] = useState(false);
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
+    const dispatch = useDispatch();
+
     const handleClose = () => {
         setEmail("");
         setPassword("");
@@ -38,7 +42,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
 
         if (!email) {
             setEmailError("이메일을 입력해주세요.");
-            isValid = false;}
+            isValid = false;
+        }
         // } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         //     setEmailError("유효한 이메일 형식이 아닙니다.");
         //     isValid = false;
@@ -52,7 +57,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
         return isValid;
     };
 
-
     const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -60,13 +64,18 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
 
         if (isValid) {
             try {
-                const data = await login({ email, password });
+                const response = await login({ email, password });
 
-                if (data.success) {
-                    console.log("로그인 성공:", data);
+                if (response.success) {
+                    const { email, nickname } = response.data;
+                    const { accessToken } = response.data.token;
+                    
+                    console.log("로그인 성공:", response.data);
+                    dispatch(loginAction({ email, nickname, accessToken }));
+
                     handleClose();
                 } else {
-                    console.log("로그인 실패:", data);
+                    console.log("로그인 실패:", response.data);
                     setLoginErrorMessage("로그인 정보를 다시 확인해주세요.");
                 }
             } catch (error) {
