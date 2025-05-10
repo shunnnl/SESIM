@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { updateAPIUsageProjects } from "../store/APIUsageSlice";
-import { APIUsageProject } from "../types/APIUsageTypes";
+import { updateProjectStatusAsync } from "../store/keyinfoSlice";
+import { AppDispatch } from "../store";
 import { EventSourcePolyfill } from "event-source-polyfill";
 
-export const useAPIUsageSSE = () => {
-    const dispatch = useDispatch();
+export const useDeploymentStateSSE = () => {
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
@@ -14,7 +14,7 @@ export const useAPIUsageSSE = () => {
             return;
         }
 
-        const url = "http://52.79.149.27/api/deployment/projects/usage/stream";
+        const url = "http://52.79.149.27/api/deployment/status";
         const eventSource = new EventSourcePolyfill(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -22,26 +22,24 @@ export const useAPIUsageSSE = () => {
         });
 
         eventSource.onopen = () => {
-            console.log("SSE 연결이 성공적으로 열렸습니다.");
+            console.log("배포 상태 SSE 연결됨");
         };
 
         eventSource.onmessage = (event) => {
             try {
-                const parsed: { projects: APIUsageProject[] } = JSON.parse(event.data);
-                dispatch(updateAPIUsageProjects(parsed.projects)); 
+                const data = JSON.parse(event.data);
+
+                dispatch(updateProjectStatusAsync({
+                    projectId: data.projectStatus.projectId,
+                    steps: data.projectStatus.steps,
+                }));
             } catch (e) {
                 console.error("SSE 메시지 파싱 실패", e);
             }
         };
 
         eventSource.onerror = (err) => {
-            if (err instanceof ErrorEvent) {
-                console.error("SSE 연결 오류", err);
-                // 이곳에서 status 속성은 직접 접근할 수 없으므로 eventSource 객체를 통해 확인
-                console.error("EventSource 상태:", eventSource.readyState);
-            } else {
-                console.error("알 수 없는 오류 발생", err);
-            }
+            console.error("SSE 연결 오류", err);
             eventSource.close();
         };
 
