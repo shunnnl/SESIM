@@ -80,14 +80,17 @@ public class AuthService {
     }
 
     private User validateLoginRequest(LoginRequest request) {
-        // 이메일로 사용자 조회
-        User user = usersRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
 
-        // 탈퇴 여부 확인
-        if (user.getDeletedAt() != null) {
-            throw new GlobalException(AuthErrorCode.USER_DELETED);
-        }
+        // 이메일로 활성 사용자만 조회
+        User user = usersRepository.findByEmailAndDeletedAtIsNull(request.getEmail())
+                .orElseThrow(() -> {
+                    // 사용자가 없는 경우, 탈퇴한 사용자인지 확인
+                    if (usersRepository.findAllByEmail(request.getEmail()).isEmpty()) {
+                        return new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND);
+                    } else {
+                        return new GlobalException(AuthErrorCode.USER_DELETED);
+                    }
+                });
 
         // 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
