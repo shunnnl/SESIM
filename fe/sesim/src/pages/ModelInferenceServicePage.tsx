@@ -32,7 +32,6 @@ export const ModelInferenceServicePage: React.FC = () => {
 
 
     const handleCreateProject = () => {
-        window.scrollTo(0, 0);
         if (isLoggedIn) {
             navigate("/model-inference-service/create-project");
         } else {

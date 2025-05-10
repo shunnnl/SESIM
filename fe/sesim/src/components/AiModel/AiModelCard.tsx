@@ -38,7 +38,6 @@ export const AiModelCard = ({ id, name, featureTitle, featureList }: AiModelCard
                     <SmallAnimatedButton
                         text="자세히 보기"
                         link={`/ai-model/${id}`}
-                        onClick={() => { window.scrollTo(0, 0); }}
                     />
                 </div>
             </div>

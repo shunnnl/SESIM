@@ -4,6 +4,7 @@ import { MainRoutes } from "./MainRoutes";
 import { AuthModals } from "./AuthModals";
 import { Navbar } from "../components/Navbar/Navbar";
 import { Footer } from "../components/Footer/Footer";
+import ScrollToTop from "../components/common/ScrollToTop";
 import { getPageBackgroundClass } from "../utils/backgroundUtils";
 
 export const MainLayout = () => {
@@ -16,6 +17,7 @@ export const MainLayout = () => {
 
     return (
         <div className={backgroundClass}>
+            <ScrollToTop />
             <div className="relative">
                 <div className="fixed top-0 left-0 right-0 z-50">
                     <Navbar

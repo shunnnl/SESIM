@@ -132,7 +132,6 @@ export const AiModelDetailPage = () => {
                                     text="SESIM SDK 다운로드 하러 가기" 
                                     link="/" 
                                     width="370px" 
-                                    onClick={() => window.scrollTo(0,0)}
                                 />
                             </div>
                         </div>
