@@ -1,11 +1,11 @@
 from ai_sdk.client import AIClient
 
-API_URL = "http://3.38.163.86"  # 또는 https://api.sesim.site
-API_KEY = "test-api-key-123"      # 실제 인증 키
+API_URL = "test_api_key"
+API_KEY = "test_api_key"
 MODEL_ID = 1
-TRAIN_FILE_PATH = "./sample.csv"   # 실제 존재하는 로그 파일
-TRAIN_TEST_FILE_PATH = "./test.csv"  # 실제 존재하는 테스트 파일
-AI_TRAIN_ID = 2
+TRAIN_FILE_PATH = "모델 학습 파일 경로"
+TRAIN_TEST_FILE_PATH = "모델 테스트 파일 경로"
+AI_TRAIN_ID = 1
 
 client = AIClient(API_URL, api_key=API_KEY)
 

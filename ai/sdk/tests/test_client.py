@@ -1,12 +1,9 @@
 import pytest
 from ai_sdk.client import AIClient
-from ai_sdk.exceptions import APIError
 import io
 
-# --------------------------
-# 예측 API 테스트 (predict_file)
-# --------------------------
 
+# 예측 API 테스트 (predict_file
 def test_predict_file(monkeypatch):
     class MockResponse:
         status_code = 200
@@ -21,10 +18,7 @@ def test_predict_file(monkeypatch):
     assert result == "비동기 파일 예측 처리가 시작되었습니다."
 
 
-# --------------------------
 # 로그 업로드 API 테스트 (upload_log_file)
-# --------------------------
-
 def test_upload_log_file(monkeypatch):
     class MockResponse:
         status_code = 200
@@ -45,10 +39,7 @@ def test_upload_log_file(monkeypatch):
     assert "path" in res["response"]
 
 
-# --------------------------
 # 모델 학습 요청 API 테스트 (train_model)
-# --------------------------
-
 def test_train_model(monkeypatch):
     class MockResponse:
         status_code = 200
@@ -68,10 +59,7 @@ def test_train_model(monkeypatch):
     assert res["message"] == "AI 서버에 학습 요청이 완료되었습니다."
 
 
-# --------------------------
 # 업로드된 파일 목록 조회 API 테스트 (list_uploaded_files)
-# --------------------------
-
 def test_list_uploaded_files(monkeypatch):
     class MockResponse:
         status_code = 200
