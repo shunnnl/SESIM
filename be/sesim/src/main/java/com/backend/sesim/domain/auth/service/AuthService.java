@@ -9,6 +9,8 @@ import com.backend.sesim.domain.auth.dto.request.SignUpRequest;
 import com.backend.sesim.global.exception.GlobalException;
 import com.backend.sesim.global.security.dto.Token;
 import com.backend.sesim.global.security.jwt.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,69 +27,78 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public void signUp(SignUpRequest request) {
-        //1. 에러 검증
+        // 기존 코드 유지
         validateSignupRequest(request);
-
-        //2. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-
-        //3. User 엔터티 생성
         User users = User.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .nickname(request.getNickname())
                 .build();
-
-        //4. db에 저장
         usersRepository.save(users);
-
         log.info("회원가입 완료");
     }
 
-    public LoginResponse login(LoginRequest request) {
-        //1. 사용자 검증
+    public LoginResponse login(LoginRequest request, HttpServletResponse response) {
+        // 사용자 검증
         User users = validateLoginRequest(request);
 
-        // 2. JWT 토큰 생성
-        Token token = jwtTokenProvider.generateToken(users);
+        // JWT 토큰 생성 (Refresh Token은 쿠키로 설정됨)
+        Token token = jwtTokenProvider.generateToken(users, response);
 
         return LoginResponse.builder()
                 .id(users.getId())
                 .email(users.getEmail())
                 .nickname(users.getNickname())
-                .token(token)
+                .token(token) // Refresh Token은 null이고 쿠키로 전송됨
                 .createdAt(users.getCreatedAt())
                 .deletedAt(users.getDeletedAt())
                 .build();
     }
 
-    public void logout(Long id) {
+    public void logout(Long id, HttpServletResponse response) {
         User users = usersRepository.findById(id)
                 .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
 
+        // DB에서 Refresh Token 제거
         invalidateRefreshToken(users);
-        log.info("로그아웃 완료", users.getEmail());
+
+        // 쿠키에서 Refresh Token 제거
+        jwtTokenProvider.deleteRefreshTokenCookie(response);
+
+        log.info("로그아웃 완료: {}", users.getEmail());
+    }
+
+    public Token refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // JwtTokenProvider를 통해 쿠키에서 Refresh Token 추출 및 검증
+            Token newToken = jwtTokenProvider.refreshAccessToken(request, response);
+            return newToken;
+        } catch (Exception e) {
+            log.error("토큰 갱신 실패: {}", e.getMessage());
+            throw new GlobalException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
     }
 
     private void validateSignupRequest(SignUpRequest request) {
-        // 이메일과 일치하면서 탈퇴하지 않은 사용자가 있는지 확인
+        // 기존 코드 유지
         boolean hasActiveUser = usersRepository.existsByEmailAndDeletedAtIsNull(request.getEmail());
-
         if (hasActiveUser) {
             throw new GlobalException(AuthErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        // 활성 사용자가 없으면 회원가입 가능 (새 이메일이거나 탈퇴한 사용자의 이메일)
     }
 
     private User validateLoginRequest(LoginRequest request) {
-        // 이메일로 사용자 조회
-        User user = usersRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND));
-
-        // 탈퇴 여부 확인
-        if (user.getDeletedAt() != null) {
-            throw new GlobalException(AuthErrorCode.USER_DELETED);
-        }
+        // 이메일로 활성 사용자만 조회
+        User user = usersRepository.findByEmailAndDeletedAtIsNull(request.getEmail())
+                .orElseThrow(() -> {
+                    // 사용자가 없는 경우, 탈퇴한 사용자인지 확인
+                    if (usersRepository.findAllByEmail(request.getEmail()).isEmpty()) {
+                        return new GlobalException(AuthErrorCode.EMAIL_NOT_FOUND);
+                    } else {
+                        return new GlobalException(AuthErrorCode.USER_DELETED);
+                    }
+                });
 
         // 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -100,7 +111,6 @@ public class AuthService {
     }
 
     private void invalidateRefreshToken(User users) {
-        // 사용자의 리프레시 토큰 필드를 null로 설정
         users.updateRefreshToken(null);
         usersRepository.save(users);
     }

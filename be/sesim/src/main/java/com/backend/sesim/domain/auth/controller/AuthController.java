@@ -4,13 +4,17 @@ import com.backend.sesim.domain.auth.dto.request.LoginRequest;
 import com.backend.sesim.domain.auth.dto.request.LoginResponse;
 import com.backend.sesim.domain.auth.dto.request.RefreshTokenRequest;
 import com.backend.sesim.domain.auth.dto.request.SignUpRequest;
+import com.backend.sesim.domain.auth.exception.AuthErrorCode;
 import com.backend.sesim.domain.auth.service.AuthService;
 import com.backend.sesim.global.dto.CommonResponseDto;
+import com.backend.sesim.global.exception.GlobalException;
 import com.backend.sesim.global.security.dto.Token;
 import com.backend.sesim.global.security.jwt.JwtTokenProvider;
 import com.backend.sesim.global.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,27 +44,36 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "로그인", description = "로그인을 처리합니다.")
     @PostMapping("/login")
-    public CommonResponseDto<LoginResponse> singUp(@RequestBody LoginRequest request) {
-        return CommonResponseDto.ok(authService.login(request));
+    @Operation(summary = "로그인", description = "사용자 인증 후 JWT 토큰을 발급합니다. Refresh Token은 HTTP-Only 쿠키로 전송됩니다.")
+    public CommonResponseDto<LoginResponse> login(
+            @RequestBody LoginRequest request,
+            HttpServletResponse response) {
+        LoginResponse loginResponse = authService.login(request, response);
+        return CommonResponseDto.ok(loginResponse);
     }
 
-
-    @Operation(summary = "로그아웃", description = "로그아웃을 처리합니다.")
     @PostMapping("/logout")
-    public CommonResponseDto logout() {
-        //현재 로그인한 사용자의 id 가져오기
-        Long id = securityUtils.getCurrentUsersId();
-        authService.logout(id);
+    @Operation(summary = "로그아웃", description = "사용자의 토큰을 무효화하고 Refresh Token 쿠키를 삭제합니다.")
+    public CommonResponseDto<?> logout(HttpServletResponse response) {
+        // SecurityUtils를 사용하여 현재 인증된 사용자의 ID 가져오기
+        Long userId = securityUtils.getCurrentUsersId();
+
+        // 인증된 사용자가 없는 경우 예외 처리
+        if (userId == null) {
+            throw new GlobalException(AuthErrorCode.UNAUTHORIZED_USER);
+        }
+
+        authService.logout(userId, response);
         return CommonResponseDto.ok();
     }
 
-    @Operation(summary = "리프레쉬", description = "리프레쉬 토큰을 처리합니다.")
     @PostMapping("/refresh")
-    public CommonResponseDto refreshToken(@RequestBody RefreshTokenRequest request) throws SignatureException {
-        Token newToken = jwtTokenProvider.refreshAccessToken(request.getRefreshToken());
+    @Operation(summary = "토큰 갱신", description = "Refresh Token 쿠키를 사용하여 새 Access Token을 발급받습니다.")
+    public CommonResponseDto<Token> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        Token newToken = authService.refreshToken(request, response);
         return CommonResponseDto.ok(newToken);
     }
-
 }

@@ -8,6 +8,9 @@ import com.backend.sesim.global.security.dto.Token;
 import com.backend.sesim.global.security.exception.JwtErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,10 +35,10 @@ public class JwtTokenProvider {
      * JWT 토큰 생성 메서드 (Access Token + Refresh Token)
      *
      * @param users 사용자 정보
-     * @return 액세스 토큰과 리프레시 토큰을 포함한 Token 객체
+     * @param response HTTP 응답 객체 (쿠키 설정용)
+     * @return 액세스 토큰을 포함한 Token 객체
      */
-    //유저가 로그인 시에 user 객체만 넘겨주면 3개의 반환 타입을 넘겨준다.
-    public Token generateToken(User users) {
+    public Token generateToken(User users, HttpServletResponse response) {
         // JwtProperties에서 만료 시간 가져오기
         long accessTokenExpiresIn = jwtProperties.getExpirationTime();
         long refreshTokenExpiresIn = jwtProperties.getRefreshExpirationTime();
@@ -47,37 +50,111 @@ public class JwtTokenProvider {
 
         LocalDateTime now = LocalDateTime.now();
 
-        // 3. Refresh Token DB에 저장
+        // Refresh Token DB에 저장
         users.updateRefreshToken(refreshToken);
         usersRepository.save(users);
 
-        //현재시간
-        //액세스 토큰 만료일을 알아보기 쉽게 3600000 -> 1시간
+        // Refresh Token을 HTTP-Only 쿠키로 설정
+        addRefreshTokenCookie(response, refreshToken, (int) (refreshTokenExpiresIn / 1000));
+
+        // 현재시간
+        // 액세스 토큰 만료일을 알아보기 쉽게 3600000 -> 1시간
         long accessTokenExpiresInHours = accessTokenExpiresIn / 3600000;
         LocalDateTime expirationTime = now.plusHours(accessTokenExpiresInHours);
 
-        return new Token(accessToken, refreshToken, expirationTime);
+        // 응답에는 Access Token만 포함 (Refresh Token은 쿠키로 전송)
+        return new Token(accessToken, null, expirationTime);
     }
 
     /**
-     * 서명에 사용할 키를 생성
-     *
-     * @return 서명용 Key 객체
+     * Refresh Token을 HTTP-Only 쿠키로 설정
      */
+    private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken, int maxAgeInSeconds) {
+        Cookie cookie = new Cookie("refresh_token", refreshToken);
+        cookie.setHttpOnly(true);         // JavaScript에서 접근 불가
+        cookie.setSecure(true);           // HTTPS에서만 전송
+        cookie.setPath("/");              // 모든 경로에서 사용 가능
+        cookie.setMaxAge(maxAgeInSeconds); // 쿠키 유효 기간 설정
+
+        response.addCookie(cookie);
+        log.info("Refresh Token 쿠키 설정 완료");
+    }
+
+    /**
+     * 쿠키에서 Refresh Token 추출
+     */
+    public String extractRefreshTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Refresh Token 쿠키 삭제 (로그아웃 시 사용)
+     */
+    public void deleteRefreshTokenCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refresh_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 즉시 만료
+
+        response.addCookie(cookie);
+        log.info("Refresh Token 쿠키 삭제 완료");
+    }
+
+    /**
+     * Access Token 갱신 (Refresh Token 사용)
+     */
+    public Token refreshAccessToken(HttpServletRequest request, HttpServletResponse response) throws SignatureException {
+        // 쿠키에서 Refresh Token 추출
+        String refreshToken = extractRefreshTokenFromCookies(request);
+
+        if (refreshToken == null) {
+            throw new GlobalException(JwtErrorCode.TOKEN_NOT_FOUND);
+        }
+
+        if (!validateToken(refreshToken)) {
+            throw new GlobalException(JwtErrorCode.TOKEN_NOT_VALID);
+        }
+
+        Claims claims = getClaims(refreshToken);
+
+        String tokenType = claims.get("tokenType", String.class);
+
+        if (!"refresh".equals(tokenType)) {
+            throw new GlobalException(JwtErrorCode.TOKEN_NOT_VALID);
+        }
+
+        // 사용자 ID 추출
+        Long userId = Long.parseLong(claims.getSubject());
+
+        // 사용자 조회
+        User users = usersRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+        // 저장된 리프레시 토큰과 일치하는지 확인
+        if (!refreshToken.equals(users.getRefreshToken())) {
+            throw new GlobalException(JwtErrorCode.REFRESH_NOT_VALID);
+        }
+
+        // 새 토큰 생성 (Access Token + 쿠키에 Refresh Token)
+        return generateToken(users, response);
+    }
+
+    // 나머지 기존 메서드는 그대로 유지
     private Key getSigningKey() {
         byte[] keyBytes = jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    /**
-     * 액세스 토큰 생성
-     *
-     * @param users          사용자 정보
-     * @param expirationTime 만료 시간(밀리초)
-     * @return 생성된 액세스 토큰
-     */
     private String generateAccessToken(User users, long expirationTime) {
-
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
 
@@ -96,43 +173,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Token refreshAccessToken(String refreshToken) throws SignatureException {
-        if (!validateToken(refreshToken)) {
-            throw new GlobalException(JwtErrorCode.TOKEN_NOT_FOUND);
-        }
-        Claims claims = getClaims(refreshToken);
-
-        String tokenType = claims.get("tokenType", String.class);
-
-        if (!"refresh".equals(tokenType)) {
-            throw new GlobalException(JwtErrorCode.TOKEN_NOT_VALID);
-        }
-
-        // 4. 사용자 ID 추출
-        Long userId = Long.parseLong(claims.getSubject());
-
-        // 5. 사용자 조회 (서비스나 레포지토리 주입 필요)
-        User users = usersRepository.findById(userId)
-                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
-
-        // 6. 저장된 리프레시 토큰과 일치하는지 확인
-        if (!refreshToken.equals(users.getRefreshToken())) {
-            throw new GlobalException(JwtErrorCode.REFRESH_NOT_VALID);
-        }
-
-        // 7. 새 액세스 토큰 생성
-        return generateToken(users);
-
-    }
-
-
-    /**
-     * 리프레시 토큰 생성 (최소한의 정보만 포함)
-     *
-     * @param users          사용자 정보
-     * @param expirationTime 만료 시간(밀리초)
-     * @return 생성된 리프레시 토큰
-     */
     private String generateRefreshToken(User users, long expirationTime) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
@@ -147,13 +187,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    /**
-     * 토큰 검증 및 클레임 추출
-     *
-     * @param token JWT 토큰
-     * @return 토큰의 클레임(페이로드) 정보
-     * @throws Exception 토큰이 유효하지 않을 경우 예외 발생
-     */
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -162,12 +195,6 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
-    /**
-     * 토큰 유효성 검사
-     *
-     * @param token 검증할 토큰
-     * @return 유효하면 true, 그렇지 않으면 false
-     */
     public boolean validateToken(String token) throws SignatureException {
         try {
             Jwts.parserBuilder()
@@ -184,12 +211,6 @@ public class JwtTokenProvider {
         return false;
     }
 
-    /**
-     * 토큰에서 사용자 ID 추출 (claim)
-     *
-     * @param token JWT 토큰
-     * @return 사용자 ID (Long 타입)
-     */
     public Long getUserId(String token) {
         try {
             Claims claims = getClaims(token);
@@ -200,12 +221,6 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 토큰에서 사용자 이메일 추출
-     *
-     * @param token JWT 토큰
-     * @return 사용자 이메일
-     */
     public String getEmail(String token) {
         try {
             Claims claims = getClaims(token);
@@ -216,12 +231,6 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 토큰에서 사용자 닉네임 추출
-     *
-     * @param token JWT 토큰
-     * @return 사용자 닉네임
-     */
     public String getNickName(String token) {
         try {
             Claims claims = getClaims(token);

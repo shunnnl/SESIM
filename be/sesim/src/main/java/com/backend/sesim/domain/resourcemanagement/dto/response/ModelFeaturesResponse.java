@@ -40,7 +40,7 @@ public class ModelFeaturesResponse {
             }
 
             // 나머지 항목들은 featureList에 추가
-            for (int i = 2; i < featureItems.length; i++) {
+            for (int i = 2; i < featureItems.length-1; i++) {
                 if (!featureItems[i].trim().isEmpty()) {
                     features.add(featureItems[i].trim());
                 }
