@@ -183,7 +183,7 @@ public class K3sSetupService {
             log.info("K3S 노드 확인 결과: {}", verifyResult);
 
             // 설치 완료 후 PEM 키 파일 삭제 (보안)
-            sshService.executeCommand(session, "rm -f k3s-setup/*.pem");
+            // sshService.executeCommand(session, "rm -f k3s-setup/*.pem");
 
             boolean success = verifyResult.contains("Ready") || verifyResult.toLowerCase().contains(masterIp.toLowerCase());
 
@@ -220,10 +220,19 @@ public class K3sSetupService {
         }
     }
 
-    public boolean checkAllPodsReady(String masterIp, String pemKeyPath, String namespace, int timeoutSeconds) {
+    public boolean checkAllPodsReady(String masterIp, String deploymentId, String namespace, int timeoutSeconds) {
         Session session = null;
         try {
-            session = sshService.setupSession(masterIp, "ubuntu", pemKeyPath);
+			String tempDir = System.getProperty("java.io.tmpdir");
+			String correctPemPath = Paths.get(tempDir, "terraform", deploymentId, "client-key-" + deploymentId + ".pem").toString();
+
+			File pemFile = new File(correctPemPath);
+			if (!pemFile.exists()) {
+				log.error("PEM 파일이 존재하지 않습니다: {}", correctPemPath);
+				return false;
+			}
+
+            session = sshService.setupSession(masterIp,"ubuntu", correctPemPath);
             String cmd = String.format("sudo kubectl wait --for=condition=Ready pod --all -n %s --timeout=%ds", namespace, timeoutSeconds);
             log.info("Pod 상태 확인 명령어 실행: {}", cmd);
             String result = sshService.executeCommand(session, cmd);
@@ -245,6 +254,37 @@ public class K3sSetupService {
             log.error("Pod 상태 확인 실패: {}", e.getMessage(), e);
             return false;
         } finally {
+            if (session != null) {
+                try {
+                    sshService.disconnect(session);
+                } catch (Exception e) {
+                    log.warn("SSH 세션 종료 중 오류: {}", e.getMessage());
+                }
+            }
+        }
+    }
+
+    public boolean deleteFile(String masterIp, String deploymentId) {
+        Session session = null;
+        try {
+			String tempDir = System.getProperty("java.io.tmpdir");
+			String correctPemPath = Paths.get(tempDir, "terraform", deploymentId, "client-key-" + deploymentId + ".pem").toString();
+
+			File pemFile = new File(correctPemPath);
+			if (!pemFile.exists()) {
+				log.error("PEM 파일이 존재하지 않습니다: {}", correctPemPath);
+				return false;
+			}
+
+            session = sshService.setupSession(masterIp, "ubuntu", correctPemPath);
+            sshService.executeCommand(session, "rm -rf k3s-setup");
+			log.info("k3s-setup 디렉토리 삭제 완료");
+			return true;
+        } catch (Exception e) {
+            log.error("파일 삭제 실패: {}", e.getMessage(), e);
+            return false;
+		}
+        finally {
             if (session != null) {
                 try {
                     sshService.disconnect(session);

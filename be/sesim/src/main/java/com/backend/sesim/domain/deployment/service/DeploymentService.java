@@ -146,7 +146,7 @@ public class DeploymentService {
                 // 서버 배포 로직 추가 (기존 로직을 여기에 배치)
                 boolean allPodsReady = k3sSetupService.checkAllPodsReady(
                     ec2PublicIps.get(0),  // master IP
-                    pemKeyPath,           // PEM key path
+                    deploymentId,           // DeploymentId
                     "client-system",      // namespace
                     300                   // timeout seconds
                 );
@@ -165,8 +165,19 @@ public class DeploymentService {
                 // 4. 완료 단계 시작
                 updateStepStatus(projectId, STEP_COMPLETION, STATUS_DEPLOYING);
 
-                // 완료 단계 완료
-                updateStepStatus(projectId, STEP_COMPLETION, STATUS_DEPLOYED);
+                boolean deletedDirectory = k3sSetupService.deleteFile(ec2PublicIps.get(0), deploymentId);
+
+                if(deletedDirectory) {
+                    // 완료 단계 완료
+                    updateStepStatus(projectId, STEP_COMPLETION, STATUS_DEPLOYED);
+                }
+
+                if(!deletedDirectory) {
+                    // 완료 단계 실패
+                    log.error("완료 실패");
+                    updateStepStatus(projectId, STEP_COMPLETION, STATUS_FAILED);
+                    return;
+                }
 
                 log.info("배포 완료 - 프로젝트 ID: {}", projectId);
 
