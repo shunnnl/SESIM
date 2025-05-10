@@ -55,7 +55,7 @@ export const AiModelDetailPage = () => {
                             <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">특징</h1>
                         </div>
                         <div>
-                            <div className="mt-[30px]">
+                            <div className="mt-[5px]">
                                 {features.map((feature, index) => (
                                     <motion.div
                                         key={index}

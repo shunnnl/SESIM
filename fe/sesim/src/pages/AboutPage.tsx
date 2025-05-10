@@ -1,12 +1,18 @@
 import { motion } from "framer-motion";
 import { AboutSesim } from "../components/About/AboutSesim";
 import { SesimFunctions } from "../components/About/SesimFunctions";
-import { ImageTitleBanner } from "../components/About/ImageTitleBanner";
+import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+import backgroundImage from "../assets/images/about-bg.webp";
 
 export const AboutPage: React.FC = () => {
     return (
         <div className="relative">
-            <ImageTitleBanner />
+            <PageTitleImageWithText
+                title="SESIM"
+                description1="SESIM은 고객 데이터를 외부로 보내지 않고,"
+                description2="프라이빗 환경에서 AI 보안 모델을 맞춤형으로 제공합니다."
+                backgroundImage={backgroundImage}
+            />
 
             <motion.div 
                 className="container-padding text-white my-[88px] relative z-10"

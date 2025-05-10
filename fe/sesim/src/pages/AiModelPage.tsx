@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setAiModels } from "../store/aiModelSlice";
 import { getAiModels } from "../services/aiModelService";
-import backgroundImage from "../assets/images/ai-model-bg.png";
+import backgroundImage from "../assets/images/ai-model-bg.webp";
 import { AllAiModels } from "../components/AiModel/AllAiModels";
 import { MostAiModel } from "../components/AiModel/MostAiModel";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";

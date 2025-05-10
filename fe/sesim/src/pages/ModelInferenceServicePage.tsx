@@ -8,7 +8,7 @@ import { BlueCircle } from "../components/common/BlueCircle";
 import { SignUpModal } from "../components/Popup/SignUpModal";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import { AiImage } from "../components/ModelInferenceService/AiImage";
-import PageBackground from "../assets/images/model-inference-service-bg.png";
+import PageBackground from "../assets/images/model-inference-service-bg.webp";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 import { ServiceDescriptionList } from "../components/ModelInferenceService/ServiceDescriptionList";
 
