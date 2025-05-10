@@ -2,6 +2,7 @@ package com.backend.sesim.domain.mail.service;
 
 import com.backend.sesim.domain.mail.exception.MailErrorCode;
 import com.backend.sesim.global.exception.GlobalException;
+import com.backend.sesim.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
+    private final UserRepository userRepository;
 
     @Value("${spring.mail.username}")
     private String senderEmail;
@@ -66,6 +68,11 @@ public class MailService {
     // 이메일 인증 코드 발송
     public void sendVerificationEmail(String email) {
         String number = createNumber();
+
+        // 활성 상태인 사용자의 이메일 중복만 체크 (탈퇴한 사용자는 다시 가입 가능)
+        if (userRepository.existsByEmailAndDeletedAtIsNull(email)) {
+            throw new GlobalException(MailErrorCode.EMAIL_ALREADY_EXISTS);
+        }
 
         try {
             MimeMessage message = createMail(email, number);
