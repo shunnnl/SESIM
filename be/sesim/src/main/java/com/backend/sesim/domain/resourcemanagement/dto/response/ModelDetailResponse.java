@@ -16,6 +16,7 @@ import java.util.List;
 public class ModelDetailResponse {
     private Long id;
     private String name;
+    private String shortDescription;
     private String version;
     private String framework;
     private Double pricePerHour;
@@ -41,9 +42,19 @@ public class ModelDetailResponse {
                     .build());
         }
 
+        // shortDescription 필드에서 마지막 줄바꿈 이후의 텍스트만 추출
+        String shortDesc = model.getShortDescription();
+        if (shortDesc != null && !shortDesc.isEmpty()) {
+            int lastNewlineIndex = shortDesc.lastIndexOf('\n');
+            if (lastNewlineIndex != -1) {
+                shortDesc = shortDesc.substring(lastNewlineIndex + 1).trim();
+            }
+        }
+
         return ModelDetailResponse.builder()
                 .id(model.getId())
                 .name(model.getName())
+                .shortDescription(shortDesc)
                 .version(model.getVersion())
                 .framework(model.getFramework())
                 .pricePerHour(model.getModelPricePerHour())
