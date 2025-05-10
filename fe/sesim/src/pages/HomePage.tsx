@@ -4,7 +4,7 @@ import { AnimatedButton } from "../components/common/AnimatedButton";
 const MainText = () => {
     return (
         <motion.p 
-            className="text-3xl md:text-4xl lg:text-5xl font-bold"
+            className="text-2xl md:text-4xl lg:text-5xl font-bold"
             initial={{ opacity: 0, y: 70 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
@@ -20,7 +20,7 @@ const MainText = () => {
 const SubText = () => {
     return (
         <motion.p 
-            className="text-lg md:text-xl font-medium"
+            className="text-md md:text-xl font-medium"
             initial={{ opacity: 0, y: 70 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
@@ -52,7 +52,7 @@ const AnimatedDetailButton = () => {
 export const HomePage: React.FC = () => {
     return (
         <div className="flex flex-col gap-8 md:gap-12 lg:gap-[72px] text-white container-padding">
-            <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[100px] md:mt-[150px] lg:mt-[200px]">
+            <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[250px] md:mt-[300px] lg:mt-[300px]">
                 <MainText />
                 <SubText />
             </div>

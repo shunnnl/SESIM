@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { BsCircleFill } from "react-icons/bs";
-import infoIcon from "../assets/images/info.png";
+import infoIcon from "../assets/images/info.webp";
 import { BlueCircle } from "../components/common/BlueCircle";
 import { getAiModelDetail } from "../services/aiModelService";
 import { AnimatedButton } from "../components/common/AnimatedButton";

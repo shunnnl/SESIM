@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { AboutSesim } from "../components/About/AboutSesim";
+import backgroundImage from "../assets/images/about-bg.webp";
 import { SesimFunctions } from "../components/About/SesimFunctions";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
-import backgroundImage from "../assets/images/about-bg.webp";
 
 export const AboutPage: React.FC = () => {
     return (

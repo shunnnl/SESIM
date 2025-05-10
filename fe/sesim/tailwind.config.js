@@ -10,7 +10,7 @@ export default {
         darkitembg: "#242C4D",
       },
       backgroundImage: {
-        "cyber-security": "url('/src/assets/images/cyber-security-bg.jpg')",
+        "cyber-security": "url('/src/assets/images/cyber-security-bg.webp')",
       },
       keyframes: {
         slideInRight: {

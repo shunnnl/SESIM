@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { AiModelCard } from "./AiModelCard";
-import globalImage from "../../assets/images/global.png";
+import globalImage from "../../assets/images/global.webp";
 
 export const AllAiModels = () => {
     const { data } = useSelector((state: RootState) => state.aiModel);

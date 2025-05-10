@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import infoIcon from "../assets/images/info.png";
+import infoIcon from "../assets/images/info.webp";
 import { BlueCircle } from "../components/common/BlueCircle";
 import PageBackground from "../assets/images/sdk-download-bg.webp";
 import { AnimatedButton } from "../components/common/AnimatedButton";
