@@ -10,6 +10,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Token {
     private String accessToken;
-    private String refreshToken;
+    private String refreshToken;  // HTTP-Only 쿠키로 전송될 때는 null이 됨
     private LocalDateTime accessTokenExpiresInForHour;
 }
