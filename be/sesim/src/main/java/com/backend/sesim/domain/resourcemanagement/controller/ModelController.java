@@ -39,7 +39,7 @@ public class ModelController {
         return CommonResponseDto.ok(modelDetail);
     }
 
-    @Operation(summary = "SDK 다운로드 코드 조회", description = "모든 모델에 공통으로 적용되는 SDK 다운로드 코드를 조회합니다.")
+    @Operation(summary = "모델 사용 예시 코드 조회", description = "모든 모델에 공통으로 적용되는 다운로드 코드를 조회합니다.")
     @GetMapping("/sdk-download-code")
     public CommonResponseDto<CodeExampleResponse> getSdkDownloadCode() {
         CodeExampleResponse codeExample = modelService.getSdkDownloadCode();
