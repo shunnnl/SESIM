@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,9 +21,10 @@ public class ApiUsageService {
 
     private final ApiUsageRepository apiUsageRepository;
     private final ProjectModelInfoRepository projectModelInfoRepository;
+    private final ApiUsageSSEService apiUsageSSEService; // 별도의 SSE 서비스 주입
 
     /**
-     * API 사용량 업데이트 또는 새로 생성 (프로젝트 ID와 모델 ID 기반)
+     * API 사용량 업데이트 또는 새로 생성
      */
     @Transactional
     public void updateApiUsage(ApiUsageUpdateRequest request) {
@@ -46,13 +46,23 @@ public class ApiUsageService {
         Long informationId = modelInfo.getId();
         Optional<ApiUsage> existingUsage = apiUsageRepository.findByInformationIdAndApiName(informationId, apiName);
 
+        boolean isUpdated = false;
+
         if (existingUsage.isPresent()) {
             // 기존 사용량이 있으면 새 값으로 완전히 대체
             ApiUsage usage = existingUsage.get();
-            usage.updateCounts(totalRequestCount, totalSeconds);  // 누적이 아닌 덮어쓰기
-            apiUsageRepository.save(usage);
-            log.info("API 사용량 덮어쓰기: projectId={}, modelId={}, apiName={}, 총 요청={}회, 총 시간={}초",
-                    projectId, modelId, apiName, totalRequestCount, totalSeconds);
+
+            // 값이 변경되었는지 확인
+            if (usage.getTotalRequestCount() != totalRequestCount ||
+                    usage.getTotalSeconds() != totalSeconds) {
+
+                usage.updateCounts(totalRequestCount, totalSeconds);
+                apiUsageRepository.save(usage);
+                isUpdated = true;
+
+                log.info("API 사용량 덮어쓰기: projectId={}, modelId={}, apiName={}, 총 요청={}회, 총 시간={}초",
+                        projectId, modelId, apiName, totalRequestCount, totalSeconds);
+            }
         } else {
             // 없으면 새로 생성
             ApiUsage newUsage = ApiUsage.builder()
@@ -62,8 +72,16 @@ public class ApiUsageService {
                     .totalSeconds(totalSeconds)
                     .build();
             apiUsageRepository.save(newUsage);
+            isUpdated = true;
+
             log.info("API 사용량 새로 생성: projectId={}, modelId={}, apiName={}, 요청={}회, 시간={}초",
                     projectId, modelId, apiName, totalRequestCount, totalSeconds);
+        }
+
+        // 변경사항이 있는 경우에만 SSE 알림 전송
+        if (isUpdated) {
+            // 업데이트 알림
+            apiUsageSSEService.notifyApiUsageUpdate();
         }
     }
 }

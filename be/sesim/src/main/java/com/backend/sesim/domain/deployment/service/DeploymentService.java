@@ -35,7 +35,7 @@ public class DeploymentService {
     private final ProjectRepository projectRepository;
     private final DeploymentStepRepository deploymentStepRepository;
     private final SqlService sqlService;
-    private final SSEService sseService;
+    private final DeploymentStepSSEService sseService;
 
     @Value("${aws.saas.access-key}")
     private String saasAccessKey;
