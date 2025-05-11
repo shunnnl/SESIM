@@ -7,7 +7,7 @@ interface SignUpModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToLogin: () => void;
-}
+};
 
 const formVariants = {
   hidden: { opacity: 0, y: 50, height: 0 },
@@ -56,7 +56,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
     setEmailError("");
     setVerificationCodeError("");
     setIsVerificationCodeSent(false);
-  }
+  };
 
 
   const resetSetDetailsForm = () => {
@@ -68,7 +68,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
     setConfirmPasswordError("");
     setShowPassword(false);
     setShowConfirmPassword(false);
-  }
+  };
 
 
   const handleClose = () => {
@@ -148,7 +148,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
     }, 500);
 
     return isValid;
-  }
+  };
 
 
   const formatTime = (seconds: number) => {
@@ -231,7 +231,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
     }, 500);
 
     return isValid;
-  }
+  };
 
 
   const handleSignUp = async () => {
@@ -245,11 +245,12 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
       if (response.success) {
         console.log("회원가입 성공");
         handleClose();
+        onSwitchToLogin();
       }
     } catch (error) {
       console.error("회원가입 실패:", error);
     }
-  }
+  };
 
 
   const handleSubmit = (e: React.FormEvent) => {
