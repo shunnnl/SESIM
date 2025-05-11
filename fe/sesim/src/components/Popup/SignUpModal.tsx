@@ -91,11 +91,15 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
         console.log("인증번호 요청 성공");
         setIsVerificationCodeSent(true);
       } else {
-        setEmailError("인증번호 요청 실패");
-        // TODO: 인증번호 요청 실패 처리 로직 구현
+        if (response.error.code === "EMAIL_ALREADY_EXISTS") {
+          setEmailError("이미 가입된 이메일입니다.");
+        } else {
+          setEmailError("인증번호 요청 실패");
+        }
       }
     } catch (error) {
       console.error("인증번호 요청 실패:", error);
+      setEmailError("네트워크 통신 오류가 발생했습니다.");
     }
   };
 
