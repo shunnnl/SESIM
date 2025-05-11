@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Project, Step } from '../types/keyinfoTypes';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Project, Step } from "../types/keyinfoTypes";
 
 interface DeploymentState {
     projects: Project[];
@@ -14,7 +14,7 @@ const initialState: DeploymentState = {
 };
 
 const keyinfoSlice = createSlice({
-    name: 'keyinfo',
+    name: "keyinfo",
     initialState,
     reducers: {
         setAllProjects: (state, action: PayloadAction<Project[]>) => {
