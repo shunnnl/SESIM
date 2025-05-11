@@ -48,7 +48,10 @@ export const ModelInferenceServicePage: React.FC = () => {
                 description2="AI 모델을 선택하고, 내 인프라에 자동 배포하세요."
                 backgroundImage={PageBackground}
             />
-            <div className="bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${BackgroundImage})` }}>
+            <div
+                className="bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: `url(${BackgroundImage})` }}
+            >
                 <motion.div
                     className="container-padding w-full text-white py-[44px]"
                     initial={{ opacity: 0, y: 70 }}
