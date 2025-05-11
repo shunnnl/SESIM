@@ -54,26 +54,32 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
     const [apiKey, setApiKey] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleOpenModal = async (projectName: string, model: Model) => {
-        setSelectedItem({ projectName, modelName: model.modelName });
+    const handleOpenModal = async (item: Model) => {
+        setSelectedItem({
+            projectName: project.projectName,
+            modelName: item.modelName,
+        });
         setIsLoading(true);
 
         try {
-            const result = await createDeploymentApiKey({
-                projectId: project.projectId,
-                modelId: model.modelId,
-            });
-
-            setApiKey(result.apiKey ?? result); 
-
-            setIsModalOpen(true);
+            const result = await createDeploymentApiKey({ projectId: project.projectId, modelId: item.modelId });
+            console.log("API 키 생성 요청 결과:", result, project, item.modelId);
+            if (result.apiKey) {
+                console.log("API 키 로드 성공", result.apiKey);
+                setApiKey(result.apiKey);
+                setIsModalOpen(true);
+            } else {
+                console.error("API 키 로드 실패:", result.error);
+                alert("API 키를 가져오는 데 실패했습니다.");
+            }
         } catch (error) {
-            console.error("API Key 요청 실패:", error);
-            alert("API Key를 가져오는 데 실패했습니다.");
+            console.error("API 키 로드 중 오류 발생:", error);
+            alert("API 키를 가져오는 중 오류가 발생했습니다.");
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
@@ -102,8 +108,9 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
     };
 
     const renderButton = (project: Project, model: Model) => {
-        const isChecked = model.apiKeyCheck;
-        const isClickable = !isChecked;
+        const isDeployed = project.steps[3]?.stepStatus === "DEPLOYED";
+        const hasChecked = model.apiKeyCheck;
+        const isClickable = isDeployed && !hasChecked;
 
         return (
             <button
@@ -139,7 +146,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
                 }}
                 onClick={() => {
                     if (isClickable) {
-                        handleOpenModal(project.projectName, model);
+                        handleOpenModal(model);
                     }
                 }}
                 disabled={!isClickable || isLoading}

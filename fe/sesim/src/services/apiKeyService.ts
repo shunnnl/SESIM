@@ -7,5 +7,6 @@ interface DeploymentApiKeyRequest {
 
 export const createDeploymentApiKey = async (data: DeploymentApiKeyRequest) => {
     const response = await api.post("/deployment/apikey", data);
+    console.log("API Key created:", response.data);
     return response.data;
 };
