@@ -578,6 +578,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
+                            tabIndex={-1}
                             className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#A3A3A3] hover:text-white transition-colors duration-300 focus:outline-none p-1"
                           >
                             {showPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
@@ -621,6 +622,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                           <button
                             type="button"
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            tabIndex={-1}
                             className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#A3A3A3] hover:text-white transition-colors duration-300 focus:outline-none p-1"
                           >
                             {showConfirmPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
