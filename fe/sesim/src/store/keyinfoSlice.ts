@@ -25,11 +25,17 @@ const keyinfoSlice = createSlice({
             action: PayloadAction<{ projectId: number; steps: Step[] }>
         ) => {
             const { projectId, steps } = action.payload;
+            console.log("🔄 [updateProjectStatus] Received:", { projectId, steps });
+
             const project = state.projects.find(p => p.projectId === projectId);
+
             if (project) {
+                console.log("✅ [updateProjectStatus] Found project:", project.projectName);
                 project.steps = steps;
+            } else {
+                console.warn("⚠️ [updateProjectStatus] Project not found for ID:", projectId);
             }
-        },
+        }
     },
 });
 

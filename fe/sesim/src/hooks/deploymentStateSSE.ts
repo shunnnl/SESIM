@@ -28,25 +28,6 @@ const useDeploymentStateSSE = () => {
                 console.log("✅ SSE 연결 성공");
             };
 
-            eventSource.onmessage = (event) => {
-                console.log("📨 일반 메시지 수신:", event.data);
-                try {
-                    const data = JSON.parse(event.data);
-                    console.log("파싱된 일반 데이터:", data);
-                    
-                    if (data.eventType === 'INIT') {
-                        dispatch(setAllProjects(data.projectList));
-                    } else if (data.eventType === 'STATUS_UPDATE') {
-                        dispatch(updateProjectStatus({
-                            projectId: data.projectStatus.projectId,
-                            steps: data.projectStatus.steps,
-                        }));
-                    }
-                } catch (err) {
-                    console.error("❌ SSE 메시지 파싱 오류", err);
-                }
-            };
-
             eventSource.addEventListener("INIT", (event: any) => {
                 console.log("📨 INIT 이벤트 수신:", event.data);
                 try {
@@ -66,13 +47,19 @@ const useDeploymentStateSSE = () => {
                 try {
                     const projectStatus = JSON.parse(event.data);
                     console.log("파싱된 STATUS_UPDATE 데이터:", projectStatus);
-                    
-                    if (projectStatus && projectStatus.projectId) {
+
+                    if (
+                        projectStatus &&
+                        typeof projectStatus.projectId === "number" &&
+                        Array.isArray(projectStatus.steps)
+                    ) {
                         dispatch(updateProjectStatus({
                             projectId: projectStatus.projectId,
                             steps: projectStatus.steps,
                         }));
                         console.log("✅ 프로젝트 상태 업데이트 완료 (ID: " + projectStatus.projectId + ")");
+                    } else {
+                        console.warn("⚠️ STATUS_UPDATE 데이터 형식 오류", projectStatus);
                     }
                 } catch (err) {
                     console.error("❌ STATUS_UPDATE 이벤트 파싱 오류", err);
