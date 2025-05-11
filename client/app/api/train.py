@@ -12,7 +12,7 @@ router = APIRouter()
 @api_logger("/admin/train/{model_id}")
 def train_model_api(
         model_id: int,
-        ai_train_id: int,
+        ai_train_id: int | None = None,
         api_key: str = Header(..., alias="api-key"),
         db: Session = Depends(get_db)
 ):
