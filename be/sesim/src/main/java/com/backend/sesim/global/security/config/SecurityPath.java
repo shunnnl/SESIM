@@ -31,6 +31,9 @@ public enum SecurityPath {
     // Model 관련 경로
     MODEL("/api/model/**"),
 
+    // Api 사용량 업데이트 관련 경로
+    UPDATE_API_USAGE("/api/deployment/api-usage"),
+
     // Health check 관련 경로
     HEALTH("/health");
 
