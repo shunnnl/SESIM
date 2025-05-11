@@ -23,7 +23,7 @@ public class DeploymentController {
     private final TerraformService terraformDeployService;
     private final DeploymentOptionService deployService;
     private final ProjectService projectService;
-    private final SSEService sseService;
+    private final DeploymentStepSSEService deploymentStepSSEService;
     private final ApiUsageService apiUsageService;
 
     @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
@@ -57,7 +57,7 @@ public class DeploymentController {
     @GetMapping(value = "/status/stream", produces = "text/event-stream")
     public SseEmitter streamDeploymentStatus() {
         log.info("배포 상태 스트림 요청 수신");
-        return sseService.subscribe();
+        return deploymentStepSSEService.subscribe();
     }
 
 

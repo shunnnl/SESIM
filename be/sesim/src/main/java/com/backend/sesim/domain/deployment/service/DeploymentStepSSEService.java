@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)  // 클래스 레벨에 적용
-public class SSEService {
+public class DeploymentStepSSEService {
 
     private static final Long DEFAULT_TIMEOUT = 60 * 60 * 1000L; // 1시간
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
