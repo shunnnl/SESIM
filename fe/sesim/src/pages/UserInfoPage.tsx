@@ -47,7 +47,7 @@ export const UserInfoPage = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <span className="w-2 h-2 rounded-full bg-blue-500" />
-            회원 정보
+            마이페이지
           </motion.h1>
 
           <InfoField label="닉네임" value={localStorage.getItem("nickname") || ""} />

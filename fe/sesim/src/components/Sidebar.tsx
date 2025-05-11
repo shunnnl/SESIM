@@ -1,7 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { LuChartColumnIncreasing } from "react-icons/lu";
-import { FaFolder, FaUserAlt, FaKey } from "react-icons/fa";
+import { LuChartColumnIncreasing, LuUserRound, LuFolder, LuKeyRound  } from "react-icons/lu";
 
 export const Sidebar: React.FC = () => {
     const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -24,22 +23,22 @@ export const Sidebar: React.FC = () => {
             {/* 네비게이션 메뉴 */}
             <nav className="flex flex-col gap-4">
                 <NavLink to="/userinfo" className={getNavLinkClass}>
-                    <FaUserAlt className="text-xl text-gray-400" />
-                    회원정보
+                    <LuUserRound className="text-2xl text-gray-400" />
+                    마이페이지
                 </NavLink>
 
                 <NavLink to="/apiusage" className={getNavLinkClass}>
-                    <LuChartColumnIncreasing className="text-lg text-gray-400" />
+                    <LuChartColumnIncreasing className="text-xl text-gray-400" />
                     API사용량 / 금액
                 </NavLink>
 
                 <NavLink to="/project" className={getNavLinkClass}>
-                    <FaFolder className="text-xl text-gray-400" />
+                    <LuFolder className="text-xl text-gray-400" />
                     대시보드
                 </NavLink>
 
                 <NavLink to="/keyinfo" className={getNavLinkClass}>
-                    <FaKey className="text-sm text-gray-400" />
+                    <LuKeyRound className="text-xl text-gray-400" />
                     키 정보
                 </NavLink>
             </nav>
