@@ -1,3 +1,4 @@
+from app.core.api_decorator import api_logger
 from app.db.database import get_db
 from app.schemas.common import MessageResponse
 from app.schemas.predict.request import PredictRequest
@@ -33,6 +34,7 @@ def predict_api(
 
 # 비동기 버전
 @router.post("/v1/predict/file", response_model=MessageResponse)
+@api_logger("/v1/predict/file")
 def predict_file_api(
         background_tasks: BackgroundTasks,
         model_id: int = Form(...),
