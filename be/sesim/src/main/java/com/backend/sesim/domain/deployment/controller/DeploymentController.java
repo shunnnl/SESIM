@@ -64,9 +64,6 @@ public class DeploymentController {
     @Operation(summary = "API 사용량 업데이트", description = "API 사용량 정보를 업데이트합니다.")
     @PostMapping("/api-usage")
     public CommonResponseDto<?> updateApiUsage(@RequestBody ApiUsageUpdateRequest request) {
-        log.info("API 사용량 업데이트 요청: informationId={}, apiName={}, 요청={}회, 시간={}초",
-                request.getInformationId(), request.getApiName(), request.getRequestCount(), request.getSeconds());
-
         apiUsageService.updateApiUsage(request);
 
         return CommonResponseDto.ok();
