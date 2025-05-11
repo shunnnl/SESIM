@@ -44,6 +44,9 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   const [isConfirmPasswordFocused, setIsConfirmPasswordFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isNicknameShaking, setIsNicknameShaking] = useState(false);
+  const [isPasswordShaking, setIsPasswordShaking] = useState(false);
+  const [isConfirmPasswordShaking, setIsConfirmPasswordShaking] = useState(false);
 
   const [shouldRender, setShouldRender] = useState(false);
 
@@ -156,6 +159,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
 
   const handleVerifyCode = async () => {
+    setStep("setDetails");
+
     if (!validateEmailVerifyForm()) {
       return;
     }
@@ -186,27 +191,46 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
 
   const validateSignUpForm = () => {
+    let isValid = true;
+
+    setNicknameError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+    setIsNicknameShaking(false);
+    setIsPasswordShaking(false);
+    setIsConfirmPasswordShaking(false);
+
     if (!nickname) {
       setNicknameError("닉네임을 입력해주세요.");
-      return false;
+      setIsNicknameShaking(true);
+      isValid = false;
     }
 
     if (!password) {
       setPasswordError("비밀번호를 입력해주세요.");
-      return false;
+      setIsPasswordShaking(true);
+      isValid = false;
     }
 
     if (!confirmPassword) {
       setConfirmPasswordError("비밀번호를 다시 입력해주세요.");
-      return false;
+      setIsConfirmPasswordShaking(true);
+      isValid = false;
     }
 
     if (password !== confirmPassword) {
       setConfirmPasswordError("비밀번호가 일치하지 않습니다.");
-      return false;
+      setIsConfirmPasswordShaking(true);
+      isValid = false;
     }
 
-    return true;
+    setTimeout(() => {
+      setIsNicknameShaking(false);
+      setIsPasswordShaking(false);
+      setIsConfirmPasswordShaking(false);
+    }, 500);
+
+    return isValid;
   }
 
 
@@ -314,7 +338,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
               pointerEvents: "none",
             }}
           ></div>
-          
+
           <motion.div
             layout
             className="flex flex-col items-center w-full py-10 sm:py-12 md:py-16 px-6 sm:px-10 md:px-16 rounded-[28px] bg-[#020207]/80"
@@ -521,7 +545,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                             className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
                             maxLength={15}
                           />
-                          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                          <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isNicknameShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
                           <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isNicknameFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
                           {nicknameError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{nicknameError}</p>}
                         </div>
@@ -558,7 +582,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                           >
                             {showPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
                           </button>
-                          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                          <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isPasswordShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
                           <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isPasswordFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
                           {passwordError &&
                             <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
@@ -601,7 +625,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                           >
                             {showConfirmPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
                           </button>
-                          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                          <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isConfirmPasswordShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
                           <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isConfirmPasswordFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
                           {confirmPasswordError &&
                             <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
