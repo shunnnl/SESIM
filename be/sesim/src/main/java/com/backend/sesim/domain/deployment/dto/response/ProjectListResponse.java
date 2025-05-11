@@ -47,6 +47,7 @@ public class ProjectListResponse {
     @Builder
     public static class ModelDto {
         private Long id;
+        private Long informationId;
         private String name;
         private String description; // short_description의 첫 번째 줄
         private String grafanaUrl;  // 그라파나 URL 추가
@@ -79,6 +80,7 @@ public class ProjectListResponse {
 
             return ModelDto.builder()
                     .id(modelInfo.getModel().getId())
+                    .informationId(modelInfo.getId())
                     .name(modelInfo.getModel().getName())
                     .description(firstLine)
                     .grafanaUrl(grafanaUrl)

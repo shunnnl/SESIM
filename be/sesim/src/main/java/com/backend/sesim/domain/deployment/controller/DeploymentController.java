@@ -1,12 +1,10 @@
 package com.backend.sesim.domain.deployment.controller;
 
 import com.backend.sesim.domain.deployment.dto.request.ApiKeyCheckRequest;
+import com.backend.sesim.domain.deployment.dto.request.ApiUsageUpdateRequest;
 import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
 import com.backend.sesim.domain.deployment.dto.response.*;
-import com.backend.sesim.domain.deployment.service.DeploymentOptionService;
-import com.backend.sesim.domain.deployment.service.ProjectService;
-import com.backend.sesim.domain.deployment.service.SSEService;
-import com.backend.sesim.domain.deployment.service.TerraformService;
+import com.backend.sesim.domain.deployment.service.*;
 import com.backend.sesim.global.dto.CommonResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +24,7 @@ public class DeploymentController {
     private final DeploymentOptionService deployService;
     private final ProjectService projectService;
     private final SSEService sseService;
+    private final ApiUsageService apiUsageService;
 
     @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
     @PostMapping("/terraform")
@@ -59,6 +58,18 @@ public class DeploymentController {
     public SseEmitter streamDeploymentStatus() {
         log.info("배포 상태 스트림 요청 수신");
         return sseService.subscribe();
+    }
+
+
+    @Operation(summary = "API 사용량 업데이트", description = "API 사용량 정보를 업데이트합니다.")
+    @PostMapping("/api-usage")
+    public CommonResponseDto<?> updateApiUsage(@RequestBody ApiUsageUpdateRequest request) {
+        log.info("API 사용량 업데이트 요청: informationId={}, apiName={}, 요청={}회, 시간={}초",
+                request.getInformationId(), request.getApiName(), request.getRequestCount(), request.getSeconds());
+
+        apiUsageService.updateApiUsage(request);
+
+        return CommonResponseDto.ok();
     }
 
     @Operation(summary = "사용자 전체 API 사용량 조회", description = "현재 로그인한 사용자의 모든 프로젝트 API 사용량을 조회합니다.")

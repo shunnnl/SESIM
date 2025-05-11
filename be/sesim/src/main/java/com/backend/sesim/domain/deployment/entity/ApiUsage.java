@@ -32,4 +32,12 @@ public class ApiUsage extends TimeStampEntity {
 
     @Column(name = "total_seconds", nullable = false)
     private int totalSeconds;
+
+    /**
+     * 사용량 업데이트
+     */
+    public void updateCounts(int newTotalRequestCount, int newTotalSeconds) {
+        this.totalRequestCount = newTotalRequestCount;
+        this.totalSeconds = newTotalSeconds;
+    }
 }
