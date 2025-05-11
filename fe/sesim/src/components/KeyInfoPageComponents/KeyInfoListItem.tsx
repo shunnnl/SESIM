@@ -80,7 +80,6 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
         }
     };
 
-
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedItem(null);
@@ -106,6 +105,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
             }
         );
     };
+
 
     const renderButton = (project: Project, model: Model) => {
         const isDeployed = project.steps[3]?.stepStatus === "DEPLOYED";
@@ -156,6 +156,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
         );
     };
 
+
     const getGradientColor = (steps: Step[], idx: number) => {
         const current = steps[idx];
         const next = steps[idx + 1];
@@ -165,7 +166,10 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
             return "from-[#495AFF] to-[#EA49FF]";
         }
 
-        if (next.stepStatus === "DEPLOYED") return "from-blue-500 to-blue-500";
+        if (next.stepStatus === "DEPLOYED") {
+            return "from-blue-500 to-blue-500";
+        }
+        
         if (next.stepStatus === "DEPLOYING" && current.stepStatus === "DEPLOYED") {
             return "from-[#495AFF] to-[#EA49FF]";
         }
@@ -265,13 +269,13 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
                 <div className="w-1 h-5 bg-blue-400 mr-3 rounded-sm" />
                 <h1 className="font-semibold text-lg">모델 리스트</h1>
             </div>
-            <div className="container mx-auto px-5 pb-3">
-                <table className="w-full text-white text-center">
+            <div className="container mx-auto pb-3">
+                <table className="w-full table-fixed text-white text-center">
                     <thead>
                         <tr className="border-b border-gray-600">
-                            <th className="py-3 px-4">모델명</th>
-                            <th className="py-3 px-4">ALB주소</th>
-                            <th className="py-3 px-4">API Key</th>
+                            <th className="py-3 px-4 w-1/3">모델명</th>
+                            <th className="py-3 px-4 w-1/3">ALB주소</th>
+                            <th className="py-3 px-4 w-1/3">API Key</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -297,6 +301,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
                         ))}
                     </tbody>
                 </table>
+
             </div>
 
             {selectedItem && apiKey && (

@@ -18,5 +18,3 @@ export const fetchAPIUsage = async (): Promise<APIUsageProject[]> => {
 
     return response.data.data.projects;
 };
-
-

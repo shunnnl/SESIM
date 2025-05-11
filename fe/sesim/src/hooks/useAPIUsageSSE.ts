@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { updateAPIUsageProjects } from "../store/APIUsageSlice";
 import { EventSourcePolyfill } from "event-source-polyfill";
+import { updateAPIUsageProjects } from "../store/APIUsageSlice";
 
 export const useAPIUsageSSE = () => {
     const dispatch = useDispatch();

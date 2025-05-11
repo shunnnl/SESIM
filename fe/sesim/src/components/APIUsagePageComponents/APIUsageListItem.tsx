@@ -160,8 +160,11 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                             const rgba = hexToRgba(hex, 0.15);
 
                             return (
-                                <tr key={index} className="text-white text-center" style={{ height: "2em" }}>
-                                    <td className="px-4 py-0" style={{ position: "relative" }}>
+                                <tr key={index}
+                                    className="text-white text-center"
+                                    style={{ height: "2em" }}>
+                                    <td className="px-4 py-0"
+                                        style={{ position: "relative" }}>
                                         <div
                                             style={{
                                                 position: "absolute",
@@ -176,13 +179,14 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                                         ></div>
                                         <span style={{ position: "relative", zIndex: 1 }}>{model.modelName}</span>
                                     </td>
-                                    <td className="px-4 py-0" style={{ position: "relative" }}>
+                                    <td className="px-4 py-0"
+                                        style={{ position: "relative" }}>
                                         <div
                                             style={{
                                                 position: "absolute",
                                                 left: 0,
                                                 right: 0,
-                                                height: "2em", 
+                                                height: "2em",
                                                 top: "50%",
                                                 transform: "translateY(-50%)",
                                                 backgroundColor: rgba,
@@ -191,13 +195,14 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                                         ></div>
                                         <span style={{ position: "relative", zIndex: 1 }}>{model.apiRequests}</span>
                                     </td>
-                                    <td className="px-4 py-0" style={{ position: "relative" }}>
+                                    <td className="px-4 py-0"
+                                        style={{ position: "relative" }}>
                                         <div
                                             style={{
                                                 position: "absolute",
                                                 left: 0,
                                                 right: 0,
-                                                height: "2em", 
+                                                height: "2em",
                                                 top: "50%",
                                                 transform: "translateY(-50%)",
                                                 backgroundColor: rgba,
@@ -206,7 +211,8 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                                         ></div>
                                         <span style={{ position: "relative", zIndex: 1 }}>{model.usageTime.toFixed(1)}h</span>
                                     </td>
-                                    <td className="px-4 py-0" style={{ position: "relative" }}>
+                                    <td className="px-4 py-0"
+                                        style={{ position: "relative" }}>
                                         <div
                                             style={{
                                                 position: "absolute",
@@ -235,7 +241,6 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                         </tr>
                     </tfoot>
                 </table>
-
             </div>
         </div>
     );

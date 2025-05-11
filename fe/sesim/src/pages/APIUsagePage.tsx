@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { RootState, AppDispatch } from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import { Sidebar } from "../components/Sidebar";
+import { useAPIUsageSSE } from "../hooks/useAPIUsageSSE";
 import { fetchAPIUsageList } from "../store/APIUsageSlice";
 import { APIUsageListItem } from "../components/APIUsagePageComponents/APIUsageListItem";
-import { useAPIUsageSSE } from "../hooks/useAPIUsageSSE";
 
 export const APIUsagePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
