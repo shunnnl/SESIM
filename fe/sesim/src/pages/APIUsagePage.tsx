@@ -5,16 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Sidebar } from "../components/Sidebar";
 import { fetchAPIUsageList } from "../store/APIUsageSlice";
 import { APIUsageListItem } from "../components/APIUsagePageComponents/APIUsageListItem";
-import { useAPIUsageSSE } from "../hooks/useAPIUsageSSE"; // ✅ 추가
+import { useAPIUsageSSE } from "../hooks/useAPIUsageSSE";
 
 export const APIUsagePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { projects, loading, error } = useSelector((state: RootState) => state.apiUsage);
 
-    // ✅ 실시간 데이터 반영
     useAPIUsageSSE();
 
-    // 초기 데이터 로드
     useEffect(() => {
         dispatch(fetchAPIUsageList());
     }, [dispatch]);

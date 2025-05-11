@@ -23,8 +23,6 @@ ChartJS.register(
     ChartDataLabels
 );
 
-
-
 const centerTextPlugin = {
     id: "centerText",
     afterDraw: (chart: any) => {

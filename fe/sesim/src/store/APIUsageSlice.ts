@@ -51,9 +51,5 @@ const apiUsageSlice = createSlice({
     },
 });
 
-// export 액션 추가
 export const { updateAPIUsageProjects } = apiUsageSlice.actions;
-
-
-
 export default apiUsageSlice.reducer;

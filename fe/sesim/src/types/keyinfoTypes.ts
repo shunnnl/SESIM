@@ -12,17 +12,9 @@ export interface Model {
 }
 
 export interface Project {
-    id: number;
-    name: string;
+    projectId: number;
+    projectName: string;
     albAddress: string;
     steps: Step[];
     models: Model[];
-}
-
-export interface KeyInfoResponse {
-    success: boolean;
-    data: {
-        projects: Project[];
-    };
-    error: string | null;
 }
