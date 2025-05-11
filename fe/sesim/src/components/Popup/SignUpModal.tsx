@@ -26,6 +26,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   const [isVerificationCodeSent, setIsVerificationCodeSent] = useState(false);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isVerificationCodeFocused, setIsVerificationCodeFocused] = useState(false);
+  const [isEmailShaking, setIsEmailShaking] = useState(false);
+  const [isVerificationCodeShaking, setIsVerificationCodeShaking] = useState(false);
 
   // step 2: 닉네임, 비밀번호 설정
   const [nickname, setNickname] = useState("");
@@ -88,9 +90,12 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
       const response = await sendVerificationCode({ email });
 
       if (response.success) {
-        console.log("인증번호 요청 성공");
+        console.log("인증번호 요청 성공: ", response);
+
         setIsVerificationCodeSent(true);
       } else {
+        console.log("인증번호 요청 실패: ", response);
+
         if (response.error.code === "EMAIL_ALREADY_EXISTS") {
           setEmailError("이미 가입된 이메일입니다.");
         } else {
@@ -105,17 +110,31 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
 
   const validateEmailVerifyForm = () => {
+    let isValid = true;
+
+    setEmailError("");
+    setVerificationCodeError("");
+    setIsEmailShaking(false);
+    setIsVerificationCodeShaking(false);
+
     if (!email) {
       setEmailError("이메일을 입력해주세요.");
-      return false;
+      setIsEmailShaking(true);
+      isValid = false;
     }
 
     if (!verificationCode || verificationCode.length !== 6) {
       setVerificationCodeError("인증번호를 입력해주세요.");
-      return false;
+      setIsVerificationCodeShaking(true);
+      isValid = false;
     }
 
-    return true;
+    setTimeout(() => {
+      setIsEmailShaking(false);
+      setIsVerificationCodeShaking(false);
+    }, 500);
+
+    return isValid;
   }
 
 
@@ -290,7 +309,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                           className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
                           disabled={isVerificationCodeSent}
                         />
-                        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                        {/* <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div> */}
+                        <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isEmailShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
                         <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isEmailFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
                         {emailError &&
                           <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
@@ -339,7 +359,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                         className="w-full bg-transparent text-start font-mono text-2xl text-white placeholder-[#555] border-b-2 border-[#555]/50 focus:border-[#3B66AF] focus:outline-none py-2 px-1 tracking-[6px]"
                         maxLength={6}
                       />
-                      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                      {/* <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div> */}
+                      <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isVerificationCodeShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
                       <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isVerificationCodeFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
                       {verificationCodeError &&
                         <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
