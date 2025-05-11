@@ -49,5 +49,28 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      const newUtilities = {
+        ".scrollbar-custom": {
+          "&::-webkit-scrollbar": {
+            width: "8px",
+            height: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "rgba(0, 0, 0, 0.1)",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "rgba(255, 255, 255, 0.2)",
+            borderRadius: "4px",
+            "&:hover": {
+              background: "rgba(255, 255, 255, 0.3)",
+            },
+          },
+        }
+      };
+      addUtilities(newUtilities);
+    },
+  ],
 };
