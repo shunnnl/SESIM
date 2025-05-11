@@ -64,9 +64,9 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
         try {
             const result = await createDeploymentApiKey({ projectId: project.projectId, modelId: item.modelId });
             console.log("API 키 생성 요청 결과:", result, project, item.modelId);
-            if (result.apiKey) {
-                console.log("API 키 로드 성공", result.apiKey);
-                setApiKey(result.apiKey);
+            if (result.data.apiKey) {
+                console.log("API 키 로드 성공", result.data.apiKey);
+                setApiKey(result.data.apiKey);
                 setIsModalOpen(true);
             } else {
                 console.error("API 키 로드 실패:", result.error);
@@ -107,10 +107,27 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
     };
 
 
+    const [clickedModelIds, setClickedModelIds] = useState<number[]>([]);
+
+    const handleClick = (model: Model) => {
+        if (!clickedModelIds.includes(model.modelId)) {
+            setClickedModelIds((prev) => [...prev, model.modelId]);
+            handleOpenModal(model);
+        }
+    };
+
     const renderButton = (project: Project, model: Model) => {
         const isDeployed = project.steps[3]?.stepStatus === "DEPLOYED";
         const hasChecked = model.apiKeyCheck;
-        const isClickable = isDeployed && !hasChecked;
+        const isClicked = clickedModelIds.includes(model.modelId);
+        const isClickable = isDeployed && !hasChecked && !isClicked;
+
+        let label = "API Key 확인";
+        if (project.steps[3]?.stepStatus === "DEPLOYING") {
+            label = "배포 중";
+        } else if (hasChecked || isClicked) {
+            label = "API Key 확인 완료";
+        }
 
         return (
             <button
@@ -146,12 +163,12 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
                 }}
                 onClick={() => {
                     if (isClickable) {
-                        handleOpenModal(model);
+                        handleClick(model);
                     }
                 }}
                 disabled={!isClickable || isLoading}
             >
-                API Key 확인
+                {label}
             </button>
         );
     };
@@ -169,7 +186,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
         if (next.stepStatus === "DEPLOYED") {
             return "from-blue-500 to-blue-500";
         }
-        
+
         if (next.stepStatus === "DEPLOYING" && current.stepStatus === "DEPLOYED") {
             return "from-[#495AFF] to-[#EA49FF]";
         }
