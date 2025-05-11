@@ -74,7 +74,7 @@ export const KeyInfoPage = () => {
                 )}
 
                 {Array.isArray(projects) && projects.length > 0 ? (
-                    projects.map((project: Project, index: number) => {
+                    projects.slice().reverse().map((project: Project, index: number) => {
                         return (
                             <motion.div
                                 key={index}
