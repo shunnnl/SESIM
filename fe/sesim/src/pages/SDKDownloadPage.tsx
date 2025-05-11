@@ -16,7 +16,7 @@ export const SdkDownloadPage = () => {
                 backgroundImage={PageBackground}
             />
             <motion.div 
-                className="flex justify-between gap-[50px] py-[88px] container-padding  text-white"
+                className="flex justify-between gap-[50px] py-[88px] container-padding text-white"
                 initial={{ opacity: 0, y: 70 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
@@ -40,7 +40,7 @@ export const SdkDownloadPage = () => {
                             <img 
                                 src={infoIcon} 
                                 alt="info" 
-                                className=" w-[30px] h-[30px]" 
+                                className="w-[30px] h-[30px]" 
                             />
                             <p className="text-[16px] font-bold">SESIM을 처음이용하신다면, SESIM SDK를 먼저 다운로드 하세요!</p>
                         </p>
