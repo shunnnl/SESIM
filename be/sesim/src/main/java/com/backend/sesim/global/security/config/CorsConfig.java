@@ -34,8 +34,9 @@ public class CorsConfig {
                 "https://3.34.198.223",
                 "http://sesim-front-alb-35113181.ap-northeast-2.elb.amazonaws.com/",
                 "http://52.79.149.27",
-                "https://52.79.149.27"
-
+                "https://52.79.149.27",
+                "http://www.sesim.site",
+                "https://www.sesim.site"
         ));
 
         // 허용할 HTTP 메서드 설정
