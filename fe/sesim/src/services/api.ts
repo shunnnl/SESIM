@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const api = axios.create({
-  // TODO: 백엔드 이중화 구현 이후 baseURL 변경
   baseURL: "http://52.79.149.27/api",
 });
 
