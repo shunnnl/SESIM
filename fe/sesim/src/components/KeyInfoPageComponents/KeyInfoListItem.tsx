@@ -174,7 +174,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
     };
 
     return (
-        <div className="bg-darkitembg rounded-xl p-4 border border-slate-500 shadow-md mb-10">
+        <div className="bg-darkitembg rounded-xl p-4 border border-slate-500 shadow-md mb-2">
             <div className="flex items-center mb-4 ml-3">
                 <h2 className="text-2xl font-bold text-white pb-2">
                     {project.projectName}

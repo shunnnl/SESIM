@@ -48,7 +48,7 @@ export const KeyInfoPage = () => {
                         AI모델 별 API 키 정보를 제공합니다.
                     </p>
 
-                    <p className="text-lg font-medium m-1 mb-6">
+                    <p className="text-lg font-medium m-1 mb-10">
                         API 키는 최초 1회만 확인 가능하며, 보안상의 이유로 이후에는 다시 확인하실 수 없습니다.
                     </p>
                 </motion.div>
@@ -83,9 +83,6 @@ export const KeyInfoPage = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
                             >
-                                <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
-                                    {project.projectName}
-                                </h2>
                                 <KeyinfoItemList project={project} />
                             </motion.div>
                         );
