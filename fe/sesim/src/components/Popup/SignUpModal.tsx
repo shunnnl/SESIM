@@ -168,8 +168,6 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
 
   const handleVerifyCode = async () => {
-    setStep("setDetails");
-
     if (!validateEmailVerifyForm()) {
       return;
     }
