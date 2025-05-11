@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
 import { CardCarousel } from "./CardCarousel";
 import { BlueCircle } from "../common/BlueCircle";
+import backgroundImage from "../../assets/images/carousel-bg.webp";
 
 export const MostAiModel = () => {
     return (
-        <div className="text-white">
+        <div className="bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${backgroundImage})` }}>
             <motion.div 
-                className="flex flex-col items-center gap-[15px] py-[44px]"
+                className="container-padding flex flex-col items-center gap-[15px] pt-[44px] pb-[100px] text-white"
                 initial={{ opacity: 0, y: 70 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}

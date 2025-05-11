@@ -36,8 +36,8 @@ export const AboutPage: React.FC = () => {
             <div
                 className="absolute top-1/2 left-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
                 style={{
-                    background: "#00215A", 
-                    boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
+                    background: "#063584", 
+                    boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
                     opacity: 0.4,
                     zIndex: 0
             }}
@@ -45,8 +45,8 @@ export const AboutPage: React.FC = () => {
             <div
                 className="absolute top-[90%] right-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
                 style={{
-                    background: "#00215A", 
-                    boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
+                    background: "#063584", 
+                    boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
                     opacity: 0.4,
                     zIndex: 0
             }}

@@ -16,7 +16,7 @@ export const SdkDownloadPage = () => {
                 backgroundImage={PageBackground}
             />
             <motion.div 
-                className="flex justify-between gap-[50px] py-[88px] container-padding  text-white"
+                className="flex justify-between gap-[50px] py-[88px] container-padding  text-white relative z-10"
                 initial={{ opacity: 0, y: 70 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
@@ -54,7 +54,20 @@ export const SdkDownloadPage = () => {
                 </div>
 
                 <ExampleCodeBox />
+                
             </motion.div>
+            <motion.div
+                    className="absolute top-[60%] left-[66%] -translate-y-1/2 w-[150px] h-[150px] rounded-full"
+                    style={{
+                        background: "#063584", 
+                        boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
+                        opacity: 0.4,
+                        zIndex: 0
+                    }}
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 0.4, y: 0 }}
+                    transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                ></motion.div>
         </div>
     );
 };

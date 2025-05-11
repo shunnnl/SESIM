@@ -2,41 +2,29 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { AiModelCard } from "./AiModelCard";
-import globalImage from "../../assets/images/global.webp";
+import backgroundImage from "../../assets/images/ai-model-list-bg.webp";
 
 export const AllAiModels = () => {
     const { data } = useSelector((state: RootState) => state.aiModel);
 
     return (
-        <motion.div 
-            className="mt-[88px] mb-[200px] text-white"
-            initial={{ opacity: 0, y: 70 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-            viewport={{ once: true, amount: 0.2 }}
-        >
-            <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold text-center">다양한 보안AI 모델을 찾아보세요</h1>
-            <div className="relative w-full max-w-[1200px] mx-auto my-[88px]">
-                <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[150px] rounded-full"
-                    style={{
-                        background: "#1E4073", 
-                        boxShadow: "0 0 160px 120px #1E4073, 0 0 320px 240px #1E4073",
-                        opacity: 0.4,
-                        zIndex: 1
-                    }}
-                ></div>
-                <img 
-                    src={globalImage} 
-                    alt="global"
-                    className="absolute top-1/2 left-1/2 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 object-cover z-10"
-                />
-                <div className="relative z-20 grid grid-cols-2 lg:grid-cols-3 gap-8">
-                    {data.map((model) => (
-                        <AiModelCard key={model.id} {...model} />
-                    ))}
+        <div className="text-white bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${backgroundImage})` }}>
+            <motion.div
+                className="container-padding py-[100px] text-white"
+                initial={{ opacity: 0, y: 70 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                viewport={{ once: true, amount: 0.2 }}
+            >
+                <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold text-center">다양한 보안AI 모델을 찾아보세요</h1>
+                <div className="relative w-full max-w-[1200px] mx-auto my-[88px]">
+                    <div className="relative z-20 grid grid-cols-2 lg:grid-cols-3 gap-8">
+                        {data.map((model) => (
+                            <AiModelCard key={model.id} {...model} />
+                        ))}
+                    </div>
                 </div>
-            </div>
-        </motion.div>
+            </motion.div>
+        </div>
     );
 };
