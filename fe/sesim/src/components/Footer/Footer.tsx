@@ -1,5 +1,5 @@
-import { SesimLogoFooter } from "./SesimLogoFooter"
 import { useLocation } from "react-router-dom";
+import { SesimLogoFooter } from "./SesimLogoFooter"
 
 export const Footer = () => {
     const location = useLocation();
@@ -29,5 +29,5 @@ export const Footer = () => {
                 </p>
             </div>
         </div>
-    )
+    );
 };

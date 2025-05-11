@@ -12,12 +12,12 @@ interface Model {
 }
 
 const models: Model[] = [
-    { id: 1, name: 'Finect', path: '/ai-model/1' },
-    { id: 2, name: 'SentimentX', path: '/ai-model/2' },
-    { id: 3, name: 'ImageDetector', path: '/ai-model/3' },
-    { id: 4, name: 'FraudGuard', path: '/ai-model/4' },
-    { id: 5, name: 'TimeSeriesPredictor', path: '/ai-model/5' },
-    { id: 6, name: 'RecommendX', path: '/ai-model/6' }
+    { id: 1, name: "Finect", path: "/ai-model/1" },
+    { id: 2, name: "SentimentX", path: "/ai-model/2" },
+    { id: 3, name: "ImageDetector", path: "/ai-model/3" },
+    { id: 4, name: "FraudGuard", path: "/ai-model/4" },
+    { id: 5, name: "TimeSeriesPredictor", path: "/ai-model/5" },
+    { id: 6, name: "RecommendX", path: "/ai-model/6" }
 ];
 
 export const NavbarMenu: React.FC = () => {

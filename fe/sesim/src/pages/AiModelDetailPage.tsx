@@ -67,11 +67,11 @@ export const AiModelDetailPage = () => {
                                         viewport={{ once: true, amount: 0.2 }}
                                     >
                                         <h2
-                                            className={`text-[80px] font-bold text-[#0075FF]/50 ${index % 2 === 1 ? 'ml-[34%]' : ''}`}
+                                            className={`text-[80px] font-bold text-[#0075FF]/50 ${index % 2 === 1 ? "ml-[34%]" : ""}`}
                                         >
                                             0{index + 1}
                                         </h2>
-                                        <div className={`flex gap-8 items-start w-full mb-10 ${index % 2 === 1 ? 'flex-row-reverse' : ''}`}>
+                                        <div className={`flex gap-8 items-start w-full mb-10 ${index % 2 === 1 ? "flex-row-reverse" : ""}`}>
                                             <div className="flex flex-col gap-4 flex-[2] min-w-0 ml-[50px]">
                                                 <div className="bg-gradient-to-l from-transparent to-[#367DF8] px-8 py-3 mb-2 rounded-[10px]">
                                                     <p className="text-[30px] font-bold">{feature.featureSummary}</p>

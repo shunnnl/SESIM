@@ -65,12 +65,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             setIsScrolled(scrollPosition > 0);
         };
 
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     return (
-        <nav className={`border-b-2 border-white/20 sticky top-0 z-50 transition-all duration-400 ${isScrolled ? 'backdrop-blur-md bg-black/50' : ''}`}>
+        <nav className={`border-b-2 border-white/20 sticky top-0 z-50 transition-all duration-400 ${isScrolled ? "backdrop-blur-md bg-black/50" : ""}`}>
             <div className="flex justify-between items-center h-[50px] md:h-[70px] lg:h-[86px] container-padding">
                 <div className="flex items-center gap-4 md:gap-1 lg:gap-[40px]" >
                     <SesimLogo />
