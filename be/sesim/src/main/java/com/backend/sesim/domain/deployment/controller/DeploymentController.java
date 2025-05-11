@@ -25,6 +25,7 @@ public class DeploymentController {
     private final ProjectService projectService;
     private final DeploymentStepSSEService deploymentStepSSEService;
     private final ApiUsageService apiUsageService;
+    private final ApiUsageSSEService apiUsageSSEService;
 
     @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
     @PostMapping("/terraform")
@@ -67,6 +68,13 @@ public class DeploymentController {
         apiUsageService.updateApiUsage(request);
 
         return CommonResponseDto.ok();
+    }
+
+    @Operation(summary = "API 사용량 실시간 모니터링", description = "API 사용량을 실시간으로 모니터링하는 SSE 스트림을 제공합니다.")
+    @GetMapping(value = "/api-usage/stream", produces = "text/event-stream")
+    public SseEmitter streamApiUsage() {
+        log.info("API 사용량 스트림 요청 수신");
+        return apiUsageSSEService.subscribe();
     }
 
     @Operation(summary = "사용자 전체 API 사용량 조회", description = "현재 로그인한 사용자의 모든 프로젝트 API 사용량을 조회합니다.")
