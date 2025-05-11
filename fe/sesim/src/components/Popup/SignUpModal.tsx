@@ -168,14 +168,19 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
       if (!isValid) {
         setIsVerificationCodeShaking(true);
-        setVerificationCodeError("인증번호가 올바르지 않습니다. 다시 시도해주세요.");
+        setVerificationCodeError("인증번호가 올바르지 않습니다.");
+        setTimerActive(false);
+        setIsVerificationCodeSent(false);
       } else {
         console.log("인증 성공!");
         setStep("setDetails");
       }
     } catch (error) {
       console.error("인증번호 검증 실패:", error);
-      setVerificationCodeError("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+
+      setVerificationCodeError("네트워크 통신 오류가 발생했습니다.");
+      setTimerActive(false);
+      setIsVerificationCodeSent(false);
     }
   };
 
@@ -256,7 +261,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
   useEffect(() => {
     let timer: ReturnType<typeof setInterval>;
-    
+
     if (timerActive && verificationCodeTimeLeft > 0) {
       timer = setInterval(() => {
         setVerificationCodeTimeLeft((prev) => prev - 1);
@@ -265,7 +270,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
       setTimerActive(false);
       setIsVerificationCodeSent(false);
     }
-    
+
     return () => clearInterval(timer);
   }, [timerActive, verificationCodeTimeLeft]);
 
@@ -366,7 +371,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                               : (isSendingVerificationCode ? "border-[#A3A3A3]/50 text-[#A3A3A3] bg-transparent" : "border-[#A3A3A3]/50 text-[#A3A3A3] hover:border-white hover:text-white bg-transparent")
                             }`}
                         >
-                        s {isSendingVerificationCode ? (
+                          {isSendingVerificationCode ? (
                             <>
                               <svg
                                 className="animate-spin h-5 w-5 text-[#A3A3A3]"
@@ -434,12 +439,26 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                       />
                       <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isVerificationCodeShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
                       <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isVerificationCodeFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
-                      {verificationCodeError &&
+                      {verificationCodeError && (
                         <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
                           {verificationCodeError}
                         </p>
-                      }
+                      )}
                     </div>
+
+                    {/* 인증번호 재전송 버튼 */}
+                    {verificationCodeError && verificationCodeError.includes("올바르지 않습니다") && (
+                      <div className="flex justify-end mt-1">
+                        <button
+                          type="button"
+                          onClick={handleRequestVerificationCode}
+                          disabled={isSendingVerificationCode}
+                          className="font-['Pretendard'] text-xs text-[#A3A3A3] hover:text-white transition-colors duration-300"
+                        >
+                          인증번호 재전송
+                        </button>
+                      </div>
+                    )}
                   </motion.div>
                 </motion.div>
               )}
