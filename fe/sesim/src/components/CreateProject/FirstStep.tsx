@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { FormStepHeader } from "./FormStepHeader"
 import { setAwsSession } from "../../store/createProjectInfoSlice";
 import { verifyRoleArn } from "../../services/createProjectService"
-import cloudFormationIcon from "../../assets/images/aws-cloudformation.png"
+import cloudFormationIcon from "../../assets/images/aws-cloudformation.webp"
 
 interface FirstStepProps {
     roleArns: { id: number; roleArn: string }[];
