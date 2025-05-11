@@ -68,6 +68,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
                 console.log("API 키 로드 성공", result.data.apiKey);
                 setApiKey(result.data.apiKey);
                 setIsModalOpen(true);
+                setClickedModelIds((prev) => [...prev, item.modelId]);
             } else {
                 console.error("API 키 로드 실패:", result.error);
                 alert("API 키를 가져오는 데 실패했습니다.");
@@ -111,7 +112,6 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
 
     const handleClick = (model: Model) => {
         if (!clickedModelIds.includes(model.modelId)) {
-            setClickedModelIds((prev) => [...prev, model.modelId]);
             handleOpenModal(model);
         }
     };
