@@ -1,7 +1,9 @@
 import axios from "axios";
+import { logout } from "../store/authSlice";
 
 const api = axios.create({
   baseURL: "http://52.79.149.27/api",
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
@@ -20,27 +22,20 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 || error.response?.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      const refreshToken = localStorage.getItem("refreshToken");
-
-      if (!refreshToken) {
-        return Promise.reject(error);
-      }
-
       try {
-        const { data } = await api.post("/auth/refresh", { "refreshToken": refreshToken });
-        const { accessToken, refreshToken: newRefreshToken } = data.data;
+        const { data } = await api.post("/auth/refresh");
+        const { accessToken } = data.data;
 
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", newRefreshToken);
+        localStorage.setItem("accessToken", accessToken);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
         return api(originalRequest);
       } catch (refreshError) {
         localStorage.clear();
-
+        logout();
         return Promise.reject(refreshError);
       }
     }
