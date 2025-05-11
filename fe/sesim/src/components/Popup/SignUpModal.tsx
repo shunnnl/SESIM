@@ -28,6 +28,9 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   const [isVerificationCodeFocused, setIsVerificationCodeFocused] = useState(false);
   const [isEmailShaking, setIsEmailShaking] = useState(false);
   const [isVerificationCodeShaking, setIsVerificationCodeShaking] = useState(false);
+  const [verificationCodeTimeLeft, setVerificationCodeTimeLeft] = useState(600);
+  const [isSendingVerificationCode, setIsSendingVerificationCode] = useState(false);
+  const [timerActive, setTimerActive] = useState(false);
 
   // step 2: 닉네임, 비밀번호 설정
   const [nickname, setNickname] = useState("");
@@ -77,12 +80,15 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
   const handleRequestVerificationCode = async () => {
     setEmailError("");
+    setIsSendingVerificationCode(true);
 
     if (!email) {
       setEmailError("이메일을 입력해주세요.");
+      setIsSendingVerificationCode(false);
       return;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setEmailError("유효한 이메일 형식이 아닙니다.");
+      setIsSendingVerificationCode(false);
       return;
     }
 
@@ -93,6 +99,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
         console.log("인증번호 요청 성공: ", response);
 
         setIsVerificationCodeSent(true);
+        setVerificationCodeTimeLeft(600);
+        setTimerActive(true);
       } else {
         console.log("인증번호 요청 실패: ", response);
 
@@ -105,6 +113,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
     } catch (error) {
       console.error("인증번호 요청 실패:", error);
       setEmailError("네트워크 통신 오류가 발생했습니다.");
+    } finally {
+      setIsSendingVerificationCode(false);
     }
   };
 
@@ -138,6 +148,13 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   }
 
 
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
+
   const handleVerifyCode = async () => {
     if (!validateEmailVerifyForm()) {
       return;
@@ -150,6 +167,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
       const isValid = response.success;
 
       if (!isValid) {
+        setIsVerificationCodeShaking(true);
         setVerificationCodeError("인증번호가 올바르지 않습니다. 다시 시도해주세요.");
       } else {
         console.log("인증 성공!");
@@ -222,6 +240,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
+
     } else {
       const timer = setTimeout(() => {
         setShouldRender(false);
@@ -229,9 +248,26 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
         resetSetDetailsForm();
         setStep("emailVerify");
       }, 300);
+
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
+
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setInterval>;
+    
+    if (timerActive && verificationCodeTimeLeft > 0) {
+      timer = setInterval(() => {
+        setVerificationCodeTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (verificationCodeTimeLeft === 0) {
+      setTimerActive(false);
+      setIsVerificationCodeSent(false);
+    }
+    
+    return () => clearInterval(timer);
+  }, [timerActive, verificationCodeTimeLeft]);
 
 
   if (!shouldRender && !isOpen) {
@@ -309,7 +345,6 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                           className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
                           disabled={isVerificationCodeSent}
                         />
-                        {/* <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div> */}
                         <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isEmailShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
                         <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isEmailFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
                         {emailError &&
@@ -318,14 +353,52 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                           </p>
                         }
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleRequestVerificationCode}
-                        disabled={isVerificationCodeSent}
-                        className={`font-['Pretendard'] text-sm font-medium px-3 py-3 rounded-md border border-[#A3A3A3]/50 text-[#A3A3A3] hover:border-white hover:text-white transition-colors duration-300 whitespace-nowrap ${isVerificationCodeSent ? "bg-gray-600 cursor-not-allowed opacity-50" : "bg-transparent"}`}
-                      >
-                        인증번호 받기
-                      </button>
+
+                      {/* 인증번호 요청 버튼 */}
+                      <div className="flex flex-col items-end gap-1">
+                        <button
+                          type="button"
+                          onClick={handleRequestVerificationCode}
+                          disabled={isVerificationCodeSent || isSendingVerificationCode}
+                          className={`font-['Pretendard'] text-sm font-medium px-3 py-3 rounded-md border transition-colors duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-[120px]
+                            ${isVerificationCodeSent
+                              ? "bg-gray-600 cursor-not-allowed opacity-50 border-gray-500 text-gray-400"
+                              : (isSendingVerificationCode ? "border-[#A3A3A3]/50 text-[#A3A3A3] bg-transparent" : "border-[#A3A3A3]/50 text-[#A3A3A3] hover:border-white hover:text-white bg-transparent")
+                            }`}
+                        >
+                        s {isSendingVerificationCode ? (
+                            <>
+                              <svg
+                                className="animate-spin h-5 w-5 text-[#A3A3A3]"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                            </>
+                          ) : (
+                            isVerificationCodeSent ? "재전송 대기" : "인증번호 받기"
+                          )}
+                          {isVerificationCodeSent && (
+                            <span className="font-['Pretendard'] text-xs text-[#A3A3A3] absolute -bottom-5 right-1">
+                              제한 시간 {formatTime(verificationCodeTimeLeft)}
+                            </span>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -359,7 +432,6 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                         className="w-full bg-transparent text-start font-mono text-2xl text-white placeholder-[#555] border-b-2 border-[#555]/50 focus:border-[#3B66AF] focus:outline-none py-2 px-1 tracking-[6px]"
                         maxLength={6}
                       />
-                      {/* <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div> */}
                       <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isVerificationCodeShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
                       <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isVerificationCodeFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
                       {verificationCodeError &&
@@ -512,11 +584,11 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
             </AnimatePresence>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             layout
             className="flex flex-col gap-4 w-full"
           >
-            {/* 다음/회원가입 버튼 */}
+            {/* 인증번호 확인/회원가입 버튼 */}
             <form onSubmit={handleSubmit}>
               <button
                 type="submit"
