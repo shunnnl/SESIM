@@ -1,5 +1,6 @@
 package com.backend.sesim.domain.resourcemanagement.controller;
 
+import com.backend.sesim.domain.resourcemanagement.dto.response.CodeExampleResponse;
 import com.backend.sesim.domain.resourcemanagement.dto.response.ModelDetailResponse;
 import com.backend.sesim.domain.resourcemanagement.dto.response.ModelFeaturesResponse;
 import com.backend.sesim.domain.resourcemanagement.service.ModelService;
@@ -36,6 +37,13 @@ public class ModelController {
     public CommonResponseDto<ModelDetailResponse> getModelDetail(@PathVariable Long modelId) {
         ModelDetailResponse modelDetail = modelService.getModelDetail(modelId);
         return CommonResponseDto.ok(modelDetail);
+    }
+
+    @Operation(summary = "SDK 다운로드 코드 조회", description = "모든 모델에 공통으로 적용되는 SDK 다운로드 코드를 조회합니다.")
+    @GetMapping("/sdk-download-code")
+    public CommonResponseDto<CodeExampleResponse> getSdkDownloadCode() {
+        CodeExampleResponse codeExample = modelService.getSdkDownloadCode();
+        return CommonResponseDto.ok(codeExample);
     }
 
 }
