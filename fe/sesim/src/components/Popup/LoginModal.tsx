@@ -121,15 +121,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
     useEffect(() => {
         if (isOpen) {
             setShouldRender(true);
-            
-            document.body.style.overflow = 'hidden';
+
+            document.body.style.overflow = "hidden";
         } else {
             const timer = setTimeout(() => {
                 setShouldRender(false);
             }, 300);
 
-            document.body.style.overflow = 'unset';
-            
+            document.body.style.overflow = "unset";
+
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
@@ -367,6 +367,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                     </svg>
                 </button>
             </div>
-        </div >
+        </div>
     );
 };

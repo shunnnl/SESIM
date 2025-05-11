@@ -288,7 +288,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
     if (isOpen) {
       setShouldRender(true);
 
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
       const timer = setTimeout(() => {
         setShouldRender(false);
@@ -297,7 +297,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
         setStep("emailVerify");
       }, 300);
 
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
 
       return () => clearTimeout(timer);
     }
