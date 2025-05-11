@@ -1,19 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-export interface Model {
-    id: number;
-    name: string;
-    albAddress: string;
-    deployStatus: "DEPLOYED" | "NOT_DEPLOYED" | string;
-    isApiKeyCheck: boolean;
-}
-
-export interface Project {
-    id: number;
-    name: string;
-    models: Model[];
-}
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Project, Step } from "../types/keyinfoTypes";
 
 interface DeploymentState {
     projects: Project[];
@@ -27,33 +13,25 @@ const initialState: DeploymentState = {
     error: null,
 };
 
-export const fetchKeyInfo = createAsyncThunk(
-    'keyinfo/fetchKeyInfo',
-    async () => {
-        const response = await axios.get('/api/your-endpoint');
-        return response.data;
-    }
-);
-
 const keyinfoSlice = createSlice({
-    name: 'keyinfo',
+    name: "keyinfo",
     initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchKeyInfo.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchKeyInfo.fulfilled, (state, action) => {
-                state.projects = action.payload;
-                state.loading = false;
-            })
-            .addCase(fetchKeyInfo.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || 'API 호출 오류';
-            });
+    reducers: {
+        setAllProjects: (state, action: PayloadAction<Project[]>) => {
+            state.projects = action.payload;
+        },
+        updateProjectStatus: (
+            state,
+            action: PayloadAction<{ projectId: number; steps: Step[] }>
+        ) => {
+            const { projectId, steps } = action.payload;
+            const project = state.projects.find(p => p.projectId === projectId);
+            if (project) {
+                project.steps = steps;
+            }
+        },
     },
 });
 
+export const { setAllProjects, updateProjectStatus } = keyinfoSlice.actions;
 export default keyinfoSlice.reducer;

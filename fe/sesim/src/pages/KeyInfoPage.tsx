@@ -1,24 +1,15 @@
-import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 import { Sidebar } from "../components/Sidebar";
-import { Project } from "../store/keyinfoSlice";
-import { RootState, AppDispatch } from "../store";
-import { fetchKeyInfo } from "../services/keyinfoService";
-import ItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
+import { Project } from "../types/keyinfoTypes";
+import useDeploymentStateSSE from '../hooks/deploymentStateSSE';
+import KeyinfoItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 
 export const KeyInfoPage = () => {
-    const dispatch = useDispatch<AppDispatch>();
+    useDeploymentStateSSE();
 
-    const { loading, error } = useSelector((state: RootState) => state.keyinfo);
-
-    const { projects } = useSelector((state: RootState) => state.keyinfo);
-
-    useEffect(() => {
-        dispatch(fetchKeyInfo());
-    }, [dispatch]);
-
-    console.log("Projects:", projects);
+    const { loading, error, projects } = useSelector((state: RootState) => state.keyinfo);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -57,7 +48,7 @@ export const KeyInfoPage = () => {
                         AI모델 별 API 키 정보를 제공합니다.
                     </p>
 
-                    <p className="text-lg font-medium m-1 mb-6">
+                    <p className="text-lg font-medium m-1 mb-10">
                         API 키는 최초 1회만 확인 가능하며, 보안상의 이유로 이후에는 다시 확인하실 수 없습니다.
                     </p>
                 </motion.div>
@@ -82,9 +73,8 @@ export const KeyInfoPage = () => {
                     </motion.div>
                 )}
 
-                <>
-                    {Array.isArray(projects) && projects.map((project: Project, index: number) => {
-                        console.log("Project Data:", project);
+                {Array.isArray(projects) && projects.length > 0 ? (
+                    projects.map((project: Project, index: number) => {
                         return (
                             <motion.div
                                 key={index}
@@ -93,14 +83,13 @@ export const KeyInfoPage = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
                             >
-                                <h2 className="text-2xl font-semibold text-white mt-4 mb-3">
-                                    {project.name}
-                                </h2>
-                                <ItemList items={project.models} projectId={project.id} />
+                                <KeyinfoItemList project={project} />
                             </motion.div>
                         );
-                    })}
-                </>
+                    })
+                ) : (
+                    <p>생성된 프로잭트가 없습니다.</p> 
+                )}
             </motion.div>
         </div>
     );
