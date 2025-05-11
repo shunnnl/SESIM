@@ -1,21 +1,14 @@
-import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { RootState, AppDispatch } from "../store";
-import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { useSelector } from "react-redux";
 import { Sidebar } from "../components/Sidebar";
 import { useAPIUsageSSE } from "../hooks/useAPIUsageSSE";
-import { fetchAPIUsageList } from "../store/APIUsageSlice";
 import { APIUsageListItem } from "../components/APIUsagePageComponents/APIUsageListItem";
 
 export const APIUsagePage: React.FC = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const { projects, loading, error } = useSelector((state: RootState) => state.apiUsage);
+    const projects = useSelector((state: RootState) => state.apiUsage.projects);
 
     useAPIUsageSSE();
-
-    useEffect(() => {
-        dispatch(fetchAPIUsageList());
-    }, [dispatch]);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -60,10 +53,7 @@ export const APIUsagePage: React.FC = () => {
                     정량화된 사용 데이터를 기반으로 보안 모델 운영을 효율화하세요.
                 </motion.p>
 
-                {loading && <p>불러오는 중...</p>}
-                {error && <p className="text-red-500">{error}</p>}
-
-                {!loading && !error && projects.map((project) => (
+                { projects.slice().reverse().map((project) => (
                     <motion.div
                         key={project.projectId}
                         initial={{ opacity: 0, y: 20 }}

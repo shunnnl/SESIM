@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { updateAPIUsageProjects } from "../store/APIUsageSlice";
 
 export const useAPIUsageSSE = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
@@ -13,36 +14,35 @@ export const useAPIUsageSSE = () => {
             return;
         }
 
-        const url = "http://52.79.149.27/api/deployment/projects/usage";
+        const url = "http://52.79.149.27/api/deployment/api-usage/stream";
 
-        let eventSource: EventSourcePolyfill | null = null;
-
-        const connectSSE = () => {
-            console.log("📡 SSE 연결 시도...");
-            eventSource = new EventSourcePolyfill(url, {
+        const createEventSource = () => {
+            console.log("📡 API Usage SSE 연결 시도...");
+            const eventSource = new EventSourcePolyfill(url, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
             eventSource.onopen = () => {
-                console.log("✅ SSE 연결 성공");
+                console.log("✅ API Usage SSE 연결 성공");
             };
 
             eventSource.onmessage = (event) => {
-                console.log("📨 기본 이벤트 메시지:", event.data);
+                console.log("📨 일반 메시지 수신:", event.data);
                 try {
-                    const parsed = JSON.parse(event.data);
-                    console.log("📨 파싱된 기본 데이터:", parsed);
-                    
-                    if (Array.isArray(parsed)) {
-                        dispatch(updateAPIUsageProjects(parsed));
-                    } 
-                    else if (parsed.projects && Array.isArray(parsed.projects)) {
-                        dispatch(updateAPIUsageProjects(parsed.projects));
+                    const data = JSON.parse(event.data);
+                    console.log("📦 파싱된 일반 데이터:", data);
+
+                    if (data.eventType === "INIT" && Array.isArray(data.projects)) {
+                        dispatch(updateAPIUsageProjects(data.projects));
+                        console.log("✅ INIT: 프로젝트 사용량 초기화 완료");
+                    } else if (data.eventType === "USAGE_UPDATE" && Array.isArray(data.projects)) {
+                        dispatch(updateAPIUsageProjects(data.projects));
+                        console.log("✅ USAGE_UPDATE: 프로젝트 사용량 업데이트 완료");
                     }
                 } catch (e) {
-                    console.error("❌ SSE 메시지 파싱 실패", e);
+                    console.error("❌ 일반 메시지 파싱 오류", e);
                 }
             };
 
@@ -50,37 +50,47 @@ export const useAPIUsageSSE = () => {
                 console.log("📨 INIT 이벤트 수신:", event.data);
                 try {
                     const parsed = JSON.parse(event.data);
-                    console.log("📨 파싱된 INIT 데이터:", parsed);
-                    
-                    if (Array.isArray(parsed)) {
-                        dispatch(updateAPIUsageProjects(parsed));
+                    if (Array.isArray(parsed.projects)) {
+                        dispatch(updateAPIUsageProjects(parsed.projects));
+                        console.log("✅ INIT 이벤트: 사용량 데이터 초기화 완료");
                     }
                 } catch (e) {
-                    console.error("❌ INIT 이벤트 파싱 실패", e);
+                    console.error("❌ INIT 이벤트 파싱 오류", e);
+                }
+            });
+
+            eventSource.addEventListener("USAGE_UPDATE", (event: any) => {
+                console.log("📨 USAGE_UPDATE 이벤트 수신:", event.data);
+                try {
+                    const parsed = JSON.parse(event.data);
+                    if (Array.isArray(parsed.projects)) {
+                        dispatch(updateAPIUsageProjects(parsed.projects));
+                        console.log("✅ USAGE_UPDATE 이벤트: 사용량 업데이트 완료");
+                    }
+                } catch (e) {
+                    console.error("❌ USAGE_UPDATE 이벤트 파싱 오류", e);
                 }
             });
 
             eventSource.addEventListener("connect", (event: any) => {
-                console.log("📨 연결 확인 메시지:", event.data);
+                console.log("📨 connect 이벤트 수신:", event.data);
             });
 
             eventSource.onerror = (err) => {
-                console.error("⚠️ SSE 연결 오류", err);
-                if (eventSource) {
-                    eventSource.close();
-                }
+                console.error("⚠️ SSE 오류 발생", err);
+                eventSource.close();
                 console.log("🔄 5초 후 SSE 재연결 시도");
-                setTimeout(connectSSE, 5000);
+                setTimeout(createEventSource, 5000);
             };
+
+            return eventSource;
         };
 
-        connectSSE();
+        const eventSource = createEventSource();
 
         return () => {
-            if (eventSource) {
-                console.log("🔌 SSE 연결 종료");
-                eventSource.close();
-            }
+            eventSource.close();
+            console.log("🔌 SSE 연결 종료");
         };
     }, [dispatch]);
 };

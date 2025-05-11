@@ -26,17 +26,26 @@ ChartJS.register(
 const centerTextPlugin = {
     id: "centerText",
     afterDraw: (chart: any) => {
-        const { width, height, ctx } = chart;
+        const { ctx } = chart;
+        const { width, height } = chart.chartArea;  
+
         ctx.save();
         const text = chart.options.plugins?.centerText?.text || "0h";
+
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = "bold 20px sans-serif";
         ctx.fillStyle = "white";
-        ctx.fillText(`총합: ${text}`, width / 2, height / 2.3);
+
+        const centerX = width / 2 + chart.chartArea.left; 
+        const centerY = height / 2 + chart.chartArea.top;  
+
+        ctx.fillText(`총합: ${text}`, centerX, centerY);
         ctx.restore();
     }
 };
+
+
 
 interface ModelCost {
     modelName: string;
@@ -69,7 +78,7 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
             {
                 data: totalUsageTime > 0
                     ? data.modelCosts.map((model) => (model.usageTime / totalUsageTime) * 100)
-                    : [],
+                    : data.modelCosts.map(() => 1),
                 backgroundColor: data.modelCosts.map((_, idx) => colors[idx % colors.length]),
                 borderWidth: 0
             }
@@ -92,11 +101,36 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
             },
             legend: {
                 position: "bottom",
+                display : false,
                 labels: {
                     color: "white",
                     boxWidth: 6,
                     boxHeight: 6,
-                    padding: 12
+                    padding: 12,
+                    generateLabels: function (chart: any) {
+                        const data = chart.data;
+                        if (data.labels.length && data.datasets.length) {
+                            return data.labels.map((label: string, i: number) => {
+                                const meta = chart.getDatasetMeta(0);
+                                const style = meta.controller.getStyle(i);
+
+                                return {
+                                    text: label,
+                                    fillStyle: colors[i % colors.length],
+                                    hidden: false,
+                                    lineCap: style.borderCapStyle,
+                                    lineDash: style.borderDash,
+                                    lineDashOffset: style.borderDashOffset,
+                                    lineJoin: style.borderJoinStyle,
+                                    lineWidth: style.borderWidth,
+                                    strokeStyle: style.borderColor,
+                                    pointStyle: style.pointStyle,
+                                    rotation: style.rotation
+                                };
+                            });
+                        }
+                        return [];
+                    }
                 }
             },
             centerText: {
@@ -106,7 +140,10 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                 color: "white",
                 formatter: (value: number, context: any) => {
                     const label = context.chart.data.labels?.[context.dataIndex];
-                    return `${label}\n${value.toFixed(1)}%`;
+                    // 데이터가 0일 때는 퍼센트를 표시하지 않음
+                    return totalUsageTime > 0
+                        ? `${label}\n${value.toFixed(1)}%`
+                        : label;
                 },
                 font: {
                     size: 14,
