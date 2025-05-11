@@ -1,6 +1,7 @@
 package com.backend.sesim.domain.deployment.service;
 
 import com.backend.sesim.domain.deployment.dto.response.ApiUsageResponse;
+import com.backend.sesim.domain.deployment.repository.ProjectModelInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -72,18 +73,21 @@ public class ApiUsageSSEService {
                 .data(apiUsage));
     }
 
+
     /**
-     * API 사용량 업데이트 알림
+     * 특정 프로젝트와 모델의 API 사용량 업데이트 알림 - 인증 없이 사용 가능
      */
-    public void notifyApiUsageUpdate() {
-        // 전체 API 사용량 조회
-        ApiUsageResponse apiUsage = projectService.getAllUserProjectsApiUsage();
+    public void notifyApiUsageUpdateByProjectAndModel(Long projectId, Long modelId) {
+        try {
+            // 특정 프로젝트와 모델에 대한 API 사용량만 조회
+            ApiUsageResponse apiUsage = projectService.getSpecificProjectModelApiUsage(projectId, modelId);
 
-        // 모든 클라이언트에게 알림
-        sendToAllEmitters("API_USAGE_UPDATE", apiUsage);
-        log.info("API 사용량 업데이트 전송");
+            // 모든 클라이언트에게 알림
+            sendToAllEmitters("API_USAGE_UPDATE", apiUsage);
+        } catch (Exception e) {
+            log.error("API 사용량 업데이트 알림 실패: {}", e.getMessage());
+        }
     }
-
 
     /**
      * 모든 이미터에 이벤트 전송

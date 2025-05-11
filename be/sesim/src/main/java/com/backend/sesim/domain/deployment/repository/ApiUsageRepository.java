@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface ApiUsageRepository extends JpaRepository<ApiUsage, Long> {
+
     // 모델 정보 ID와 API 이름으로 사용량 조회
     Optional<ApiUsage> findByInformationIdAndApiName(Long informationId, String apiName);
 

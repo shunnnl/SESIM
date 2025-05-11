@@ -80,8 +80,8 @@ public class ApiUsageService {
 
         // 변경사항이 있는 경우에만 SSE 알림 전송
         if (isUpdated) {
-            // 업데이트 알림
-            apiUsageSSEService.notifyApiUsageUpdate();
+            // 업데이트 알림(변경)
+            apiUsageSSEService.notifyApiUsageUpdateByProjectAndModel(projectId, modelId);
         }
     }
 }
