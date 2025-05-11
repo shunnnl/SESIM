@@ -58,26 +58,6 @@ public class ProjectService {
         return ProjectListResponse.from(projects);
     }
 
-    /**
-     * 현재 로그인한 사용자의 프로젝트 배포 상태 조회
-     */
-    public ProjectDeploymentResponse getProjectDeploymentStatus() {
-        // 현재 로그인한 사용자 ID 가져오기
-        Long userId = securityUtils.getCurrentUsersId();
-
-        // 사용자 정보 조회
-        User currentUser = userRepository.findById(userId)
-                .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
-
-        // 사용자의 RoleArn 목록 조회
-        List<RoleArn> roleArns = roleArnRepository.findAllByUser(currentUser);
-
-        // RoleArn에 해당하는 프로젝트 목록 조회
-        List<Project> projects = projectRepository.findAllByRoleArnIn(roleArns);
-
-        // 응답 DTO 변환
-        return ProjectDeploymentResponse.from(projects);
-    }
 
     @Transactional
     public ApiKeyResponse checkAndGetApiKey(ApiKeyCheckRequest request) {

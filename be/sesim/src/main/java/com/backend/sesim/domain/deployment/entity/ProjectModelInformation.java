@@ -1,6 +1,5 @@
 package com.backend.sesim.domain.deployment.entity;
 
-import com.backend.sesim.domain.deployment.entity.*;
 import com.backend.sesim.domain.resourcemanagement.entity.InfrastructureSpec;
 import com.backend.sesim.domain.resourcemanagement.entity.Region;
 import com.backend.sesim.domain.resourcemanagement.entity.Model;
