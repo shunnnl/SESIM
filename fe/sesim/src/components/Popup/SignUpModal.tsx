@@ -39,6 +39,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   const [nicknameError, setNicknameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [signUpError, setSignUpError] = useState("");
   const [isNicknameFocused, setIsNicknameFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isConfirmPasswordFocused, setIsConfirmPasswordFocused] = useState(false);
@@ -68,6 +69,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
     setConfirmPasswordError("");
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setSignUpError("");
   };
 
 
@@ -246,9 +248,13 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
         console.log("회원가입 성공");
         handleClose();
         onSwitchToLogin();
+      } else {
+        console.error("회원가입 실패:", response.error);
+        setSignUpError(response.error.message || "회원가입 중 오류가 발생했습니다.");
       }
     } catch (error) {
       console.error("회원가입 실패:", error);
+      setSignUpError("네트워크 통신 오류가 발생했습니다.");
     }
   };
 
@@ -270,6 +276,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
+      
+      document.body.style.overflow = 'hidden';
     } else {
       const timer = setTimeout(() => {
         setShouldRender(false);
@@ -278,6 +286,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
         setStep("emailVerify");
       }, 300);
 
+      document.body.style.overflow = 'unset';
+      
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
@@ -319,7 +329,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}
+      className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 overflow-y-auto scrollbar-custom ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}
     >
       <div className="relative w-full max-w-[500px] mx-auto">
         <motion.div
@@ -668,6 +678,66 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
                   </div>
                 </button>
               </form>
+
+              {/* 에러 메시지 박스 */}
+              <AnimatePresence>
+                {signUpError && (
+                  <motion.div
+                    className="relative w-full mb-2"
+                    initial={{ opacity: 0, y: -20, scaleY: 0, height: 0 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      scaleY: 1,
+                      height: "auto",
+                      transition: {
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 20
+                      }
+                    }}
+                    exit={{
+                      opacity: 0,
+                      y: -10,
+                      scaleY: 0,
+                      height: 0,
+                      transition: {
+                        duration: 0.3,
+                        ease: "easeInOut"
+                      }
+                    }}
+                  >
+                    <motion.div
+                      className="absolute inset-0 rounded-[12px] p-[1px]"
+                      style={{
+                        background: "linear-gradient(to right, #FF4040, #FF7373)",
+                        WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                        WebkitMaskComposite: "xor",
+                        maskComposite: "exclude",
+                        pointerEvents: "none",
+                      }}
+                      animate={{
+                        opacity: [0.5, 1, 0.5],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    ></motion.div>
+                    <div className="w-full py-2 px-4 rounded-[12px] bg-[#3A1A1A]/60 backdrop-blur-md">
+                      <motion.p
+                        className="font-['Pretendard'] text-red-400 text-sm text-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        {signUpError}
+                      </motion.p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* 로그인 버튼 */}
               <div className="flex justify-end">

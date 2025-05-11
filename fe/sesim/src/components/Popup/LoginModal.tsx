@@ -121,10 +121,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
     useEffect(() => {
         if (isOpen) {
             setShouldRender(true);
+            
+            document.body.style.overflow = 'hidden';
         } else {
             const timer = setTimeout(() => {
                 setShouldRender(false);
             }, 300);
+
+            document.body.style.overflow = 'unset';
+            
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
@@ -148,7 +153,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
     }
 
     return (
-        <div className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}>
+        <div className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 overflow-y-auto scrollbar-custom ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}>
             <div className="relative w-full max-w-[500px] mx-auto">
                 <motion.div
                     className="w-full rounded-[30px] transform transition-all duration-300"
@@ -175,7 +180,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitc
                         <p className="font-['Pretendard'] font-bold text-3xl md:text-4xl text-center text-white mb-10">
                             로그인
                         </p>
-                        
+
                         <div className="flex flex-col items-center gap-12 w-full pb-10 p-2">
                             {/* 이메일 입력 */}
                             <div className="w-full">
