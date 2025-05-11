@@ -24,27 +24,3 @@
         margin-right: auto;
     }
 }
-
-/* ===== 스크롤바 커스텀 ===== */
-::-webkit-scrollbar {
-    width: 8px;
-    background: #22223b;
-}
-::-webkit-scrollbar-thumb {
-    background: #3893FF;
-    border-radius: 8px;
-}
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-/* ===== 스크롤바 숨기기 ===== */
-::-webkit-scrollbar {
-    display: none;
-}
-
-html {
-    scrollbar-width: thin;
-    scrollbar-color: #3893FF transparent;
-    scrollbar-width: none;
-}
