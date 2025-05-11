@@ -9,7 +9,6 @@ import { LoginButton } from "./LoginButton";
 import { UserDropdown } from "./UserDropdown";
 import { logout } from "../../store/authSlice";
 
-
 interface NavbarProps {
     isLoginModalOpen: boolean;
     setIsLoginModalOpen: (open: boolean) => void;
@@ -37,11 +36,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         setIsLoginModalOpen(!isLoginModalOpen);
     };
 
+
     const handleLogout = () => {
         dispatch(logout());
         navigate("/");
         setIsDropdownOpen(false);
     };
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

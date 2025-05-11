@@ -17,7 +17,8 @@ export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = (
                 className="w-full h-full object-cover col-start-1 row-start-1"
             />
             <div className="relative bg-[#0A0C35]/30 flex flex-col justify-center items-center col-start-1 row-start-1 min-h-[300px] pb-[70px]">
-                <div className="flex flex-col justify-center items-center text-center flex-1"
+                <div 
+                    className="flex flex-col justify-center items-center text-center flex-1"
                     style={{ paddingTop: "5%" }}
                 >
                     <h1 className="text-white text-[28px] md:text-[42px] lg:text-[54px] font-bold">{modelName}</h1>

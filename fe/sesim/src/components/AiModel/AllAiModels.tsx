@@ -8,7 +8,10 @@ export const AllAiModels = () => {
     const { data } = useSelector((state: RootState) => state.aiModel);
 
     return (
-        <div className="text-white bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${backgroundImage})` }}>
+        <div
+            className="text-white bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${backgroundImage})` }}
+        >
             <motion.div
                 className="container-padding py-[100px] text-white"
                 initial={{ opacity: 0, y: 70 }}

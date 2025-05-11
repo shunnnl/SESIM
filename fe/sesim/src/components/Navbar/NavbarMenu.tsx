@@ -1,9 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-const menuClass = "relative group px-2 flex flex-col items-center justify-center min-w-[65px]";
-const linkClass = "text-white transition-colors duration-200 group-hover:font-bold font-medium transform transition-transform group-hover:scale-110";
-const indicatorClass = "absolute -top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#3893FF] opacity-0 group-hover:opacity-100 transition-opacity duration-200";
 
 interface Model {
     id: number;
@@ -19,6 +16,10 @@ const models: Model[] = [
     { id: 5, name: "TimeSeriesPredictor", path: "/ai-model/5" },
     { id: 6, name: "RecommendX", path: "/ai-model/6" }
 ];
+
+const menuClass = "relative group px-2 flex flex-col items-center justify-center min-w-[65px]";
+const linkClass = "text-white transition-colors duration-200 group-hover:font-bold font-medium transform transition-transform group-hover:scale-110";
+const indicatorClass = "absolute -top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#3893FF] opacity-0 group-hover:opacity-100 transition-opacity duration-200";
 
 export const NavbarMenu: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);

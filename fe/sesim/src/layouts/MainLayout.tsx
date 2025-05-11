@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { MainRoutes } from "./MainRoutes";
 import { AuthModals } from "./AuthModals";
-import { MypageRoutes, mypageRoutes } from "./MypageRoutes";
 import { Navbar } from "../components/Navbar/Navbar";
 import { Footer } from "../components/Footer/Footer";
 import ScrollToTop from "../components/common/ScrollToTop";
+import { MypageRoutes, mypageRoutes } from "./MypageRoutes";
 import { getPageBackgroundClass } from "../utils/backgroundUtils";
 
 export const MainLayout = () => {

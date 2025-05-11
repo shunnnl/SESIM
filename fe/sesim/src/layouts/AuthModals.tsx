@@ -14,6 +14,7 @@ export const AuthModals = ({ isLoginModalOpen, setIsLoginModalOpen, isSignUpModa
         setIsSignUpModalOpen(true);
     };
 
+    
     const handleLoginClick = () => {
         setIsLoginModalOpen(true);
         setIsSignUpModalOpen(false);

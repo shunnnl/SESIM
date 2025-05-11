@@ -28,7 +28,7 @@ export const AiModelPage: React.FC = () => {
                 description2="프라이빗 환경에서 AI 보안 모델을 맞춤형으로 제공합니다."
                 backgroundImage={backgroundImage}
             />
-            <div className="">
+            <div>
                 <MostAiModel />
                 <AllAiModels />
             </div>
