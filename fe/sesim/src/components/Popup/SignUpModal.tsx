@@ -245,7 +245,6 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
-
     } else {
       const timer = setTimeout(() => {
         setShouldRender(false);
@@ -256,6 +255,20 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
 
       return () => clearTimeout(timer);
     }
+  }, [isOpen]);
+
+
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isOpen) {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscKey);
+    return () => {
+      window.removeEventListener("keydown", handleEscKey);
+    };
   }, [isOpen]);
 
 
@@ -282,368 +295,390 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
   return (
     <div
       className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}
-      onClick={handleClose}
     >
-      <motion.div
-        className={`relative w-[90%] sm:w-[80%] md:w-[60%] lg:w-[35%] max-h-[750px] rounded-[30px] transform transition-all duration-300 ${isOpen ? "opacity-100 translate-y-0 animate-slideIn" : "opacity-0 translate-y-4 animate-slideOut"}`}
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 50, opacity: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div
-          className="absolute inset-0 rounded-[30px] p-[2px]"
-          style={{
-            background: "linear-gradient(to bottom right, #263F7C, #3B66AF, #035179, #5D659A)",
-            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-            WebkitMaskComposite: "xor",
-            maskComposite: "exclude",
-            pointerEvents: "none",
-          }}
-        ></div>
-
+      <div className="relative w-full max-w-[500px] mx-auto">
         <motion.div
-          layout
-          className="flex flex-col items-center w-full h-full py-10 sm:py-12 md:py-16 px-6 sm:px-10 md:px-16 rounded-[28px] bg-[#020207]/80"
+          className="w-full rounded-[30px] transform transition-all duration-300"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 50, opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <p className="font-['Pretendard'] font-bold text-3xl md:text-4xl text-center text-white mb-10">
-            회원가입
-          </p>
-
+          <div
+            className="absolute inset-0 rounded-[30px] p-[2px]"
+            style={{
+              background: "linear-gradient(to bottom right, #263F7C, #3B66AF, #035179, #5D659A)",
+              WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude",
+              pointerEvents: "none",
+            }}
+          ></div>
+          
           <motion.div
             layout
-            className="w-full"
+            className="flex flex-col items-center w-full py-10 sm:py-12 md:py-16 px-6 sm:px-10 md:px-16 rounded-[28px] bg-[#020207]/80"
           >
-            <AnimatePresence
-              mode="wait"
-              initial={false}
+            <p className="font-['Pretendard'] font-bold text-3xl md:text-4xl text-center text-white mb-10">
+              회원가입
+            </p>
+            <motion.div
+              layout
+              className="w-full"
             >
-              {step === "emailVerify" && (
-                <motion.div
-                  key="emailVerify"
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  variants={formVariants}
-                  className="flex flex-col items-center gap-10 w-full overflow-hidden p-2 pb-10"
-                >
-                  {/* 이메일 입력 */}
-                  <div className="w-full">
-                    <div className="relative group flex flex-row items-end gap-2">
-                      <div className="flex-grow relative group">
-                        <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isEmailFocused || email ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
-                          이메일
-                        </label>
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => {
-                            setEmail(e.target.value);
-                            if (emailError) {
-                              return setEmailError("");
-                            }
-                          }}
-                          onFocus={() => setIsEmailFocused(true)}
-                          onBlur={() => setIsEmailFocused(false)}
-                          placeholder={isEmailFocused ? "" : "이메일 주소를 입력해주세요."}
-                          className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
-                          disabled={isVerificationCodeSent}
-                        />
-                        <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isEmailShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
-                        <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isEmailFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
-                        {emailError &&
-                          <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
-                            {emailError}
-                          </p>
-                        }
-                      </div>
+              <AnimatePresence
+                mode="wait"
+                initial={false}
+              >
 
-                      {/* 인증번호 요청 버튼 */}
-                      <div className="flex flex-col items-end gap-1">
-                        <button
-                          type="button"
-                          onClick={handleRequestVerificationCode}
-                          disabled={isVerificationCodeSent || isSendingVerificationCode}
-                          className={`font-['Pretendard'] text-sm font-medium px-3 py-3 rounded-md border transition-colors duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-[120px]
-                            ${isVerificationCodeSent
-                              ? "bg-gray-600 cursor-not-allowed opacity-50 border-gray-500 text-gray-400"
-                              : (isSendingVerificationCode ? "border-[#A3A3A3]/50 text-[#A3A3A3] bg-transparent" : "border-[#A3A3A3]/50 text-[#A3A3A3] hover:border-white hover:text-white bg-transparent")
-                            }`}
-                        >
-                          {isSendingVerificationCode ? (
-                            <>
-                              <svg
-                                className="animate-spin h-5 w-5 text-[#A3A3A3]"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className="opacity-25"
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
-                                  stroke="currentColor"
-                                  strokeWidth="4"
-                                ></circle>
-                                <path
-                                  className="opacity-75"
-                                  fill="currentColor"
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                              </svg>
-                            </>
-                          ) : (
-                            isVerificationCodeSent ? "재전송 대기" : "인증번호 받기"
-                          )}
-                          {isVerificationCodeSent && (
-                            <span className="font-['Pretendard'] text-xs text-[#A3A3A3] absolute -bottom-5 right-1">
-                              제한 시간 {formatTime(verificationCodeTimeLeft)}
-                            </span>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 인증번호 입력 */}
+                {/* step 1: 이메일 인증 */}
+                {step === "emailVerify" && (
                   <motion.div
-                    key="verificationCodeInput"
-                    className="w-full"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0, transition: { delay: 0.1 } }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <div className="relative group">
-                      <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isVerificationCodeFocused || verificationCode ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
-                        인증번호
-                      </label>
-                      <input
-                        type="text"
-                        value={verificationCode}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, "");
-                          if (value.length <= 6) {
-                            setVerificationCode(value);
-                          }
-                          if (verificationCodeError) {
-                            return setVerificationCodeError("");
-                          }
-                        }}
-                        onFocus={() => setIsVerificationCodeFocused(true)}
-                        onBlur={() => setIsVerificationCodeFocused(false)}
-                        placeholder={isVerificationCodeFocused ? "" : "●●●●●●"}
-                        className="w-full bg-transparent text-start font-mono text-2xl text-white placeholder-[#555] border-b-2 border-[#555]/50 focus:border-[#3B66AF] focus:outline-none py-2 px-1 tracking-[6px]"
-                        maxLength={6}
-                      />
-                      <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isVerificationCodeShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
-                      <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isVerificationCodeFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
-                      {verificationCodeError && (
-                        <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
-                          {verificationCodeError}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* 인증번호 재전송 버튼 */}
-                    {verificationCodeError && verificationCodeError.includes("올바르지 않습니다") && (
-                      <div className="flex justify-end mt-1">
-                        <button
-                          type="button"
-                          onClick={handleRequestVerificationCode}
-                          disabled={isSendingVerificationCode}
-                          className="font-['Pretendard'] text-xs text-[#A3A3A3] hover:text-white transition-colors duration-300"
-                        >
-                          인증번호 재전송
-                        </button>
-                      </div>
-                    )}
-                  </motion.div>
-                </motion.div>
-              )}
-
-              {/* step 2: 닉네임, 비밀번호 설정 */}
-              {step === "setDetails" && (
-                <>
-                  <motion.div
-                    key="setDetails"
-                    variants={formVariants}
+                    key="emailVerify"
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="w-full flex flex-col items-center gap-10 overflow-hidden p-2 pb-10"
+                    variants={formVariants}
+                    className="flex flex-col items-center gap-10 w-full overflow-hidden p-2 pb-10"
                   >
-                    {/* 이메일 확인 */}
-                    <div className="relative group flex flex-row items-end gap-2 w-full">
-                      <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isEmailFocused || email ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
-                        이메일
-                      </label>
-                      <p className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] py-2 px-1">
-                        {email}
-                      </p>
-                      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 transition-all duration-300"></div>
+                    {/* 이메일 입력 */}
+                    <div className="w-full">
+                      <div className="relative group flex flex-row items-end gap-2">
+                        <div className="flex-grow relative group">
+                          <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isEmailFocused || email ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
+                            이메일
+                          </label>
+                          <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => {
+                              setEmail(e.target.value);
+                              if (emailError) {
+                                return setEmailError("");
+                              }
+                            }}
+                            onFocus={() => setIsEmailFocused(true)}
+                            onBlur={() => setIsEmailFocused(false)}
+                            placeholder={isEmailFocused ? "" : "이메일 주소를 입력해주세요."}
+                            className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
+                            disabled={isVerificationCodeSent}
+                          />
+                          <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isEmailShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
+                          <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isEmailFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                          {emailError &&
+                            <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
+                              {emailError}
+                            </p>
+                          }
+                        </div>
+
+                        {/* 인증번호 요청 버튼 */}
+                        <div className="flex flex-col items-end gap-1">
+                          <button
+                            type="button"
+                            onClick={handleRequestVerificationCode}
+                            disabled={isVerificationCodeSent || isSendingVerificationCode}
+                            className={`font-['Pretendard'] text-sm font-medium px-3 py-3 rounded-md border transition-colors duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-[120px]
+                              ${isVerificationCodeSent
+                                ? "bg-gray-600 cursor-not-allowed opacity-50 border-gray-500 text-gray-400"
+                                : (isSendingVerificationCode ? "border-[#A3A3A3]/50 text-[#A3A3A3] bg-transparent" : "border-[#A3A3A3]/50 text-[#A3A3A3] hover:border-white hover:text-white bg-transparent")
+                              }`}
+                          >
+                            {isSendingVerificationCode ? (
+                              <>
+                                <svg
+                                  className="animate-spin h-5 w-5 text-[#A3A3A3]"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                              </>
+                            ) : (
+                              isVerificationCodeSent ? "재전송 대기" : "인증번호 받기"
+                            )}
+                            {isVerificationCodeSent && (
+                              <span className="font-['Pretendard'] text-xs text-[#A3A3A3] absolute -bottom-5 right-1">
+                                제한 시간 {formatTime(verificationCodeTimeLeft)}
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* 닉네임 입력 */}
-                    <div className="w-full">
+                    {/* 인증번호 입력 */}
+                    <motion.div
+                      key="verificationCodeInput"
+                      className="w-full"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0, transition: { delay: 0.1 } }}
+                      exit={{ opacity: 0 }}
+                    >
                       <div className="relative group">
-                        <label
-                          className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isNicknameFocused || nickname ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
-                        >
-                          닉네임
+                        <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isVerificationCodeFocused || verificationCode ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
+                          인증번호
                         </label>
                         <input
                           type="text"
-                          value={nickname}
+                          value={verificationCode}
                           onChange={(e) => {
-                            setNickname(e.target.value);
-                            if (nicknameError) {
-                              setNicknameError("");
+                            const value = e.target.value.replace(/\D/g, "");
+                            if (value.length <= 6) {
+                              setVerificationCode(value);
+                            }
+                            if (verificationCodeError) {
+                              return setVerificationCodeError("");
                             }
                           }}
-                          onFocus={() => setIsNicknameFocused(true)}
-                          onBlur={() => setIsNicknameFocused(false)}
-                          placeholder={isNicknameFocused ? "" : "사용하실 닉네임을 입력해주세요."}
-                          className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
-                          maxLength={15}
+                          onFocus={() => setIsVerificationCodeFocused(true)}
+                          onBlur={() => setIsVerificationCodeFocused(false)}
+                          placeholder={isVerificationCodeFocused ? "" : "●●●●●●"}
+                          className="w-full bg-transparent text-start font-mono text-2xl text-white placeholder-[#555] border-b-2 border-[#555]/50 focus:border-[#3B66AF] focus:outline-none py-2 px-1 tracking-[6px]"
+                          maxLength={6}
                         />
-                        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                        <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isNicknameFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
-                        {nicknameError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{nicknameError}</p>}
-                      </div>
-                    </div>
-
-                    {/* 비밀번호 입력 */}
-                    <div className="w-full">
-                      <div className="relative group">
-                        <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isPasswordFocused || password ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
-                          비밀번호
-                        </label>
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          value={password}
-                          onChange={(e) => {
-                            setPassword(e.target.value);
-                            if (passwordError) {
-                              setPasswordError("");
-                            }
-                            if (confirmPasswordError && e.target.value === confirmPassword) {
-                              setConfirmPasswordError("");
-                            }
-                          }}
-                          onFocus={() => setIsPasswordFocused(true)}
-                          onBlur={() => setIsPasswordFocused(false)}
-                          placeholder={isPasswordFocused ? "" : "비밀번호를 입력해주세요."}
-                          className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 pr-10 pl-1 [&:not(:placeholder-shown)]:text-white"
-                          autoComplete="new-password"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#A3A3A3] hover:text-white transition-colors duration-300 focus:outline-none p-1"
-                        >
-                          {showPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
-                        </button>
-                        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                        <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isPasswordFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
-                        {passwordError &&
+                        <div className={`absolute bottom-0 left-0 w-full h-[1px] ${isVerificationCodeShaking ? "bg-red-500 animate-shake" : "bg-[#848484]/50 group-hover:bg-[#848484]"} transition-all duration-300`}></div>
+                        <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isVerificationCodeFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                        {verificationCodeError && (
                           <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
-                            {passwordError}
+                            {verificationCodeError}
                           </p>
-                        }
+                        )}
                       </div>
-                    </div>
 
-                    {/* 비밀번호 입력 확인 */}
-                    <div className="w-full">
-                      <div className="relative group">
-                        <label
-                          className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isConfirmPasswordFocused || confirmPassword ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
-                        >
-                          비밀번호 확인
-                        </label>
-                        <input
-                          type={showConfirmPassword ? "text" : "password"}
-                          value={confirmPassword}
-                          onChange={(e) => {
-                            setConfirmPassword(e.target.value);
-                            if (confirmPasswordError) {
-                              return setConfirmPasswordError("");
-                            }
-                            if (passwordError && e.target.value === password) {
-                              setPasswordError("");
-                            }
-                          }}
-                          onFocus={() => setIsConfirmPasswordFocused(true)}
-                          onBlur={() => setIsConfirmPasswordFocused(false)}
-                          placeholder={isConfirmPasswordFocused ? "" : "비밀번호를 다시 입력해주세요."}
-                          className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 pr-10 pl-1 [&:not(:placeholder-shown)]:text-white"
-                          autoComplete="new-password"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#A3A3A3] hover:text-white transition-colors duration-300 focus:outline-none p-1"
-                        >
-                          {showConfirmPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
-                        </button>
-                        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
-                        <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isConfirmPasswordFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
-                        {confirmPasswordError &&
-                          <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
-                            {confirmPasswordError}
-                          </p>
-                        }
-                      </div>
-                    </div>
+                      {/* 인증번호 재전송 버튼 */}
+                      {verificationCodeError && verificationCodeError.includes("올바르지 않습니다") && (
+                        <div className="flex justify-end mt-1">
+                          <button
+                            type="button"
+                            onClick={handleRequestVerificationCode}
+                            disabled={isSendingVerificationCode}
+                            className="font-['Pretendard'] text-xs text-[#A3A3A3] hover:text-white transition-colors duration-300"
+                          >
+                            인증번호 재전송
+                          </button>
+                        </div>
+                      )}
+                    </motion.div>
                   </motion.div>
-                </>
-              )}
-            </AnimatePresence>
-          </motion.div>
+                )}
 
-          <motion.div
-            layout
-            className="flex flex-col gap-4 w-full"
-          >
-            {/* 인증번호 확인/회원가입 버튼 */}
-            <form onSubmit={handleSubmit}>
-              <button
-                type="submit"
-                className="relative rounded-[30px] p-[2px] group hover:scale-[1.01] transition-all duration-300 w-full"
-              >
-                <div
-                  className="absolute inset-0 rounded-[30px] p-[2px] transition-all duration-300 opacity-50 group-hover:opacity-100"
-                  style={{
-                    background: "linear-gradient(to bottom right, #263F7C, #3B66AF, #035179, #5D659A)",
-                    WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                    WebkitMaskComposite: "xor",
-                    maskComposite: "exclude",
-                    pointerEvents: "none",
-                  }}
-                ></div>
-                <div className="relative block w-full text-center rounded-[28px] font-['Pretendard'] font-medium text-lg md:text-xl text-white py-2 sm:py-3 transition-all duration-300 backdrop-blur-md group-hover:bg-white/[0.05]">
-                  {step === "emailVerify" ? "인증번호 확인" : "회원가입"}
-                </div>
-              </button>
-            </form>
+                {/* step 2: 닉네임, 비밀번호 설정 */}
+                {step === "setDetails" && (
+                  <>
+                    <motion.div
+                      key="setDetails"
+                      variants={formVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      className="w-full flex flex-col items-center gap-10 overflow-hidden p-2 pb-10"
+                    >
+                      {/* 이메일 확인 */}
+                      <div className="relative group flex flex-row items-end gap-2 w-full">
+                        <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isEmailFocused || email ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
+                          이메일
+                        </label>
+                        <p className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] py-2 px-1">
+                          {email}
+                        </p>
+                        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 transition-all duration-300"></div>
+                      </div>
 
-            {/* 로그인 버튼 */}
-            <div className="flex justify-end">
-              <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
-                이미 계정이 있으신가요?{"  "}
-                <a
-                  onClick={onSwitchToLogin}
-                  className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer"
+                      {/* 닉네임 입력 */}
+                      <div className="w-full">
+                        <div className="relative group">
+                          <label
+                            className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isNicknameFocused || nickname ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
+                          >
+                            닉네임
+                          </label>
+                          <input
+                            type="text"
+                            value={nickname}
+                            onChange={(e) => {
+                              setNickname(e.target.value);
+                              if (nicknameError) {
+                                setNicknameError("");
+                              }
+                            }}
+                            onFocus={() => setIsNicknameFocused(true)}
+                            onBlur={() => setIsNicknameFocused(false)}
+                            placeholder={isNicknameFocused ? "" : "사용하실 닉네임을 입력해주세요."}
+                            className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 px-1 [&:not(:placeholder-shown)]:text-white"
+                            maxLength={15}
+                          />
+                          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                          <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isNicknameFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                          {nicknameError && <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">{nicknameError}</p>}
+                        </div>
+                      </div>
+
+                      {/* 비밀번호 입력 */}
+                      <div className="w-full">
+                        <div className="relative group">
+                          <label className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isPasswordFocused || password ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}>
+                            비밀번호
+                          </label>
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => {
+                              setPassword(e.target.value);
+                              if (passwordError) {
+                                setPasswordError("");
+                              }
+                              if (confirmPasswordError && e.target.value === confirmPassword) {
+                                setConfirmPasswordError("");
+                              }
+                            }}
+                            onFocus={() => setIsPasswordFocused(true)}
+                            onBlur={() => setIsPasswordFocused(false)}
+                            placeholder={isPasswordFocused ? "" : "비밀번호를 입력해주세요."}
+                            className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 pr-10 pl-1 [&:not(:placeholder-shown)]:text-white"
+                            autoComplete="new-password"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#A3A3A3] hover:text-white transition-colors duration-300 focus:outline-none p-1"
+                          >
+                            {showPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
+                          </button>
+                          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                          <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isPasswordFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                          {passwordError &&
+                            <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
+                              {passwordError}
+                            </p>
+                          }
+                        </div>
+                      </div>
+
+                      {/* 비밀번호 입력 확인 */}
+                      <div className="w-full">
+                        <div className="relative group">
+                          <label
+                            className={`absolute font-['Pretendard'] font-medium text-xs text-[#A3A3A3] transition-all duration-300 ${isConfirmPasswordFocused || confirmPassword ? "top-[-10px] opacity-100" : "top-[50%] translate-y-[-50%] opacity-0"}`}
+                          >
+                            비밀번호 확인
+                          </label>
+                          <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={confirmPassword}
+                            onChange={(e) => {
+                              setConfirmPassword(e.target.value);
+                              if (confirmPasswordError) {
+                                return setConfirmPasswordError("");
+                              }
+                              if (passwordError && e.target.value === password) {
+                                setPasswordError("");
+                              }
+                            }}
+                            onFocus={() => setIsConfirmPasswordFocused(true)}
+                            onBlur={() => setIsConfirmPasswordFocused(false)}
+                            placeholder={isConfirmPasswordFocused ? "" : "비밀번호를 다시 입력해주세요."}
+                            className="w-full bg-transparent font-['Pretendard'] font-medium text-base md:text-lg text-[#A3A3A3] focus:text-white focus:outline-none py-2 pr-10 pl-1 [&:not(:placeholder-shown)]:text-white"
+                            autoComplete="new-password"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#A3A3A3] hover:text-white transition-colors duration-300 focus:outline-none p-1"
+                          >
+                            {showConfirmPassword ? (<EyeSlashIcon />) : (<EyeIcon />)}
+                          </button>
+                          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#848484]/50 group-hover:bg-[#848484] transition-all duration-300"></div>
+                          <div className={`absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#263F7C] via-[#3B66AF] to-[#035179] transition-all duration-300 ${isConfirmPasswordFocused ? "w-full" : ""} group-focus-within:w-full`}></div>
+                          {confirmPasswordError &&
+                            <p className="font-['Pretendard'] text-red-500 text-xs mt-1 absolute -bottom-5 left-1">
+                              {confirmPasswordError}
+                            </p>
+                          }
+                        </div>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            <motion.div
+              layout
+              className="flex flex-col gap-4 w-full"
+            >
+              {/* 인증번호 확인/회원가입 버튼 */}
+              <form onSubmit={handleSubmit}>
+                <button
+                  type="submit"
+                  className="relative rounded-[30px] p-[2px] group hover:scale-[1.01] transition-all duration-300 w-full"
                 >
-                  로그인
-                </a>
-              </span>
-            </div>
+                  <div
+                    className="absolute inset-0 rounded-[30px] p-[2px] transition-all duration-300 opacity-50 group-hover:opacity-100"
+                    style={{
+                      background: "linear-gradient(to bottom right, #263F7C, #3B66AF, #035179, #5D659A)",
+                      WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                      WebkitMaskComposite: "xor",
+                      maskComposite: "exclude",
+                      pointerEvents: "none",
+                    }}
+                  ></div>
+                  <div className="relative block w-full text-center rounded-[28px] font-['Pretendard'] font-medium text-lg md:text-xl text-white py-2 sm:py-3 transition-all duration-300 backdrop-blur-md group-hover:bg-white/[0.05]">
+                    {step === "emailVerify" ? "인증번호 확인" : "회원가입"}
+                  </div>
+                </button>
+              </form>
+
+              {/* 로그인 버튼 */}
+              <div className="flex justify-end">
+                <span className="font-['Pretendard'] font-medium text-sm md:text-base text-[#A3A3A3]">
+                  이미 계정이 있으신가요?{"  "}
+                  <a
+                    onClick={onSwitchToLogin}
+                    className="text-[#FFFFFF] font-bold text-sm md:text-base cursor-pointer"
+                  >
+                    로그인
+                  </a>
+                </span>
+              </div>
+            </motion.div>
           </motion.div>
         </motion.div>
-      </motion.div>
+
+        {/* 닫기 버튼 */}
+        <button
+          onClick={handleClose}
+          className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#A3A3A3]/30 text-[#A3A3A3] hover:border-white hover:text-white transition-all duration-300 bg-[#020207]/80 backdrop-blur-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };
