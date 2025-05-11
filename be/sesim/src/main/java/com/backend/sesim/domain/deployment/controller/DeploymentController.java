@@ -76,12 +76,4 @@ public class DeploymentController {
         log.info("API 사용량 스트림 요청 수신");
         return apiUsageSSEService.subscribe();
     }
-
-    @Operation(summary = "사용자 전체 API 사용량 조회", description = "현재 로그인한 사용자의 모든 프로젝트 API 사용량을 조회합니다.")
-    @GetMapping("/projects/usage")
-    public CommonResponseDto<ApiUsageResponse> getAllUserProjectsApiUsage() {
-        log.info("사용자 전체 API 사용량 조회 요청");
-        ApiUsageResponse response = projectService.getAllUserProjectsApiUsage();
-        return CommonResponseDto.ok(response);
-    }
 }

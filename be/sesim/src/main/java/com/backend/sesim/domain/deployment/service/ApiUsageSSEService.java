@@ -84,18 +84,6 @@ public class ApiUsageSSEService {
         log.info("API 사용량 업데이트 전송");
     }
 
-    /**
-     * 특정 프로젝트의 API 사용량 업데이트 알림
-     */
-    public void notifyProjectApiUsageUpdate(Long projectId) {
-        // 전체 API 사용량 조회
-        ApiUsageResponse apiUsage = projectService.getAllUserProjectsApiUsage();
-
-        // 모든 클라이언트에게 전체 사용량 업데이트 전송
-        // 클라이언트에서 필요한 프로젝트만 필터링하도록 함
-        sendToAllEmitters("API_USAGE_UPDATE", apiUsage);
-        log.info("프로젝트 API 사용량 업데이트 전송: projectId={}", projectId);
-    }
 
     /**
      * 모든 이미터에 이벤트 전송
