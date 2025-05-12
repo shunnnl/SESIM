@@ -23,6 +23,7 @@ public enum SecurityPath {
     // Auth 관련 경로
     SIGNUP("/api/auth/signup"),
     LOGIN("/api/auth/login"),
+    REFRESH("/api/auth/refresh"),
 
     // Mail 관련 경로
     SEND_CODE("/api/mail/send-code"),
