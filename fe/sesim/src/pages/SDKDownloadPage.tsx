@@ -12,8 +12,9 @@ export const SdkDownloadPage = () => {
         <div>
             <PageTitleImageWithText
                 title="SDK 다운로드"
-                description1="SESIM SDK를 다운로드하고 고객 인프라에 AI 보안 모델을 쉽게 연동하세요."
-                description2=""
+                description1="SeSeim 플랫폼의 주요 기능, API 사용법, SDK 연동 가이드, 모델 배포 절차"
+                description2="등을 체계적으로 안내합니다."
+                buttonText="SDK 다운로드"
                 backgroundImage={PageBackground}
             />
             <div 

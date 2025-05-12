@@ -43,9 +43,10 @@ export const ModelInferenceServicePage: React.FC = () => {
     return (
         <div>
             <PageTitleImageWithText
-                title="모델 추론 서비스"
-                description1="프로젝트를 생성해"
-                description2="AI 모델을 선택하고, 내 인프라에 자동 배포하세요."
+                title="SESIM 서비스 이용 안내"
+                description1="고객의 데이터를 외부로 유출하지 않고, 개인 인프라 안에서"
+                description2="AI 기반 보안 서비스를 사용할 수 있도록 프로젝트 환경을 자동으로 구축해 드립니다."
+                buttonText="프로젝트 생성하기"
                 backgroundImage={PageBackground}
             />
             <div
