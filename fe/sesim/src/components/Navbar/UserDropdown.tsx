@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface UserDropdownProps {
   isOpen: boolean;
@@ -9,13 +9,8 @@ interface UserDropdownProps {
 
 export const UserDropdown: React.FC<UserDropdownProps> = ({ isOpen, onClose, onLogout }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname;
 
   if (!isOpen) return null;
-
-  const InfoPage = ["/userinfo", "/apiusage", "/project", "/keyinfo"];
-  const isUserInfoPage = InfoPage.includes(currentPath);
 
   const menuItems = [
     { id: "api", label: "API 사용량", path: "/apiusage" },
@@ -37,30 +32,25 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ isOpen, onClose, onL
   return (
     <div className="absolute right-0 top-1/2 translate-y-[60px] w-[180px] h-fit bg-[#07142B] rounded-[20px] shadow-[0px_0px_15px_rgba(116,208,244,0.4)] text-white font-['Pretendard'] z-50">
       <div className="flex flex-col tems-start gap-[16px] py-[20px]">
-        {!isUserInfoPage && (
-          <>
+        <button
+          className="font-semibold px-[32px] text-[16px] text-left hover:text-gray-400"
+          onClick={handleUserInfoClick}
+        >
+          마이페이지
+        </button>
+        <div className="w-full border-t border-[#3E4865]" />
+        <div className="flex flex-col items-start text-left py-[2px] gap-[22px]">
+          {menuItems.map(item => (
             <button
-              className="font-semibold px-[32px] text-[16px] text-left hover:text-gray-400"
-              onClick={handleUserInfoClick}
+              key={item.id}
+              className="font-medium text-white/80 text-[14px] px-[32px] self-stretch text-left hover:text-gray-400"
+              onClick={() => handleMenuItemsClick(item.path)}
             >
-              마이페이지
+              {item.label}
             </button>
-            <div className="w-full border-t border-[#3E4865]" />
-            <div className="flex flex-col items-start text-left py-[2px] gap-[22px]">
-              {menuItems.map(item => (
-                <button
-                  key={item.id}
-                  className="font-medium text-white/80 text-[14px] px-[32px] self-stretch text-left hover:text-gray-400"
-                  onClick={() => handleMenuItemsClick(item.path)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-            <div className="w-full border-t border-[#3E4865]" />
-          </>
-        )}
-
+          ))}
+        </div>
+        <div className="w-full border-t border-[#3E4FF865]" />
         <button
           onClick={onLogout}
           className="font-semibold text-[16px] px-[32px] text-left hover:text-gray-400"
