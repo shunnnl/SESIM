@@ -72,7 +72,7 @@ public class JwtTokenProvider {
     private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken, int maxAgeInSeconds) {
         Cookie cookie = new Cookie("refresh_token", refreshToken);
         cookie.setHttpOnly(true);         // JavaScript에서 접근 불가
-        cookie.setSecure(true);           // HTTPS에서만 전송
+        cookie.setSecure(false));           // HTTPS에서만 전송
         cookie.setPath("/");              // 모든 경로에서 사용 가능
         cookie.setMaxAge(maxAgeInSeconds); // 쿠키 유효 기간 설정
 
