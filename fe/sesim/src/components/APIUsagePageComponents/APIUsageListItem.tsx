@@ -45,8 +45,6 @@ const centerTextPlugin = {
     }
 };
 
-
-
 interface ModelCost {
     modelName: string;
     cost: string;
@@ -140,7 +138,6 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                 color: "white",
                 formatter: (value: number, context: any) => {
                     const label = context.chart.data.labels?.[context.dataIndex];
-                    // 데이터가 0일 때는 퍼센트를 표시하지 않음
                     return totalUsageTime > 0
                         ? `${label}\n${value.toFixed(1)}%`
                         : label;
