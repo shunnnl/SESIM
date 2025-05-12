@@ -8,7 +8,7 @@ export const SesimLogo: React.FC = () => {
                 <img 
                     src={sesimLogo} 
                     alt="SESIM Logo" 
-                    className="w-[120px] md:w-[140px] lg:w-[160px]"
+                    className="w-[80px] md:w-[100px] lg:w-[120px]"
                 />
             </Link>
         </div>

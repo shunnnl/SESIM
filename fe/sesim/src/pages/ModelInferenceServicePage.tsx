@@ -9,6 +9,7 @@ import { SignUpModal } from "../components/Popup/SignUpModal";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import { AiImage } from "../components/ModelInferenceService/AiImage";
 import PageBackground from "../assets/images/model-inference-service-bg.webp";
+import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 import BackgroundImage from "../assets/images/model-inference-service-content-bg.webp";
 import { ServiceDescriptionList } from "../components/ModelInferenceService/ServiceDescriptionList";
@@ -41,7 +42,7 @@ export const ModelInferenceServicePage: React.FC = () => {
     };
 
     return (
-        <div>
+        <SnapScrollContainer>
             <PageTitleImageWithText
                 title="SESIM 서비스 이용 안내"
                 description1="고객의 데이터를 외부로 유출하지 않고, 개인 인프라 안에서"
@@ -146,6 +147,6 @@ export const ModelInferenceServicePage: React.FC = () => {
                 onClose={() => setIsSignUpModalOpen(false)}
                 onSwitchToLogin={handleLoginClick}
             />
-        </div>
+        </SnapScrollContainer>
     );
 };

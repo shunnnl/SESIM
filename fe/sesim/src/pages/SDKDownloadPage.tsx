@@ -3,13 +3,14 @@ import infoIcon from "../assets/images/info.webp";
 import { BlueCircle } from "../components/common/BlueCircle";
 import PageBackground from "../assets/images/sdk-download-bg.webp";
 import { AnimatedButton } from "../components/common/AnimatedButton";
-import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
-import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 import BackgroundImage from "../assets/images/sdk-download-content-bg.webp";
+import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
+import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
+import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 
 export const SdkDownloadPage = () => {
     return (
-        <div>
+        <SnapScrollContainer>
             <PageTitleImageWithText
                 title="SDK 다운로드"
                 description1="SeSeim 플랫폼의 주요 기능, API 사용법, SDK 연동 가이드, 모델 배포 절차"
@@ -18,20 +19,17 @@ export const SdkDownloadPage = () => {
                 backgroundImage={PageBackground}
             />
             <div 
-                className="bg-cover bg-center bg-no-repeat" 
+                className="bg-cover bg-center bg-no-repeat h-screen" 
                 style={{ backgroundImage: `url(${BackgroundImage})` }}
             >
                 <motion.div
-                    className="flex justify-between gap-[50px] py-[88px] container-padding text-white relative z-10"
+                    className="flex justify-between gap-[50px] pt-[140px] container-padding text-white relative z-10"
                     initial={{ opacity: 0, y: 70 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                 >
                     <div className="flex flex-col gap-[10px]">
-                        <div className="flex flex-col items-center">
-                            <BlueCircle />
-                            <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">SDK 다운로드</h1>
-                        </div>
+                        <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">SDK 다운로드</h1>
                         <div className="flex flex-col gap-[15px] text-[20px] mt-[40px]">
                             <div>
                                 <p>고객 인프라 내에서 AI 보안 모델을 연동하기 위해 필요한 SESIM SDK를 다운로드 할 수 있습니다.</p>
@@ -59,7 +57,7 @@ export const SdkDownloadPage = () => {
                     <ExampleCodeBox />
                 </motion.div>
                 <motion.div
-                    className="absolute top-[60%] left-[66%] -translate-y-1/2 w-[150px] h-[150px] rounded-full"
+                    className="absolute top-[73%] left-[66%] -translate-y-1/2 w-[100px] h-[100px] rounded-full"
                     style={{
                         background: "#063584",
                         boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
@@ -71,6 +69,6 @@ export const SdkDownloadPage = () => {
                     transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                 ></motion.div>
             </div>
-        </div>
+        </SnapScrollContainer>
     );
 };
