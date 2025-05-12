@@ -10,7 +10,7 @@ interface ImageTitleBannerWithNavProps {
 
 export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = ({ modelName, description, selectedTab, setSelectedTab }) => {
     return (
-        <div className="grid grid w-full min-h-[200px] md:min-h-[300px] lg:min-h-[400px]">
+        <div className="grid w-full  min-h-[200px] md:min-h-[300px] lg:min-h-[400px]">
             <img
                 src={backgroundImage}
                 alt="PageBackground"

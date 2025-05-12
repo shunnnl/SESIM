@@ -25,7 +25,7 @@ export const AiModelCard = ({ id, name, featureTitle, featureList }: AiModelCard
                         key={index}
                         className="text-[15px] font-medium  my-[8px] flex items-center gap-[6px]"
                     >
-                        <BsCircleFill className="size-[8px] text-white" /> {detail}
+                        <BsCircleFill className="size-[4px] text-white"/> {detail}
                     </p>
                 ))}
             </div>

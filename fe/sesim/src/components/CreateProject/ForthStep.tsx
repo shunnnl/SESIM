@@ -203,7 +203,7 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
                                         className={`flex items-center gap-[10px] rounded-[5px] px-[20px] py-[10px] w-[250px]
                                             ${selectedAwsIdxMap[selectedModel.id] === idx && !isDisabled
                                                 ? "border-[#F97316] border-[3px] bg-[#FFFFFF]"
-                                                : "border border-[#D9D9D9] bg-[#FFFFFF]"}
+                                                : "border border-[#D9D9D9] bg-[#D2D2D2]"}
                                             ${isDisabled ? "cursor-not-allowed" : ""}
                                         `}
                                         onClick={() => !isDisabled && handleAwsClick(selectedModel, idx)}
@@ -230,7 +230,7 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
                                                 className={`w-[28px] h-[30px] ${isDisabled ? "grayscale" : ""}`} 
                                             />
                                         )}
-                                        <p className={`text-[16px] font-medium ${isDisabled ? "text-[#A3A3A3]" : "text-[#000000]"}`}>{label}</p>
+                                        <p className={`text-[16px] font-medium ${isDisabled ? "text-[#707070]" : "text-[#000000]"}`}>{label}</p>
                                     </button>
                                 );
                             })}

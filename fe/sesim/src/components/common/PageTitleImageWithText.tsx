@@ -51,14 +51,14 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
     
     return (
         <div className="relative">
-            <div className="grid w-full h-screen">
+            <div className="grid w-full h-screen container-padding">
                 <img 
                     src={backgroundImage}
                     alt="PageBackground"
                     className="w-full h-full object-cover absolute inset-0"
                 />
                 <motion.div
-                    className="flex flex-col ml-[11%] justify-center relative z-10 gap-[20px]"
+                    className="flex flex-col justify-center relative z-10 gap-[20px] "
                     initial={{ opacity: 0, y: 70 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, ease: "easeOut" }}
