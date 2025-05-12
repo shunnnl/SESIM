@@ -47,7 +47,7 @@ export const UserInfoPage = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <span className="w-2 h-2 rounded-full bg-blue-500" />
-            회원 정보
+            마이페이지
           </motion.h1>
 
           <InfoField label="닉네임" value={localStorage.getItem("nickname") || ""} />
@@ -55,7 +55,7 @@ export const UserInfoPage = () => {
         </div>
 
         <motion.div
-          className="mt-6 ml-72"
+          className="mt-6 ml-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
