@@ -49,7 +49,6 @@ public class DeploymentController {
     @Operation(summary = "API 키 확인", description = "배포된 모델의 API 키를 확인하고 반환합니다.")
     @PostMapping("/apikey")
     public CommonResponseDto<ApiKeyResponse> checkApiKey(@RequestBody ApiKeyCheckRequest request) {
-        log.info("API 키 확인 요청: projectId={}, modelId={}", request.getProjectId(), request.getModelId());
         ApiKeyResponse response = projectService.checkAndGetApiKey(request);
         return CommonResponseDto.ok(response);
     }
@@ -57,7 +56,6 @@ public class DeploymentController {
     @Operation(summary = "Alb 주소 조회 및 배포 상태 실시간 모니터링", description = "모든 프로젝트의 Alb 주소 및 배포 상태를 실시간으로 모니터링하는 SSE 스트림을 제공합니다.")
     @GetMapping(value = "/status/stream", produces = "text/event-stream")
     public SseEmitter streamDeploymentStatus() {
-        log.info("배포 상태 스트림 요청 수신");
         return deploymentStepSSEService.subscribe();
     }
 
@@ -66,14 +64,12 @@ public class DeploymentController {
     @PostMapping("/api-usage")
     public CommonResponseDto<?> updateApiUsage(@RequestBody ApiUsageUpdateRequest request) {
         apiUsageService.updateApiUsage(request);
-
         return CommonResponseDto.ok();
     }
 
     @Operation(summary = "API 사용량 실시간 모니터링", description = "API 사용량을 실시간으로 모니터링하는 SSE 스트림을 제공합니다.")
     @GetMapping(value = "/api-usage/stream", produces = "text/event-stream")
     public SseEmitter streamApiUsage() {
-        log.info("API 사용량 스트림 요청 수신");
         return apiUsageSSEService.subscribe();
     }
 }

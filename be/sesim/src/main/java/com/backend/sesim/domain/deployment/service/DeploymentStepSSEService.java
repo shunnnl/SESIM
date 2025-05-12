@@ -1,5 +1,6 @@
 package com.backend.sesim.domain.deployment.service;
 
+import com.backend.sesim.domain.auth.exception.AuthErrorCode;
 import com.backend.sesim.domain.deployment.dto.response.DeploymentStatusUpdateResponse;
 import com.backend.sesim.domain.deployment.dto.response.ProjectStatusResponse;
 import com.backend.sesim.domain.deployment.entity.DeploymentStep;
@@ -8,11 +9,19 @@ import com.backend.sesim.domain.deployment.entity.ProjectModelInformation;
 import com.backend.sesim.domain.deployment.repository.DeploymentStepRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectModelInfoRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectRepository;
+import com.backend.sesim.domain.iam.entity.RoleArn;
+import com.backend.sesim.domain.iam.repository.RoleArnRepository;
+import com.backend.sesim.domain.user.entity.User;
+import com.backend.sesim.domain.user.repository.UserRepository;
+import com.backend.sesim.global.exception.GlobalException;
+import com.backend.sesim.global.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.management.relation.Role;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -24,19 +33,24 @@ import java.util.stream.Collectors;
 @Slf4j
 @Transactional(readOnly = true)  // 클래스 레벨에 적용
 public class DeploymentStepSSEService {
-
     private static final Long DEFAULT_TIMEOUT = 60 * 60 * 1000L; // 1시간
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final ProjectRepository projectRepository;
     private final DeploymentStepRepository deploymentStepRepository;
     private final ProjectModelInfoRepository projectModelInfoRepository;
+    private final SecurityUtils securityUtils;
+    private final UserRepository userRepository;
+    private final RoleArnRepository roleArnRepository;
 
     /**
      * 클라이언트가 SSE에 연결할 때 호출되는 메서드
      */
-    @Transactional(readOnly = true) // 추가
+    @Transactional(readOnly = true)
     public SseEmitter subscribe() {
-        String emitterId = generateEmitterId();
+        // 현재 로그인한 사용자 ID 가져오기
+        Long userId = securityUtils.getCurrentUsersId();
+
+        String emitterId = generateEmitterId(userId);
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 
         emitters.put(emitterId, emitter);
@@ -77,27 +91,42 @@ public class DeploymentStepSSEService {
      * 초기 배포 상태를 전송
      */
     private void sendInitialStatus(SseEmitter emitter) throws IOException {
-        List<ProjectStatusResponse> statuses = getAllProjectsStatus();
+        List<ProjectStatusResponse> statuses = getCurrentUserProjectsStatus();
         emitter.send(SseEmitter.event()
                 .name("INIT")
                 .data(statuses));
     }
 
     /**
-     * 모든 프로젝트의 배포 상태를 조회
+     * 현재 로그인한 사용자의 프로젝트 배포 상태를 조회
      */
-    @Transactional(readOnly = true) // 추가
-    protected List<ProjectStatusResponse> getAllProjectsStatus() {
-        List<Project> projects = projectRepository.findAll();
-        return projects.stream()
-                .map(this::convertToProjectStatusDTO)
-                .collect(Collectors.toList());
+    protected List<ProjectStatusResponse> getCurrentUserProjectsStatus() {
+        try {
+            // 현재 로그인한 사용자 조회
+            Long userId = securityUtils.getCurrentUsersId();
+            User currentUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+            // 사용자의 RoleArn 목록 조회
+            List<RoleArn> roleArns = roleArnRepository.findAllByUser(currentUser);
+
+            // 사용자의 프로젝트 목록 조회
+            List<Project> userProjects = projectRepository.findAllByRoleArnIn(roleArns);
+
+            return userProjects.stream()
+                    .map(this::convertToProjectStatusDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("사용자 프로젝트 상태 조회 실패: {}", e.getMessage());
+            return List.of(); // 오류 발생 시 빈 리스트 반환
+        }
     }
+
 
     /**
      * 프로젝트를 ProjectStatusResponse로 변환
      */
-    @Transactional(readOnly = true) // 추가
+    @Transactional(readOnly = true)
     protected ProjectStatusResponse convertToProjectStatusDTO(Project project) {
         List<DeploymentStep> steps = deploymentStepRepository.findByProjectIdOrderByStepOrder(project.getId());
 
@@ -126,55 +155,109 @@ public class DeploymentStepSSEService {
 
 
     /**
-     * 배포 상태가 업데이트될 때 모든 클라이언트에게 알림
+     * 프로젝트 ID로 프로젝트 소유자의 사용자 ID 조회
      */
-    @Transactional(readOnly = true)  // 여기에 @Transactional 어노테이션 추가
-    public void notifyDeploymentStatusUpdate(DeploymentStep step) {
-        // 1. step에서 projectId만 가져옴 (이 부분은 LazyInitializationException이 발생하지 않음)
-        Long projectId = step.getProject().getId();
+    private Long getProjectOwnerId(Long projectId) {
+        try {
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없음: " + projectId));
 
-        // 2. 새로운 트랜잭션에서 프로젝트 정보를 다시 조회
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없음: " + projectId));
+            // 프로젝트의 RoleArn을 통해 사용자 ID 조회
+            RoleArn roleArn = project.getRoleArn();
+            if (roleArn != null && roleArn.getUser() != null) {
+                return roleArn.getUser().getId();
+            }
 
-        // 3. 프로젝트 상태 DTO 생성
-        ProjectStatusResponse projectStatus = convertToProjectStatusDTO(project);
-
-        // 4. 업데이트 DTO 생성
-        DeploymentStatusUpdateResponse updateDTO = DeploymentStatusUpdateResponse.builder()
-                .projectId(projectId)
-                .projectStatus(projectStatus)
-                .stepId(step.getId())
-                .stepStatus(step.getStepStatus())
-                .stepName(step.getStepName())
-                .build();
-
-        // 5. 모든 연결된 클라이언트에게 이벤트 전송
-        sendToAllEmitters("STATUS_UPDATE", updateDTO);
-        log.info("배포 상태 업데이트 전송: 프로젝트={}, 스텝={}, 상태={}",
-                projectId, step.getId(), step.getStepStatus());
+            // 소유자 정보가 없는 경우
+            log.warn("프로젝트 {} 소유자 정보 없음", projectId);
+            return null;
+        } catch (Exception e) {
+            log.error("프로젝트 소유자 ID 조회 실패: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
-     * 모든 이미터에 이벤트 전송
+     * 배포 상태가 업데이트될 때 프로젝트 소유자의 클라이언트에게만 알림
      */
-    private <T> void sendToAllEmitters(String eventName, T data) {
-        emitters.forEach((id, emitter) -> {
-            try {
-                emitter.send(SseEmitter.event()
-                        .name(eventName)
-                        .data(data));
-            } catch (IOException e) {
-                log.error("이벤트 전송 실패: {}", id, e);
-                emitters.remove(id);
+    @Transactional(readOnly = true)
+    public void notifyDeploymentStatusUpdate(DeploymentStep step) {
+        try {
+            // 1. step에서 projectId만 가져옴
+            Long projectId = step.getProject().getId();
+
+            // 2. 프로젝트 정보를 다시 조회
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없음: " + projectId));
+
+            // 3. 프로젝트 소유자 ID 조회
+            Long ownerId = getProjectOwnerId(projectId);
+            if (ownerId == null) {
+                log.warn("프로젝트 소유자를 찾을 수 없음, 알림 전송 건너뜀: {}", projectId);
+                return;
             }
-        });
+
+            // 4. 프로젝트 상태 DTO 생성
+            ProjectStatusResponse projectStatus = convertToProjectStatusDTO(project);
+
+            // 5. 업데이트 DTO 생성
+            DeploymentStatusUpdateResponse updateDTO = DeploymentStatusUpdateResponse.builder()
+                    .projectId(projectId)
+                    .projectStatus(projectStatus)
+                    .stepId(step.getId())
+                    .stepStatus(step.getStepStatus())
+                    .stepName(step.getStepName())
+                    .build();
+
+            // 6. 프로젝트 소유자의 클라이언트에게만 이벤트 전송
+            sendToUserEmitters(ownerId, "STATUS_UPDATE", updateDTO);
+            log.info("배포 상태 업데이트 전송: 프로젝트={}, 소유자={}, 스텝={}, 상태={}",
+                    projectId, ownerId, step.getId(), step.getStepStatus());
+        } catch (Exception e) {
+            log.error("배포 상태 업데이트 알림 실패: {}", e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * 특정 사용자의 이미터에게만 이벤트 전송
+     */
+    private <T> void sendToUserEmitters(Long userId, String eventName, T data) {
+        if (userId == null) {
+            log.warn("사용자 ID가 null, 이벤트 전송 건너뜀");
+            return;
+        }
+
+        // 해당 사용자 ID를 가진 이미터 찾기
+        String userPrefix = "sse-" + userId + "-";
+        boolean sent = false;
+
+        for (Map.Entry<String, SseEmitter> entry : emitters.entrySet()) {
+            String emitterId = entry.getKey();
+            if (emitterId.startsWith(userPrefix)) {
+                try {
+                    entry.getValue().send(SseEmitter.event()
+                            .name(eventName)
+                            .data(data));
+                    sent = true;
+                    log.debug("이벤트 {} 전송 성공: {}", eventName, emitterId);
+                } catch (IOException e) {
+                    log.error("이벤트 전송 실패: {}", emitterId, e);
+                    emitters.remove(emitterId);
+                }
+            }
+        }
+
+        if (!sent) {
+            log.info("사용자 {}에게 전송할 이미터 없음", userId);
+        }
     }
 
     /**
      * 고유한 이미터 ID 생성
      */
-    private String generateEmitterId() {
-        return "sse-" + System.currentTimeMillis();
+    private String generateEmitterId(Long userId) {
+        return "sse-" + userId + "-" + System.currentTimeMillis();
     }
 }
