@@ -69,14 +69,13 @@ public class ProjectListResponse {
             if (modelInfo.getProject().getAlbAddress() != null && !modelInfo.getProject().getAlbAddress().isEmpty()) {
                 String albAddress = modelInfo.getProject().getAlbAddress();
 
-                // 도메인 부분만 추출 (http://13.125.10.230)
-                int indexOfApi = albAddress.indexOf("/api");
-                if (indexOfApi > 0) {
-                    // "/api" 이전 부분만 추출하고 "/grafana" 추가
-                    grafanaUrl = albAddress.substring(0, indexOfApi) + "/grafana";
-                } else {
-                    // "/api"가 없는 경우 끝에 "/grafana" 추가
+                // 기존 주소가 http://23.45.45.44 형식이라면 /grafana만 추가
+                if (!albAddress.endsWith("/")) {
+                    // 끝에 / 없는 경우
                     grafanaUrl = albAddress + "/grafana";
+                } else {
+                    // 끝에 / 있는 경우
+                    grafanaUrl = albAddress + "grafana";
                 }
             }
 
