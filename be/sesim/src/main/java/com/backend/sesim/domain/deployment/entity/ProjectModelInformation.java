@@ -41,14 +41,4 @@ public class ProjectModelInformation extends TimeStampEntity {
 
     @Column(name = "model_api_key", length = 255)
     private String modelApiKey;
-
-    @Builder.Default
-    @Column(name = "is_api_key_check")
-    private Boolean isApiKeyCheck = false;
-
-    // API 키 확인 메서드
-    public void checkModelApiKey(String apiKey) {
-        this.isApiKeyCheck=true;
-    }
-
 }

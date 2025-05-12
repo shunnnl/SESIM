@@ -79,14 +79,6 @@ public class ProjectService {
             throw new GlobalException(DeploymentErrorCode.UNAUTHORIZED_PROJECT_ACCESS);
         }
 
-        // API 키가 이미 확인된 경우 체크
-        if (modelInfo.getIsApiKeyCheck()) {
-            throw new GlobalException(DeploymentErrorCode.API_KEY_ALREADY_CHECKED);
-        }
-
-        // API 키 확인 상태 업데이트
-        modelInfo.checkModelApiKey(modelInfo.getModelApiKey());
-
         // 응답 생성
         return ApiKeyResponse.builder()
                 .apiKey(modelInfo.getModelApiKey())

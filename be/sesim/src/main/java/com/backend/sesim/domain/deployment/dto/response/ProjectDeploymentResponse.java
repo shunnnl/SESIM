@@ -47,25 +47,13 @@ public class ProjectDeploymentResponse {
         private Long id;
         private String name;
         private String albAddress;
-        private Boolean isApiKeyCheck;
 
         public static DeployedModelDto from(ProjectModelInformation modelInfo) {
             return DeployedModelDto.builder()
                     .id(modelInfo.getModel().getId())
                     .name(modelInfo.getModel().getName())
                     .albAddress(modelInfo.getProject().getAlbAddress())
-                    .isApiKeyCheck(modelInfo.getIsApiKeyCheck())
                     .build();
         }
-    }
-
-    public static ProjectDeploymentResponse from(List<Project> projects) {
-        List<ProjectStatusDto> projectDtos = projects.stream()
-                .map(ProjectStatusDto::from)
-                .collect(Collectors.toList());
-
-        return ProjectDeploymentResponse.builder()
-                .projects(projectDtos)
-                .build();
     }
 }
