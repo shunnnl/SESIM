@@ -1,4 +1,4 @@
-import ModelInferenceImg1 from "../../assets/images/model-inference1.png";
+import ModelInferenceImg1 from "../../assets/images/model-inference1.webp";
 
 export const AiImage = () => {
     return (

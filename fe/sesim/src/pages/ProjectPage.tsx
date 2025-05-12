@@ -55,7 +55,7 @@ export const ProjectPage = () => {
                 {loading && <p>Loading...</p>}
                 {error && <p>Error: {error}</p>}
 
-                {projects.map((project, index) => (
+                {projects.slice().reverse().map((project, index) => (
                     <motion.div
                         key={index}
                         className="mb-8"

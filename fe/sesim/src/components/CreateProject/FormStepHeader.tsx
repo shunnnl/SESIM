@@ -1,4 +1,4 @@
-import infoIcon from "../../assets/images/info.png";
+import infoIcon from "../../assets/images/info.webp";
 
 interface FormStepHeaderProps {
     step: string;

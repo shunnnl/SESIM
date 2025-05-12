@@ -26,14 +26,21 @@ ChartJS.register(
 const centerTextPlugin = {
     id: "centerText",
     afterDraw: (chart: any) => {
-        const { width, height, ctx } = chart;
+        const { ctx } = chart;
+        const { width, height } = chart.chartArea;  
+
         ctx.save();
         const text = chart.options.plugins?.centerText?.text || "0h";
+
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = "bold 20px sans-serif";
         ctx.fillStyle = "white";
-        ctx.fillText(`총합: ${text}`, width / 2, height / 2.3);
+
+        const centerX = width / 2 + chart.chartArea.left; 
+        const centerY = height / 2 + chart.chartArea.top;  
+
+        ctx.fillText(`총합: ${text}`, centerX, centerY);
         ctx.restore();
     }
 };
@@ -41,7 +48,7 @@ const centerTextPlugin = {
 interface ModelCost {
     modelName: string;
     cost: string;
-    usageTime: number; 
+    usageTime: number;
     apiRequests: number;
 }
 
@@ -69,11 +76,18 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
             {
                 data: totalUsageTime > 0
                     ? data.modelCosts.map((model) => (model.usageTime / totalUsageTime) * 100)
-                    : [],
+                    : data.modelCosts.map(() => 1),
                 backgroundColor: data.modelCosts.map((_, idx) => colors[idx % colors.length]),
                 borderWidth: 0
             }
         ]
+    };
+
+    const hexToRgba = (hex: string, alpha: number) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     };
 
     const chartOptions = {
@@ -85,11 +99,36 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
             },
             legend: {
                 position: "bottom",
+                display : false,
                 labels: {
                     color: "white",
                     boxWidth: 6,
                     boxHeight: 6,
-                    padding: 12
+                    padding: 12,
+                    generateLabels: function (chart: any) {
+                        const data = chart.data;
+                        if (data.labels.length && data.datasets.length) {
+                            return data.labels.map((label: string, i: number) => {
+                                const meta = chart.getDatasetMeta(0);
+                                const style = meta.controller.getStyle(i);
+
+                                return {
+                                    text: label,
+                                    fillStyle: colors[i % colors.length],
+                                    hidden: false,
+                                    lineCap: style.borderCapStyle,
+                                    lineDash: style.borderDash,
+                                    lineDashOffset: style.borderDashOffset,
+                                    lineJoin: style.borderJoinStyle,
+                                    lineWidth: style.borderWidth,
+                                    strokeStyle: style.borderColor,
+                                    pointStyle: style.pointStyle,
+                                    rotation: style.rotation
+                                };
+                            });
+                        }
+                        return [];
+                    }
                 }
             },
             centerText: {
@@ -99,7 +138,9 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                 color: "white",
                 formatter: (value: number, context: any) => {
                     const label = context.chart.data.labels?.[context.dataIndex];
-                    return `${label}\n${value.toFixed(1)}%`;
+                    return totalUsageTime > 0
+                        ? `${label}\n${value.toFixed(1)}%`
+                        : label;
                 },
                 font: {
                     size: 14,
@@ -146,16 +187,85 @@ export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
                             <th className="px-4 py-2 text-center">비용</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        {data.modelCosts.map((model, index) => (
-                            <tr key={index} className="text-lg text-center">
-                                <td className="px-4 py-2 text-center">{model.modelName}</td>
-                                <td className="px-4 py-2 text-center">{model.apiRequests}</td>
-                                <td className="px-4 py-2 text-center">{model.usageTime.toFixed(1)}h</td> 
-                                <td className="px-4 py-2 text-center">{model.cost}</td>
-                            </tr>
-                        ))}
+                        {data.modelCosts.map((model, index) => {
+                            const hex = colors[index % colors.length];
+                            const rgba = hexToRgba(hex, 0.15);
+
+                            return (
+                                <tr key={index}
+                                    className="text-white text-center"
+                                    style={{ height: "2em" }}>
+                                    <td className="px-4 py-0"
+                                        style={{ position: "relative" }}>
+                                        <div
+                                            style={{
+                                                position: "absolute",
+                                                left: 0,
+                                                right: 0,
+                                                height: "2em",
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                backgroundColor: rgba,
+                                                zIndex: 0,
+                                            }}
+                                        ></div>
+                                        <span style={{ position: "relative", zIndex: 1 }}>{model.modelName}</span>
+                                    </td>
+                                    <td className="px-4 py-0"
+                                        style={{ position: "relative" }}>
+                                        <div
+                                            style={{
+                                                position: "absolute",
+                                                left: 0,
+                                                right: 0,
+                                                height: "2em",
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                backgroundColor: rgba,
+                                                zIndex: 0,
+                                            }}
+                                        ></div>
+                                        <span style={{ position: "relative", zIndex: 1 }}>{model.apiRequests}</span>
+                                    </td>
+                                    <td className="px-4 py-0"
+                                        style={{ position: "relative" }}>
+                                        <div
+                                            style={{
+                                                position: "absolute",
+                                                left: 0,
+                                                right: 0,
+                                                height: "2em",
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                backgroundColor: rgba,
+                                                zIndex: 0,
+                                            }}
+                                        ></div>
+                                        <span style={{ position: "relative", zIndex: 1 }}>{model.usageTime.toFixed(1)}h</span>
+                                    </td>
+                                    <td className="px-4 py-0"
+                                        style={{ position: "relative" }}>
+                                        <div
+                                            style={{
+                                                position: "absolute",
+                                                left: 0,
+                                                right: 0,
+                                                height: "2em",
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                backgroundColor: rgba,
+                                                zIndex: 0,
+                                            }}
+                                        ></div>
+                                        <span style={{ position: "relative", zIndex: 1 }}>{model.cost}</span>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
+
                     <tfoot>
                         <tr className="border-t border-gray-500 font-semibold text-xl text-center">
                             <td className="px-4 py-2 text-2xl text-center">Total</td>

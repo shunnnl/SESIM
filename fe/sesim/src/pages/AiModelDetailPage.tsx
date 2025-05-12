@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { BsCircleFill } from "react-icons/bs";
-import infoIcon from "../assets/images/info.png";
+import infoIcon from "../assets/images/info.webp";
 import { BlueCircle } from "../components/common/BlueCircle";
 import { getAiModelDetail } from "../services/aiModelService";
 import { AnimatedButton } from "../components/common/AnimatedButton";
@@ -36,13 +36,15 @@ export const AiModelDetailPage = () => {
     
     return (
         <div>
-            <ImageTitleBannerWithNav
-                modelName={modelName}
-                description="웹 요청에서 해킹 시도와 이상 접근을 식별합니다."
-                selectedTab={selectedTab}
-                setSelectedTab={setSelectedTab}
-            />
-            <div className="container-padding my-[44px] text-white">
+            <div className="relative z-10">
+                <ImageTitleBannerWithNav
+                    modelName={modelName}
+                    description="웹 요청에서 해킹 시도와 이상 접근을 식별합니다."
+                    selectedTab={selectedTab}
+                    setSelectedTab={setSelectedTab}
+                />
+            </div>
+            <div className="container-padding my-[44px] text-white relative z-10">
                 { selectedTab === "description" && (
                     <motion.div 
                         className="py-[44px]"
@@ -55,7 +57,7 @@ export const AiModelDetailPage = () => {
                             <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">특징</h1>
                         </div>
                         <div>
-                            <div className="mt-[30px]">
+                            <div className="mt-[2px]">
                                 {features.map((feature, index) => (
                                     <motion.div
                                         key={index}
@@ -63,14 +65,13 @@ export const AiModelDetailPage = () => {
                                         whileInView={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.8, ease: "easeOut" }}
                                         viewport={{ once: true, amount: 0.2 }}
-                                        className=""
                                     >
                                         <h2
-                                            className={`text-[80px] font-bold text-[#0075FF]/50 ${index % 2 === 1 ? 'ml-[370px]' : ''}`}
+                                            className={`text-[80px] font-bold text-[#0075FF]/50 ${index % 2 === 1 ? "ml-[34%]" : ""}`}
                                         >
                                             0{index + 1}
                                         </h2>
-                                        <div className={`flex gap-8 items-start w-full mb-12 ${index % 2 === 1 ? 'flex-row-reverse' : ''}`}>
+                                        <div className={`flex gap-8 items-start w-full mb-10 ${index % 2 === 1 ? "flex-row-reverse" : ""}`}>
                                             <div className="flex flex-col gap-4 flex-[2] min-w-0 ml-[50px]">
                                                 <div className="bg-gradient-to-l from-transparent to-[#367DF8] px-8 py-3 mb-2 rounded-[10px]">
                                                     <p className="text-[30px] font-bold">{feature.featureSummary}</p>
@@ -132,15 +133,69 @@ export const AiModelDetailPage = () => {
                                     text="SESIM SDK 다운로드 하러 가기" 
                                     link="/" 
                                     width="370px" 
-                                    onClick={() => window.scrollTo(0,0)}
                                 />
                             </div>
                         </div>
-
                         <ExampleCodeBox />
                     </motion.div>
                 )}
             </div>
+
+            { selectedTab == "description" && (
+                <>
+                    <motion.div
+                        className="absolute top-[40%] right-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
+                        style={{
+                            background: "#063584", 
+                            boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
+                            opacity: 0.4,
+                            zIndex: 0
+                        }}
+                        initial={{ opacity: 0, y: 100 }}
+                        animate={{ opacity: 0.4, y: 0 }}
+                        transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                    ></motion.div>
+                    <motion.div
+                        className="absolute top-[62%] left-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
+                        style={{
+                            background: "#063584", 
+                            boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
+                            opacity: 0.4,
+                            zIndex: 0
+                        }}
+                        initial={{ opacity: 0, y: 100 }}
+                        animate={{ opacity: 0.4, y: 0 }}
+                        transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+                    ></motion.div>
+                    <motion.div
+                        className="absolute top-[90%] right-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
+                        style={{
+                            background: "#063584", 
+                            boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
+                            opacity: 0.4,
+                            zIndex: 0
+                        }}
+                        initial={{ opacity: 0, y: 100 }}
+                        animate={{ opacity: 0.4, y: 0 }}
+                        transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
+                    ></motion.div>
+                </>
+            )}
+
+            { selectedTab == "examplecode" && (
+                <motion.div
+                    className="absolute top-[70%] left-[66%] -translate-y-1/2 w-[150px] h-[150px] rounded-full"
+                    style={{
+                        background: "#063584", 
+                        boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
+                        opacity: 0.4,
+                        zIndex: 0
+                    }}
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 0.4, y: 0 }}
+                    transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                ></motion.div>
+            )}
         </div>
     );
 };

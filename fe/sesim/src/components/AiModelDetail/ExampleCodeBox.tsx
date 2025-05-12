@@ -53,7 +53,7 @@ export const ExampleCodeBox = () => {
                         {copied ? "Copied!" : "Copy"}
                     </button>
                 </div>
-                <pre className="bg-[#1E1E1E] rounded-[10px] mt-2 px-4 py-4 shadow-[0_4px_4px_rgba(0,0,0,0.25)] text-[14px] leading-relaxed overflow-x-auto">
+                <pre className="bg-[#1E1E1E] rounded-[10px] mt-2 px-4 py-4 shadow-[0_4px_4px_rgba(0,0,0,0.25)] text-[12px] leading-relaxed overflow-x-auto">
                     <code className="font-mono">
                         {codeString}
                     </code>

@@ -1,22 +1,24 @@
 import { FiArrowUpRight } from "react-icons/fi";
-import logo from "../../assets/images/sesim-logo.png";
-import bgImage from "../../assets/images/project-bg.png";
-import bgImage2 from "../../assets/images/project-bg2.png";
-import bgImage3 from "../../assets/images/project-bg3.png";
-import bgImage4 from "../../assets/images/project-bg4.png";
 import { Model } from "../../types/ProjectTypes";
+import bgImage from "../../assets/images/model-bg-1.webp";
+import bgImage2 from "../../assets/images/model-bg-2.webp";
+import bgImage3 from "../../assets/images/model-bg-3.webp";
+import bgImage4 from "../../assets/images/model-bg-4.webp";
+import bgImage5 from "../../assets/images/model-bg-5.webp";
+import bgImage6 from "../../assets/images/model-bg-6.webp";
+
 
 interface ProjectItemListProps {
     items: Model[];
 }
 
 const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
-    const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4];
+    const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4, bgImage5, bgImage6];
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {items.map((item) => {
-                const backgroundImage = BG_IMAGES[item.id % 4];
+                const backgroundImage = BG_IMAGES[item.id % 6];
                 return (
                     <div
                         key={item.id}
@@ -28,15 +30,11 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                             backgroundPosition: 'center',
                         }}
                     >
-                        <div className="absolute inset-0 bg-black bg-opacity-55 rounded-2xl z-0" />
+                        <div className="absolute inset-0 bg-black bg-opacity-70 rounded-2xl z-0" />
 
                         <div className="relative z-10 p-6">
-                            <p className="text-sm ml-2 mb-1">{item.description}</p>
+                            <p className="text-sm mb-1">{item.description}</p>
                             <p className="text-xl font-semibold mb-2">
-                                <img
-                                    src={logo} alt="icon"
-                                    className="inline-block w-6 h-6"
-                                />
                                 {item.name}
                             </p>
 

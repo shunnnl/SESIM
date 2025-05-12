@@ -1,12 +1,18 @@
 import { motion } from "framer-motion";
 import { AboutSesim } from "../components/About/AboutSesim";
+import backgroundImage from "../assets/images/about-bg.webp";
 import { SesimFunctions } from "../components/About/SesimFunctions";
-import { ImageTitleBanner } from "../components/About/ImageTitleBanner";
+import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 
 export const AboutPage: React.FC = () => {
     return (
         <div className="relative">
-            <ImageTitleBanner />
+            <PageTitleImageWithText
+                title="SESIM"
+                description1="SESIM은 고객 데이터를 외부로 보내지 않고,"
+                description2="프라이빗 환경에서 AI 보안 모델을 맞춤형으로 제공합니다."
+                backgroundImage={backgroundImage}
+            />
 
             <motion.div 
                 className="container-padding text-white my-[88px] relative z-10"
@@ -30,8 +36,8 @@ export const AboutPage: React.FC = () => {
             <div
                 className="absolute top-1/2 left-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
                 style={{
-                    background: "#00215A", 
-                    boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
+                    background: "#063584", 
+                    boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
                     opacity: 0.4,
                     zIndex: 0
             }}
@@ -39,8 +45,8 @@ export const AboutPage: React.FC = () => {
             <div
                 className="absolute top-[90%] right-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
                 style={{
-                    background: "#00215A", 
-                    boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
+                    background: "#063584", 
+                    boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
                     opacity: 0.4,
                     zIndex: 0
             }}
