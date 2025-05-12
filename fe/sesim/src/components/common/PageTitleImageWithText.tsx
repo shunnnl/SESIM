@@ -3,6 +3,10 @@ import { BlueCircle } from "./BlueCircle";
 import { AnimatedButton } from "./AnimatedButton";
 import { motion, AnimatePresence } from "framer-motion";
 import downscrollImage from "../../assets/images/down-scroll-icon.svg";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import { LoginModal } from "../Popup/LoginModal";
+import { SignUpModal } from "../Popup/SignUpModal";
 
 interface PageTitleImageWithTextProps {
     subtitle?: string;
@@ -16,6 +20,9 @@ interface PageTitleImageWithTextProps {
 export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ subtitle, title, description1, description2, buttonText, backgroundImage }) => {
     const sdkDownloadLink = "https://sesimai.s3.ap-northeast-2.amazonaws.com/sesim_ai_sdk-0.1.0-py3-none-any.whl"
     const [isAtTop, setIsAtTop] = useState(true);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+    const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -25,6 +32,22 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const handleSignUpClick = () => {
+        setIsLoginModalOpen(false);
+        setIsSignUpModalOpen(true);
+    };
+
+    const handleLoginClick = () => {
+        setIsLoginModalOpen(true);
+        setIsSignUpModalOpen(false);
+    };
+
+    const handleButtonClick = () => {
+        if (!isLoggedIn) {
+            setIsLoginModalOpen(true);
+        }
+    };
     
     return (
         <div className="relative">
@@ -34,10 +57,18 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                     alt="PageBackground"
                     className="w-full h-full object-cover absolute inset-0"
                 />
-                <div
+                <motion.div
                     className="flex flex-col ml-[11%] justify-center relative z-10 gap-[20px]"
+                    initial={{ opacity: 0, y: 70 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, ease: "easeOut" }}
                 >
-                    <div className="flex flex-col gap-[5px]">
+                    <motion.div 
+                        className="flex flex-col gap-[5px]"
+                        initial={{ opacity: 0, y: 70 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                    >
                         {subtitle && (
                             <motion.div 
                                 className="flex items-center gap-[10px]"
@@ -53,23 +84,15 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                             className="text-white text-[28px] md:text-[42px] lg:text-5xl font-bold"
                             initial={{ opacity: 0, y: 70 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ 
-                                duration: 1, 
-                                delay: subtitle ? 0.5 : 0, 
-                                ease: "easeOut" 
-                            }}
+                            transition={{ duration: 1, delay: subtitle ? 0.5 : 0, ease: "easeOut" }}
                         >
                             {title}
                         </motion.h1>
-                    </div>
+                    </motion.div>
                     <motion.div
                         initial={{ opacity: 0, y: 70 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ 
-                            duration: 1, 
-                            delay: subtitle ? 1 : 0.5, 
-                            ease: "easeOut" 
-                        }}
+                        transition={{ duration: 1, delay: subtitle ? 0.9 : 0.4, ease: "easeOut" }}
                     >
                         {description1 && <p className="text-white text-[16px] md:text-[20px] lg:text-xl font-normal">{description1}</p>}
                         {description2 && <p className="text-white text-[16px] md:text-[20px] lg:text-xl font-normal">{description2}</p>}
@@ -78,16 +101,13 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                         <motion.div
                             initial={{ opacity: 0, y: 70 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ 
-                                duration: 1, 
-                                delay: subtitle ? 1.5 : 1, 
-                                ease: "easeOut" 
-                            }}
+                            transition={{ duration: 1, delay: subtitle ? 1.2 : 0.7, ease: "easeOut" }}
                         >
                             <AnimatedButton
                                 text="프로젝트 생성하기"
-                                link="/model-inference-service/create-project"
+                                link={isLoggedIn ? "/model-inference-service/create-project" : undefined}
                                 width="250px"
+                                onClick={handleButtonClick}
                             />
                         </motion.div>
                     )}
@@ -95,11 +115,7 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                         <motion.div
                             initial={{ opacity: 0, y: 70 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ 
-                                duration: 1, 
-                                delay: subtitle ? 1.5 : 1, 
-                                ease: "easeOut" 
-                            }}
+                            transition={{ duration: 1, delay: subtitle ? 1.2 : 0.7, ease: "easeOut" }}
                         >
                             <AnimatedButton
                                 text="SDK 다운로드"
@@ -108,7 +124,7 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                             />
                         </motion.div>
                     )}
-                </div>
+                </motion.div>
             </div>
             <AnimatePresence>
                 {isAtTop && (
@@ -123,6 +139,19 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                     />
                 )}
             </AnimatePresence>
+
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={() => setIsLoginModalOpen(false)}
+                onSwitchToSignUp={handleSignUpClick}
+            />
+
+            <SignUpModal
+                isOpen={isSignUpModalOpen}
+                onClose={() => setIsSignUpModalOpen(false)}
+                onSwitchToLogin={handleLoginClick}
+            />
         </div>
     );
 };
+
