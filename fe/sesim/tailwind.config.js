@@ -54,18 +54,17 @@ export default {
       const newUtilities = {
         ".scrollbar-custom": {
           "&::-webkit-scrollbar": {
-            width: "8px",
+            width: "4px",
             height: "8px",
           },
           "&::-webkit-scrollbar-track": {
-            background: "rgba(0, 0, 0, 0.1)",
-            borderRadius: "4px",
+            background: "rgba(0, 0, 0)",
           },
           "&::-webkit-scrollbar-thumb": {
-            background: "rgba(255, 255, 255, 0.2)",
+            background: "rgba(255, 255, 255, 0.5)",
             borderRadius: "4px",
             "&:hover": {
-              background: "rgba(255, 255, 255, 0.3)",
+              background: "rgba(255, 255, 255, 0.7)",
             },
           },
         }
