@@ -258,7 +258,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
           handleClose();
           onSwitchToLogin();
         }, 2000);
-        
+
       } else {
         console.error("회원가입 실패:", response.error);
         setSignUpError(response.error.message || "회원가입 중 오류가 발생했습니다.");
@@ -343,7 +343,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
       <div
         className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center transition-all duration-300 overflow-y-auto scrollbar-custom ${isOpen ? "opacity-100 animate-fadeIn" : "opacity-0 animate-fadeOut"}`}
       >
-        <div className="relative w-full max-w-[500px] mx-auto">
+        <div className="relative w-full max-w-[500px]">
           <motion.div
             className="w-full rounded-[30px] transform transition-all duration-300"
             initial={{ y: 50, opacity: 0 }}
@@ -766,28 +766,28 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onClose, onSwi
               </motion.div>
             </motion.div>
           </motion.div>
-        </div>
 
-        {/* 닫기 버튼 */}
-        <button
-          onClick={handleClose}
-          className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#A3A3A3]/30 text-[#A3A3A3] hover:border-white hover:text-white transition-all duration-300 bg-[#020207]/80 backdrop-blur-sm"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          {/* 닫기 버튼 */}
+          <button
+            onClick={handleClose}
+            className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#A3A3A3]/30 text-[#A3A3A3] hover:border-white hover:text-white transition-all duration-300 bg-[#020207]/80 backdrop-blur-sm"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* 회원가입 완료 toast */}
