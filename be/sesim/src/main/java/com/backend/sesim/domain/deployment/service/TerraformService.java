@@ -198,7 +198,6 @@ public class TerraformService {
                     .spec(spec)
                     .region(region)
                     .modelApiKey(apiKey)
-                    .isApiKeyCheck(false)
                     .build();
 
             projectModelInformations.add(projectModelInfoRepository.save(modelInfo));

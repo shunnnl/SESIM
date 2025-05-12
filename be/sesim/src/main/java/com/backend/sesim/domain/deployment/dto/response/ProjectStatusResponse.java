@@ -36,6 +36,5 @@ public class ProjectStatusResponse {
     public static class ModelInfo {
         private Long modelId;
         private String modelName;
-        private boolean isApiKeyCheck;
     }
 }

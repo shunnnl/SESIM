@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -25,9 +26,10 @@ public class ProjectListResponse {
         private Long id;
         private String name;
         private String description;
+        private boolean isDeployed;  // 배포 완료 여부 필드 추가
         private List<ModelDto> models;
 
-        public static ProjectDto from(Project project) {
+        public static ProjectDto from(Project project, boolean isDeployed) {
             List<ModelDto> modelDtos = project.getModelInformations().stream()
                     .map(ModelDto::from)
                     .collect(Collectors.toList());
@@ -36,6 +38,7 @@ public class ProjectListResponse {
                     .id(project.getId())
                     .name(project.getName())
                     .description(project.getDescription())
+                    .isDeployed(isDeployed)  // 배포 상태 설정
                     .models(modelDtos)
                     .build();
         }
@@ -66,14 +69,13 @@ public class ProjectListResponse {
             if (modelInfo.getProject().getAlbAddress() != null && !modelInfo.getProject().getAlbAddress().isEmpty()) {
                 String albAddress = modelInfo.getProject().getAlbAddress();
 
-                // 도메인 부분만 추출 (http://13.125.10.230)
-                int indexOfApi = albAddress.indexOf("/api");
-                if (indexOfApi > 0) {
-                    // "/api" 이전 부분만 추출하고 "/grafana" 추가
-                    grafanaUrl = albAddress.substring(0, indexOfApi) + "/grafana";
-                } else {
-                    // "/api"가 없는 경우 끝에 "/grafana" 추가
+                // 기존 주소가 http://23.45.45.44 형식이라면 /grafana만 추가
+                if (!albAddress.endsWith("/")) {
+                    // 끝에 / 없는 경우
                     grafanaUrl = albAddress + "/grafana";
+                } else {
+                    // 끝에 / 있는 경우
+                    grafanaUrl = albAddress + "grafana";
                 }
             }
 
@@ -86,9 +88,9 @@ public class ProjectListResponse {
         }
     }
 
-    public static ProjectListResponse from(List<Project> projects) {
+    public static ProjectListResponse from(List<Project> projects, Map<Long, Boolean> deploymentStatusMap) {
         List<ProjectDto> projectDtos = projects.stream()
-                .map(ProjectDto::from)
+                .map(project -> ProjectDto.from(project, deploymentStatusMap.getOrDefault(project.getId(), false)))
                 .collect(Collectors.toList());
 
         return ProjectListResponse.builder()

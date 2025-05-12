@@ -6,10 +6,12 @@ import com.backend.sesim.domain.deployment.dto.response.ApiKeyResponse;
 import com.backend.sesim.domain.deployment.dto.response.ApiUsageResponse;
 import com.backend.sesim.domain.deployment.dto.response.ProjectListResponse;
 import com.backend.sesim.domain.deployment.entity.ApiUsage;
+import com.backend.sesim.domain.deployment.entity.DeploymentStep;
 import com.backend.sesim.domain.deployment.entity.Project;
 import com.backend.sesim.domain.deployment.entity.ProjectModelInformation;
 import com.backend.sesim.domain.deployment.exception.DeploymentErrorCode;
 import com.backend.sesim.domain.deployment.repository.ApiUsageRepository;
+import com.backend.sesim.domain.deployment.repository.DeploymentStepRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectModelInfoRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectRepository;
 import com.backend.sesim.domain.iam.entity.RoleArn;
@@ -23,7 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +41,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final ApiUsageRepository apiUsageRepository;
     private final SecurityUtils securityUtils;
+    private final DeploymentStepRepository deploymentStepRepository;
 
     /**
      * 현재 로그인한 사용자의 프로젝트 목록 조회
@@ -55,8 +60,41 @@ public class ProjectService {
         // RoleArn에 해당하는 프로젝트 목록 조회
         List<Project> projects = projectRepository.findAllByRoleArnIn(roleArns);
 
+        // 프로젝트별 배포 상태 조회
+        Map<Long, Boolean> deploymentStatusMap = getProjectsDeploymentStatus(projects);
+
         // 응답 DTO 변환
-        return ProjectListResponse.from(projects);
+        return ProjectListResponse.from(projects, deploymentStatusMap);
+    }
+
+    /**
+     * 프로젝트 목록의 배포 상태 조회
+     */
+    private Map<Long, Boolean> getProjectsDeploymentStatus(List<Project> projects) {
+        Map<Long, Boolean> statusMap = new HashMap<>();
+
+        for (Project project : projects) {
+            // 프로젝트 ID를 기준으로 배포 단계 조회
+            List<DeploymentStep> steps = deploymentStepRepository.findByProjectIdOrderByStepOrder(project.getId());
+
+            // 배포 단계가 없으면 false 설정
+            if (steps.isEmpty()) {
+                statusMap.put(project.getId(), false);
+                continue;
+            }
+
+            // 마지막 배포 단계(COMPLETION) 찾기
+            DeploymentStep lastStep = steps.stream()
+                    .filter(step -> "COMPLETION".equals(step.getStepName()) || step.getStepOrder() == 4)
+                    .findFirst()
+                    .orElse(null);
+
+            // 마지막 단계가 있고 상태가 "DEPLOYED"면 true, 아니면 false
+            boolean isDeployed = (lastStep != null && "DEPLOYED".equals(lastStep.getStepStatus()));
+            statusMap.put(project.getId(), isDeployed);
+        }
+
+        return statusMap;
     }
 
 
@@ -78,14 +116,6 @@ public class ProjectService {
         if (!modelInfo.getProject().getRoleArn().getUser().getId().equals(userId)) {
             throw new GlobalException(DeploymentErrorCode.UNAUTHORIZED_PROJECT_ACCESS);
         }
-
-        // API 키가 이미 확인된 경우 체크
-        if (modelInfo.getIsApiKeyCheck()) {
-            throw new GlobalException(DeploymentErrorCode.API_KEY_ALREADY_CHECKED);
-        }
-
-        // API 키 확인 상태 업데이트
-        modelInfo.checkModelApiKey(modelInfo.getModelApiKey());
 
         // 응답 생성
         return ApiKeyResponse.builder()

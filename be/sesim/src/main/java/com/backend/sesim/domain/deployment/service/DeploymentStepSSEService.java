@@ -147,8 +147,7 @@ public class DeploymentStepSSEService {
                 .models(modelInfos.stream()
                         .map(modelInfo -> new ProjectStatusResponse.ModelInfo(
                                 modelInfo.getModel().getId(),
-                                modelInfo.getModel().getName(),
-                                modelInfo.getIsApiKeyCheck()))
+                                modelInfo.getModel().getName()))
                         .collect(Collectors.toList()))
                 .build();
     }
