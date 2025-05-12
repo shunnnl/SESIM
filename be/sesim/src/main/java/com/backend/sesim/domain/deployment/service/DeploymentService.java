@@ -99,7 +99,7 @@ public class DeploymentService {
                 // ALB 주소 업데이트
                 if (ec2PublicIps != null && !ec2PublicIps.isEmpty()) {
                     String masterIp = ec2PublicIps.get(0);
-                    String albAddress = "http://" + masterIp + "/api/";
+                    String albAddress = "http://" + masterIp;
                     project.updateAlbAddress(albAddress);
                     projectRepository.save(project);
                     log.info("ALB 주소 업데이트: {}", albAddress);
