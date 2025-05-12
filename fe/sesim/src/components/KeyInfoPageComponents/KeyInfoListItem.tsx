@@ -6,6 +6,7 @@ import loading from "../../assets/lotties/pendingLottie.json";
 import deployed from "../../assets/lotties/deployedLottie.json";
 import { Project, Step, Model } from "../../types/keyinfoTypes";
 import { createDeploymentApiKey } from "../../services/apiKeyService";
+import ApiKeyButton from "./ApikeyButton";
 
 interface Props {
     project: Project;
@@ -53,6 +54,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
     } | null>(null);
     const [apiKey, setApiKey] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [clickedModelIds, setClickedModelIds] = useState<number[]>([]);
 
     const handleOpenModal = async (item: Model) => {
         setSelectedItem({
@@ -64,10 +66,11 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
         try {
             const result = await createDeploymentApiKey({ projectId: project.projectId, modelId: item.modelId });
             console.log("API 키 생성 요청 결과:", result, project, item.modelId);
-            if (result.apiKey) {
-                console.log("API 키 로드 성공", result.apiKey);
-                setApiKey(result.apiKey);
+            if (result.data.apiKey) {
+                console.log("API 키 로드 성공", result.data.apiKey);
+                setApiKey(result.data.apiKey);
                 setIsModalOpen(true);
+                setClickedModelIds((prev) => [...prev, item.modelId]);
             } else {
                 console.error("API 키 로드 실패:", result.error);
                 alert("API 키를 가져오는 데 실패했습니다.");
@@ -80,11 +83,20 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
         }
     };
 
+
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedItem(null);
         setApiKey(null);
     };
+
+
+    const handleClick = (model: Model) => {
+        if (!clickedModelIds.includes(model.modelId)) {
+            handleOpenModal(model);
+        }
+    };
+
 
     const renderState = (stepStatus: string) => {
         if (stepStatus === "FAILED") {
@@ -107,56 +119,6 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
     };
 
 
-    const renderButton = (project: Project, model: Model) => {
-        const isDeployed = project.steps[3]?.stepStatus === "DEPLOYED";
-        const hasChecked = model.apiKeyCheck;
-        const isClickable = isDeployed && !hasChecked;
-
-        return (
-            <button
-                className={`text-base rounded-full px-3 py-1 w-36 ml-4 relative z-0 ${isClickable
-                    ? "text-white hover:bg-gradient-to-r hover:from-gradientpink30 hover:via-gradientpurple30 hover:to-gradientblue30"
-                    : "text-gray-300 bg-gray-500 border border-gray-300 cursor-not-allowed"
-                    }`}
-                style={
-                    isClickable
-                        ? {
-                            position: "relative",
-                            border: "2px solid transparent",
-                            borderRadius: "9999px",
-                            backgroundImage:
-                                "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
-                            backgroundOrigin: "border-box",
-                            backgroundClip: "padding-box, border-box",
-                            color: "white",
-                        }
-                        : undefined
-                }
-                onMouseEnter={(e) => {
-                    if (isClickable) {
-                        e.currentTarget.style.backgroundImage =
-                            "linear-gradient(to right, #5A316C, #513176, #2C3273), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
-                    }
-                }}
-                onMouseLeave={(e) => {
-                    if (isClickable) {
-                        e.currentTarget.style.backgroundImage =
-                            "linear-gradient(#242C4D, #242C4D), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
-                    }
-                }}
-                onClick={() => {
-                    if (isClickable) {
-                        handleOpenModal(model);
-                    }
-                }}
-                disabled={!isClickable || isLoading}
-            >
-                API Key 확인
-            </button>
-        );
-    };
-
-
     const getGradientColor = (steps: Step[], idx: number) => {
         const current = steps[idx];
         const next = steps[idx + 1];
@@ -169,7 +131,7 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
         if (next.stepStatus === "DEPLOYED") {
             return "from-blue-500 to-blue-500";
         }
-        
+
         if (next.stepStatus === "DEPLOYING" && current.stepStatus === "DEPLOYED") {
             return "from-[#495AFF] to-[#EA49FF]";
         }
@@ -235,8 +197,11 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
                                 )}
 
                                 <p className="text-center text-lg font-semibold mt-3 text-white mb-2">
-                                    {stepDescriptions[step.stepOrder]?.main}
+                                    {step.stepOrder === 4 && isDeploying
+                                        ? "배포중"
+                                        : stepDescriptions[step.stepOrder]?.main}
                                 </p>
+                                
                                 <ul className="text-sm text-gray-300 list-disc list-inside">
                                     {stepDescriptions[step.stepOrder]?.sub.map((desc, i) => (
                                         <li key={i}>{desc}</li>
@@ -294,14 +259,19 @@ const KeyinfoItemList: React.FC<Props> = ({ project }) => {
                                 </td>
                                 <td className="py-3 px-4">
                                     <div className="flex justify-center items-center">
-                                        {renderButton(project, model)}
+                                        <ApiKeyButton
+                                            project={project}
+                                            model={model}
+                                            isClicked={clickedModelIds.includes(model.modelId)}
+                                            isLoading={isLoading}
+                                            onClick={handleClick}
+                                        />
                                     </div>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-
             </div>
 
             {selectedItem && apiKey && (
