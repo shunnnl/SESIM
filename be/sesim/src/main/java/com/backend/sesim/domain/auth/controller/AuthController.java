@@ -2,7 +2,6 @@ package com.backend.sesim.domain.auth.controller;
 
 import com.backend.sesim.domain.auth.dto.request.LoginRequest;
 import com.backend.sesim.domain.auth.dto.request.LoginResponse;
-import com.backend.sesim.domain.auth.dto.request.RefreshTokenRequest;
 import com.backend.sesim.domain.auth.dto.request.SignUpRequest;
 import com.backend.sesim.domain.auth.exception.AuthErrorCode;
 import com.backend.sesim.domain.auth.service.AuthService;
@@ -22,9 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.SignatureException;
-
-
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -34,7 +30,6 @@ public class AuthController {
 
     private final AuthService authService;
     private final SecurityUtils securityUtils;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "회원가입", description = "회원가입을 처리합니다.")
     @PostMapping("/signup")
