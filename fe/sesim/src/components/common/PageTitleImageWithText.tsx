@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { BlueCircle } from "./BlueCircle";
-import { AnimatedButton } from "./AnimatedButton";
-import { motion, AnimatePresence } from "framer-motion";
-import downscrollImage from "../../assets/images/down-scroll-icon.svg";
 import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { RootState } from "../../store";
+import { BlueCircle } from "./BlueCircle";
 import { LoginModal } from "../Popup/LoginModal";
+import { AnimatedButton } from "./AnimatedButton";
 import { SignUpModal } from "../Popup/SignUpModal";
+import downscrollImage from "../../assets/images/down-scroll-icon.svg";
 
 interface PageTitleImageWithTextProps {
     subtitle?: string;
