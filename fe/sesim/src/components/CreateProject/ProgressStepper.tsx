@@ -13,7 +13,7 @@ const steps = [
 
 export const ProgressStepper: React.FC<ProgressStepperProps> = ({ currentStep }) => {
     return (
-        <div className="sticky top-0 z-40 w-full bg-[#242C4D]/80 shadow-lg backdrop-blur-md py-4">
+        <div className="sticky top-0 z-40 w-full bg-[#242C4D]/90 shadow-lg backdrop-blur-md py-4">
         <div className="flex justify-center">
             {steps.map((step, idx) => (
             <React.Fragment key={idx}>

@@ -62,7 +62,8 @@ export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSeco
                     <div>
                         <p className="text-[16px] font-bold">프로젝트 이름 <span className="text-[#FF7E7E]">*</span></p>
                         <input 
-                            type="text" 
+                            type="text"
+                            maxLength={100}
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3]" 
                             placeholder="예: 보안 모니터링 프로젝트, 이상행위 탐지 시스템"
                             value={tempName}
@@ -75,6 +76,7 @@ export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSeco
                     <div className="mt-[15px]">
                         <p className="text-[16px] font-bold">프로젝트 설명</p>
                         <textarea 
+                            maxLength={500}
                             className="mt-[10px] w-full bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3] min-h-[200px] resize-y" 
                             placeholder="이 프로젝트에서 관리할 보안 AI 모델들의 목적과 용도를 설명해주세요."
                             value={tempDesc}
