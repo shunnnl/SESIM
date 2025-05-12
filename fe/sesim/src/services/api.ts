@@ -1,6 +1,6 @@
 import axios from "axios";
-import { logout } from "../store/authSlice";
 import { store } from "../store/index";
+import { logout } from "../store/authSlice";
 
 const api = axios.create({
   baseURL: "http://52.79.149.27/api",
