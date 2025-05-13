@@ -133,10 +133,22 @@ public class DeploymentStepSSEService {
         // 2. 프로젝트 모델 정보 조회 (ProjectModelInfoRepository 주입 필요)
         List<ProjectModelInformation> modelInfos = projectModelInfoRepository.findByProjectId(project.getId());
 
+        // Grafana URL 생성
+        String grafanaUrl = "";
+        if (project.getAlbAddress() != null && !project.getAlbAddress().isEmpty()) {
+            String albAddress = project.getAlbAddress();
+            if (!albAddress.endsWith("/")) {
+                grafanaUrl = albAddress + "/grafana";
+            } else {
+                grafanaUrl = albAddress + "grafana";
+            }
+        }
+
         return ProjectStatusResponse.builder()
                 .projectId(project.getId())
                 .projectName(project.getName())
                 .albAddress(project.getAlbAddress())
+                .grafanaUrl(grafanaUrl)
                 .steps(steps.stream()
                         .map(step -> new ProjectStatusResponse.StepStatus(
                                 step.getId(),
@@ -145,9 +157,21 @@ public class DeploymentStepSSEService {
                                 step.getStepStatus()))
                         .collect(Collectors.toList()))
                 .models(modelInfos.stream()
-                        .map(modelInfo -> new ProjectStatusResponse.ModelInfo(
-                                modelInfo.getModel().getId(),
-                                modelInfo.getModel().getName()))
+                        .map(modelInfo -> {
+                            // 모델의 short_description에서 첫 번째 줄 추출
+                            String description = "";
+                            if (modelInfo.getModel().getShortDescription() != null) {
+                                String[] lines = modelInfo.getModel().getShortDescription().split("\\n");
+                                if (lines.length > 0) {
+                                    description = lines[0];
+                                }
+                            }
+
+                            return new ProjectStatusResponse.ModelInfo(
+                                    modelInfo.getModel().getId(),
+                                    modelInfo.getModel().getName(),
+                                    description);  // 모델별 설명 추가
+                        })
                         .collect(Collectors.toList()))
                 .build();
     }

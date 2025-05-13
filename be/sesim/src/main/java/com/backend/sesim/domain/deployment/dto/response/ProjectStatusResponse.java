@@ -15,6 +15,7 @@ public class ProjectStatusResponse {
     private Long projectId;
     private String projectName;
     private String albAddress;
+    private String grafanaUrl;
     private List<StepStatus> steps;
     private List<ModelInfo> models;
 
@@ -36,5 +37,6 @@ public class ProjectStatusResponse {
     public static class ModelInfo {
         private Long modelId;
         private String modelName;
+        private String description;
     }
 }
