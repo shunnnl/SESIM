@@ -12,20 +12,10 @@ export const ProjectPage = () => {
     const { loading, error, projects } = useSelector((state: RootState) => state.keyinfo);
 
     return (
-        <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
-            <div className="mr-12">
+        <div className="flex min-h-screen text-white container-padding">
+            <div>
                 <Sidebar />
             </div>
-
-            <div
-                className="absolute top-[40%] right-[30%] -translate-y-1/2 w-[50px] h-[50px] rounded-full"
-                style={{
-                    background: "#00215A",
-                    boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
-                    opacity: 0.4,
-                    zIndex: 0
-                }}
-            ></div>
 
             <motion.div
                 className="flex flex-col flex-1 p-6 mt-4"
