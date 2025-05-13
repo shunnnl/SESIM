@@ -18,10 +18,10 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {items.map((item) => {
-                const backgroundImage = BG_IMAGES[item.id % 6];
+                const backgroundImage = BG_IMAGES[item.modelId % 6];
                 return (
                     <div
-                        key={item.id}
+                        key={item.modelId}
                         className="relative rounded-2xl h-44 overflow-hidden"
                         style={{
                             boxShadow: '0px 0px 10px rgba(116, 208, 244, 0.3)',
@@ -35,7 +35,7 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                         <div className="relative z-10 p-6">
                             <p className="text-sm mb-1">{item.description}</p>
                             <p className="text-xl font-semibold mb-2">
-                                {item.name}
+                                {item.modelName}
                             </p>
 
                             <button
@@ -50,11 +50,11 @@ const ProjectItemList: React.FC<ProjectItemListProps> = ({ items }) => {
                                     backgroundClip: "padding-box, border-box",
                                     color: "white",
                                 }}
-                                onClick={() => {
-                                    if (item.grafanaUrl) {  
-                                        window.location.href = item.grafanaUrl; 
-                                    }
-                                }}
+                                // onClick={() => {
+                                //     if (item.) {  
+                                //         window.location.href = item.grafanaUrl; 
+                                //     }
+                                // }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.backgroundImage =
                                         "linear-gradient(to right, #5A316C, #513176, #2C3273), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";

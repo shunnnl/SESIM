@@ -8,7 +8,7 @@ export interface Step {
 export interface Model {
     modelId: number;
     modelName: string;
-    apiKeyCheck: boolean;
+    description: string;
 }
 
 export interface Project {

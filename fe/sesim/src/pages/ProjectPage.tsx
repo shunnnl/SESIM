@@ -4,7 +4,7 @@ import { RootState } from "../store";
 import { Sidebar } from "../components/Sidebar";
 import { Project } from "../types/ProjectTypes";
 import useDeploymentStateSSE from '../hooks/projectStateSSE';
-import KeyinfoItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
+import KeyinfoItemList from "../components/ProjectPageComponents/KeyInfoListItem";
 
 export const ProjectPage = () => {
     useDeploymentStateSSE();
