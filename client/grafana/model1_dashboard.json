@@ -1254,7 +1254,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 4,
         "w": 13,
         "x": 5,
         "y": 10
@@ -1293,7 +1293,7 @@
           "show": true
         },
         "rowsFrame": {
-          "layout": "unknown"
+          "layout": "auto"
         },
         "tooltip": {
           "show": true,
@@ -1418,7 +1418,7 @@
         "h": 7,
         "w": 13,
         "x": 5,
-        "y": 15
+        "y": 14
       },
       "id": 19,
       "options": {
@@ -1495,114 +1495,6 @@
       ],
       "title": "로그 그래프",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "cellOptions": {
-              "type": "color-text"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 10
-              },
-              {
-                "color": "#EF843C",
-                "value": 20
-              },
-              {
-                "color": "red",
-                "value": 30
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "공격 횟수"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 100
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 6,
-        "x": 18,
-        "y": 21
-      },
-      "id": 17,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": [],
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "9.5.21",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \r\n  attack_type AS \"공격 유형\",\r\n  COUNT(*) AS \"공격 횟수\"\r\nFROM ai_results_1\r\nWHERE \r\n  logged_at >= $__timeFrom() AND logged_at <= $__timeTo()\r\n  AND is_attack = TRUE\r\nGROUP BY attack_type\r\nORDER BY \"공격 횟수\" DESC;\r\n",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "공격 유형 별 공격 횟수",
-      "type": "table"
     },
     {
       "datasource": {
@@ -1689,7 +1581,7 @@
         "h": 10,
         "w": 18,
         "x": 0,
-        "y": 22
+        "y": 21
       },
       "id": 6,
       "options": {
@@ -1737,6 +1629,114 @@
         }
       ],
       "title": "가장 많이 공격 받은 경로 TOP 10",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "color-text"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 10
+              },
+              {
+                "color": "#EF843C",
+                "value": 20
+              },
+              {
+                "color": "red",
+                "value": 30
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "공격 횟수"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 6,
+        "x": 18,
+        "y": 21
+      },
+      "id": 17,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": [],
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n  attack_type AS \"공격 유형\",\r\n  COUNT(*) AS \"공격 횟수\"\r\nFROM ai_results_1\r\nWHERE \r\n  logged_at >= $__timeFrom() AND logged_at <= $__timeTo()\r\n  AND is_attack = TRUE\r\nGROUP BY attack_type\r\nORDER BY \"공격 횟수\" DESC;\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "공격 유형 별 공격 횟수",
       "type": "table"
     },
     {
@@ -1907,7 +1907,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 31
       },
       "id": 10,
       "options": {
@@ -1989,7 +1989,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 41
       },
       "id": 13,
       "options": {
@@ -2054,6 +2054,6 @@
   "timezone": "browser",
   "title": "finect_dashboard",
   "uid": "dek6a3kaic268a1",
-  "version": 31,
+  "version": 32,
   "weekStart": ""
 }
