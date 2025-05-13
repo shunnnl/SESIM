@@ -19,6 +19,8 @@ public class TerraformDeployRequest {
     // 모델 구성 정보 - 여러 개 선택 가능
     private List<ModelConfig> modelConfigs;
 
+    // 허용 IP 주소 목록
+    private List<String> allowedIpAddresses;
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

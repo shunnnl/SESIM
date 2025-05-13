@@ -9,9 +9,11 @@ import com.backend.sesim.domain.deployment.entity.ProjectModelInformation;
 import com.backend.sesim.domain.deployment.repository.DeploymentStepRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectModelInfoRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectRepository;
+import com.backend.sesim.domain.deployment.repository.RegisterIpRepository;
 import com.backend.sesim.domain.iam.entity.RoleArn;
 import com.backend.sesim.domain.iam.repository.RoleArnRepository;
 import com.backend.sesim.domain.user.entity.User;
+import com.backend.sesim.domain.deployment.entity.RegisterIp;
 import com.backend.sesim.domain.user.repository.UserRepository;
 import com.backend.sesim.global.exception.GlobalException;
 import com.backend.sesim.global.util.SecurityUtils;
@@ -21,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.relation.Role;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class DeploymentStepSSEService {
     private final SecurityUtils securityUtils;
     private final UserRepository userRepository;
     private final RoleArnRepository roleArnRepository;
+    private final RegisterIpRepository registerIpRepository;
 
     /**
      * 클라이언트가 SSE에 연결할 때 호출되는 메서드
@@ -133,10 +135,40 @@ public class DeploymentStepSSEService {
         // 2. 프로젝트 모델 정보 조회 (ProjectModelInfoRepository 주입 필요)
         List<ProjectModelInformation> modelInfos = projectModelInfoRepository.findByProjectId(project.getId());
 
+        // 프로젝트에 등록된 허용 IP 주소 목록 조회
+        List<String> allowedIps = registerIpRepository.findByProjectId(project.getId()).stream()
+                .map(RegisterIp::getIpNumber)
+                .collect(Collectors.toList());
+
+        // Grafana URL 생성
+        String grafanaUrl = "";
+        if (project.getAlbAddress() != null && !project.getAlbAddress().isEmpty()) {
+            String albAddress = project.getAlbAddress();
+            if (!albAddress.endsWith("/")) {
+                grafanaUrl = albAddress + "/grafana";
+            } else {
+                grafanaUrl = albAddress + "grafana";
+            }
+        }
+
+        // isDeployed 판단 - COMPLETION 단계가 DEPLOYED 상태인지 확인
+        boolean isDeployed = false;
+        DeploymentStep completionStep = steps.stream()
+                .filter(step -> "COMPLETION".equals(step.getStepName()))
+                .findFirst()
+                .orElse(null);
+
+        if (completionStep != null && "DEPLOYED".equals(completionStep.getStepStatus())) {
+            isDeployed = true;
+        }
+
         return ProjectStatusResponse.builder()
                 .projectId(project.getId())
                 .projectName(project.getName())
                 .albAddress(project.getAlbAddress())
+                .grafanaUrl(grafanaUrl)
+                .allowedIps(allowedIps)
+                .isDeployed(isDeployed)
                 .steps(steps.stream()
                         .map(step -> new ProjectStatusResponse.StepStatus(
                                 step.getId(),
@@ -145,9 +177,21 @@ public class DeploymentStepSSEService {
                                 step.getStepStatus()))
                         .collect(Collectors.toList()))
                 .models(modelInfos.stream()
-                        .map(modelInfo -> new ProjectStatusResponse.ModelInfo(
-                                modelInfo.getModel().getId(),
-                                modelInfo.getModel().getName()))
+                        .map(modelInfo -> {
+                            // 모델의 short_description에서 첫 번째 줄 추출
+                            String description = "";
+                            if (modelInfo.getModel().getShortDescription() != null) {
+                                String[] lines = modelInfo.getModel().getShortDescription().split("\\n");
+                                if (lines.length > 0) {
+                                    description = lines[0];
+                                }
+                            }
+
+                            return new ProjectStatusResponse.ModelInfo(
+                                    modelInfo.getModel().getId(),
+                                    modelInfo.getModel().getName(),
+                                    description);  // 모델별 설명 추가
+                        })
                         .collect(Collectors.toList()))
                 .build();
     }

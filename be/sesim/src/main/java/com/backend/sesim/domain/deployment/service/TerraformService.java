@@ -4,10 +4,12 @@ import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
 import com.backend.sesim.domain.deployment.entity.DeploymentStep;
 import com.backend.sesim.domain.deployment.entity.Project;
 import com.backend.sesim.domain.deployment.entity.ProjectModelInformation;
+import com.backend.sesim.domain.deployment.entity.RegisterIp;
 import com.backend.sesim.domain.deployment.exception.TerraformErrorCode;
 import com.backend.sesim.domain.deployment.repository.DeploymentStepRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectModelInfoRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectRepository;
+import com.backend.sesim.domain.deployment.repository.RegisterIpRepository;
 import com.backend.sesim.domain.deployment.util.TerraformExecutor;
 import com.backend.sesim.domain.iam.entity.RoleArn;
 import com.backend.sesim.domain.iam.repository.RoleArnRepository;
@@ -31,6 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.backend.sesim.domain.deployment.constant.DeploymentConstants.*;
@@ -49,6 +52,7 @@ public class TerraformService {
     private final RegionRepository regionRepository;
     private final DeploymentStepRepository deploymentStepRepository;
     private final DeploymentService deploymentService;
+    private final RegisterIpRepository registerIpRepository;
 
     /**
      * SaaS 계정에 AWS 리소스를 배포합니다.
@@ -88,6 +92,9 @@ public class TerraformService {
         // 프로젝트 및 모델 정보 먼저 저장 (상태는 PENDING)
         Project project = saveProjectInfo(roleArn, request);
         List<ProjectModelInformation> modelInfos = saveModelInformation(request, project);
+
+        // IP 주소 등록 로직 추가
+        saveAllowedIpAddresses(request.getAllowedIpAddresses(), project);
 
         // 배포 단계 초기화
         initializeDeploymentSteps(project);
@@ -207,7 +214,37 @@ public class TerraformService {
         return projectModelInformations;
     }
 
+    /**
+     * 허용된 IP 주소를 저장합니다.
+     */
+    private void saveAllowedIpAddresses(List<String> ipAddresses, Project project) {
+        if (ipAddresses == null || ipAddresses.isEmpty()) {
+            log.info("등록할 IP 주소가 없습니다. 모든 IP 주소에서 접근 가능합니다.");
+            return;
+        }
 
+        // IP 주소 유효성 검증을 위한 정규식 패턴
+        Pattern ipPattern = Pattern.compile(
+                "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+
+        for (String ipAddress : ipAddresses) {
+            // IP 주소 유효성 검증
+            if (!ipPattern.matcher(ipAddress).matches()) {
+                log.warn("유효하지 않은 IP 주소 형식: {}", ipAddress);
+                continue; // 유효하지 않은 IP는 건너뜀
+            }
+
+            RegisterIp registerIp = RegisterIp.builder()
+                    .project(project)
+                    .ipNumber(ipAddress)
+                    .build();
+
+            registerIpRepository.save(registerIp);
+            log.info("IP 주소 등록 완료: {}", ipAddress);
+        }
+
+        log.info("프로젝트 ID: {}에 대한 IP 주소 등록 완료", project.getId());
+    }
 
     /**
      * 고객 ID 추출 (IAM Role ARN에서)

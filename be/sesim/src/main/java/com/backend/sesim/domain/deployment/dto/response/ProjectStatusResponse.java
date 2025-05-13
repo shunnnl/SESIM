@@ -15,8 +15,11 @@ public class ProjectStatusResponse {
     private Long projectId;
     private String projectName;
     private String albAddress;
+    private String grafanaUrl;
+    private List<String> allowedIps;   // 허용된 IP 주소 목록
     private List<StepStatus> steps;
     private List<ModelInfo> models;
+    private boolean isDeployed;
 
     @Data
     @Builder
@@ -36,5 +39,6 @@ public class ProjectStatusResponse {
     public static class ModelInfo {
         private Long modelId;
         private String modelName;
+        private String description;
     }
 }
