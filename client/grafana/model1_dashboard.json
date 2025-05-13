@@ -36,7 +36,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "\n<h1 style=\"font-size: 40px; text-align: center; font-weight: bold;\">\nSESIM <span style=\"color: #001894; font-weight: bold;\">FINECT</span>\n</h1>",
+        "content": "\n<h1 style=\"font-size: 40px; text-align: center; font-weight: bold;\">\nSESIM <span style=\"color: skyblue; font-weight: bold;\">FINECT</span>\n</h1>",
         "mode": "html"
       },
       "pluginVersion": "9.5.21",
@@ -1165,13 +1165,6 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "client_ip"
-            },
-            "properties": []
-          },
-          {
-            "matcher": {
-              "id": "byName",
               "options": "공격횟수"
             },
             "properties": [
@@ -1261,7 +1254,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
+        "h": 5,
         "w": 13,
         "x": 5,
         "y": 10
@@ -1293,7 +1286,9 @@
         "exemplars": {
           "color": "orange"
         },
-        "filterValues": {},
+        "filterValues": {
+          "le": 1e-9
+        },
         "legend": {
           "show": true
         },
@@ -1348,6 +1343,7 @@
         "type": "postgres",
         "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1422,7 +1418,7 @@
         "h": 7,
         "w": 13,
         "x": 5,
-        "y": 13
+        "y": 15
       },
       "id": 19,
       "options": {
@@ -1497,143 +1493,8 @@
           }
         }
       ],
-      "title": "실시간 로그",
+      "title": "로그 그래프",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "cellOptions": {
-              "type": "color-text"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 5
-              },
-              {
-                "color": "red",
-                "value": 10
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "공격횟수"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 150
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "url"
-            },
-            "properties": [
-              {
-                "id": "custom.width"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "공격횟수"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "thresholds"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 100
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 18,
-        "x": 0,
-        "y": 20
-      },
-      "id": 6,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "9.5.21",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT COUNT(*) AS \"공격횟수\" , url\r\nFROM ai_results_1 \r\nWHERE logged_at >= $__timeFrom() AND logged_at <= $__timeTo()  -- Grafana에서 시간 범위를 자동으로 설정\r\n  AND is_attack = TRUE  -- 공격으로 표시된 로그만\r\nGROUP BY url\r\nORDER BY \"공격횟수\" DESC\r\nLIMIT 10;  -- 상위 10개 경로만 표시\r\n",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "가장 많이 공격 받은 경로 TOP 10",
-      "type": "table"
     },
     {
       "datasource": {
@@ -1741,6 +1602,141 @@
         }
       ],
       "title": "공격 유형 별 공격 횟수",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "color-text"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "공격횟수"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "url"
+            },
+            "properties": [
+              {
+                "id": "custom.width"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "공격횟수"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 18,
+        "x": 0,
+        "y": 22
+      },
+      "id": 6,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.5.21",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "a8ed462a-5454-4bc8-ac91-9eccf463b5ad"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS \"공격횟수\" , url\r\nFROM ai_results_1 \r\nWHERE logged_at >= $__timeFrom() AND logged_at <= $__timeTo()  -- Grafana에서 시간 범위를 자동으로 설정\r\n  AND is_attack = TRUE  -- 공격으로 표시된 로그만\r\nGROUP BY url\r\nORDER BY \"공격횟수\" DESC\r\nLIMIT 10;  -- 상위 10개 경로만 표시\r\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "가장 많이 공격 받은 경로 TOP 10",
       "type": "table"
     },
     {
@@ -1911,7 +1907,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 32
       },
       "id": 10,
       "options": {
@@ -1993,7 +1989,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 42
       },
       "id": 13,
       "options": {
@@ -2041,7 +2037,7 @@
       "type": "netsage-sankey-panel"
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
@@ -2058,6 +2054,6 @@
   "timezone": "browser",
   "title": "finect_dashboard",
   "uid": "dek6a3kaic268a1",
-  "version": 28,
+  "version": 31,
   "weekStart": ""
 }
