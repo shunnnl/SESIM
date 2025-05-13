@@ -9,9 +9,11 @@ import com.backend.sesim.domain.deployment.entity.ProjectModelInformation;
 import com.backend.sesim.domain.deployment.repository.DeploymentStepRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectModelInfoRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectRepository;
+import com.backend.sesim.domain.deployment.repository.RegisterIpRepository;
 import com.backend.sesim.domain.iam.entity.RoleArn;
 import com.backend.sesim.domain.iam.repository.RoleArnRepository;
 import com.backend.sesim.domain.user.entity.User;
+import com.backend.sesim.domain.deployment.entity.RegisterIp;
 import com.backend.sesim.domain.user.repository.UserRepository;
 import com.backend.sesim.global.exception.GlobalException;
 import com.backend.sesim.global.util.SecurityUtils;
@@ -21,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.relation.Role;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class DeploymentStepSSEService {
     private final SecurityUtils securityUtils;
     private final UserRepository userRepository;
     private final RoleArnRepository roleArnRepository;
+    private final RegisterIpRepository registerIpRepository;
 
     /**
      * 클라이언트가 SSE에 연결할 때 호출되는 메서드
@@ -133,6 +135,11 @@ public class DeploymentStepSSEService {
         // 2. 프로젝트 모델 정보 조회 (ProjectModelInfoRepository 주입 필요)
         List<ProjectModelInformation> modelInfos = projectModelInfoRepository.findByProjectId(project.getId());
 
+        // 프로젝트에 등록된 허용 IP 주소 목록 조회
+        List<String> allowedIps = registerIpRepository.findByProjectId(project.getId()).stream()
+                .map(RegisterIp::getIpNumber)
+                .collect(Collectors.toList());
+
         // Grafana URL 생성
         String grafanaUrl = "";
         if (project.getAlbAddress() != null && !project.getAlbAddress().isEmpty()) {
@@ -149,6 +156,7 @@ public class DeploymentStepSSEService {
                 .projectName(project.getName())
                 .albAddress(project.getAlbAddress())
                 .grafanaUrl(grafanaUrl)
+                .allowedIps(allowedIps)
                 .steps(steps.stream()
                         .map(step -> new ProjectStatusResponse.StepStatus(
                                 step.getId(),
