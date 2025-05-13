@@ -19,6 +19,7 @@ public class ProjectStatusResponse {
     private List<String> allowedIps;   // 허용된 IP 주소 목록
     private List<StepStatus> steps;
     private List<ModelInfo> models;
+    private boolean isDeployed;
 
     @Data
     @Builder

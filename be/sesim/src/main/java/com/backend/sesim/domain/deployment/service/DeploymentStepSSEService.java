@@ -151,12 +151,24 @@ public class DeploymentStepSSEService {
             }
         }
 
+        // isDeployed 판단 - COMPLETION 단계가 DEPLOYED 상태인지 확인
+        boolean isDeployed = false;
+        DeploymentStep completionStep = steps.stream()
+                .filter(step -> "COMPLETION".equals(step.getStepName()))
+                .findFirst()
+                .orElse(null);
+
+        if (completionStep != null && "DEPLOYED".equals(completionStep.getStepStatus())) {
+            isDeployed = true;
+        }
+
         return ProjectStatusResponse.builder()
                 .projectId(project.getId())
                 .projectName(project.getName())
                 .albAddress(project.getAlbAddress())
                 .grafanaUrl(grafanaUrl)
                 .allowedIps(allowedIps)
+                .isDeployed(isDeployed)
                 .steps(steps.stream()
                         .map(step -> new ProjectStatusResponse.StepStatus(
                                 step.getId(),

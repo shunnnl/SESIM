@@ -48,7 +48,7 @@ public class DeploymentController {
         return CommonResponseDto.ok(response);
     }
 
-    @Operation(summary = "프로젝트 및 모델의 Alb 주소, granfanaUrl 조회 및 배포 상태 실시간 모니터링", description = "모든 프로젝트의 Alb 주소, granfanaUrl 및 배포 상태를 실시간으로 모니터링하는 SSE 스트림을 제공합니다.")
+    @Operation(summary = "프로젝트 및 모델의 Alb 주소, granfanaUrl, 허용된 ip 조회 및 배포 상태 실시간 모니터링", description = "모든 프로젝트의 Alb 주소, granfanaUrl, 허용된 ip 및 배포 상태를 실시간으로 모니터링하는 SSE 스트림을 제공합니다.")
     @GetMapping(value = "/status/stream", produces = "text/event-stream")
     public SseEmitter streamDeploymentStatus() {
         return deploymentStepSSEService.subscribe();
