@@ -34,7 +34,7 @@ spring:
 
 jwt:
   secret-key: ${JWT_SECRET}
-  expiration-time: 60000 # 1분(test)
+  expiration-time: 3600000
   token-prefix: "Bearer "
   header-string: "Authorization"
   issuer: "sesim"

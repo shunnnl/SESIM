@@ -3,6 +3,7 @@ package com.backend.sesim.domain.deployment.exception;
 import com.backend.sesim.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor

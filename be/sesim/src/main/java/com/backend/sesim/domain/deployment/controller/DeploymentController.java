@@ -27,6 +27,7 @@ public class DeploymentController {
     private final ApiUsageService apiUsageService;
     private final ApiUsageSSEService apiUsageSSEService;
 
+
     @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
     @PostMapping("/terraform")
     public CommonResponseDto deploy(@RequestBody TerraformDeployRequest request) {
@@ -40,17 +41,18 @@ public class DeploymentController {
         return CommonResponseDto.ok(deployService.getDeployOptions());
     }
 
-    @Operation(summary = "사용자 프로젝트 목록 조회", description = "현재 로그인한 사용자의 프로젝트 목록과 관련 모델 정보를 조회합니다.")
-    @GetMapping("/projects")
-    public CommonResponseDto<ProjectListResponse> getUserProjects() {
-        return CommonResponseDto.ok(projectService.getUserProjects());
-    }
-
     @Operation(summary = "API 키 확인", description = "배포된 모델의 API 키를 확인하고 반환합니다.")
     @PostMapping("/apikey")
     public CommonResponseDto<ApiKeyResponse> checkApiKey(@RequestBody ApiKeyCheckRequest request) {
         ApiKeyResponse response = projectService.checkAndGetApiKey(request);
         return CommonResponseDto.ok(response);
+    }
+
+    // 이거 2개 합칠거야
+    @Operation(summary = "사용자 프로젝트 목록 조회", description = "현재 로그인한 사용자의 프로젝트 목록과 관련 모델 정보를 조회합니다.")
+    @GetMapping("/projects")
+    public CommonResponseDto<ProjectListResponse> getUserProjects() {
+        return CommonResponseDto.ok(projectService.getUserProjects());
     }
 
     @Operation(summary = "Alb 주소 조회 및 배포 상태 실시간 모니터링", description = "모든 프로젝트의 Alb 주소 및 배포 상태를 실시간으로 모니터링하는 SSE 스트림을 제공합니다.")
@@ -72,4 +74,6 @@ public class DeploymentController {
     public SseEmitter streamApiUsage() {
         return apiUsageSSEService.subscribe();
     }
+
+
 }
