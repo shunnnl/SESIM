@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { AppDispatch } from "../store";
-import { setAllProjects, updateProjectStatus } from "../store/keyinfoSlice";
+import { setAllProjects, updateProjectStatus } from "../store/projectSlice";
 
 const useDeploymentStateSSE = () => {
     const dispatch = useDispatch<AppDispatch>();

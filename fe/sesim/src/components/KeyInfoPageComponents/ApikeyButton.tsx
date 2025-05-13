@@ -1,4 +1,4 @@
-import { Project, Model } from "../../types/keyinfoTypes";
+import { Project, Model } from "../../types/ProjectTypes";
 
 interface ApiKeyButtonProps {
     project: Project;

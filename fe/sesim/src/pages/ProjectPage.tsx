@@ -1,19 +1,15 @@
-import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 import { Sidebar } from "../components/Sidebar";
-import { RootState, AppDispatch } from "../store/index"; 
-import { fetchProjectList } from "../store/projectSlice";  
-import ProjectItemList from "../components/ProjectPageComponents/ProjectListItem";
+import { Project } from "../types/ProjectTypes";
+import useDeploymentStateSSE from '../hooks/deploymentStateSSE';
+import KeyinfoItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 
 export const ProjectPage = () => {
-    const dispatch = useDispatch<AppDispatch>(); 
+    useDeploymentStateSSE();
 
-    const { projects, loading, error } = useSelector((state: RootState) => state.project);
-
-    useEffect(() => {
-        dispatch(fetchProjectList());
-    }, [dispatch]);
+    const { loading, error, projects } = useSelector((state: RootState) => state.keyinfo);
 
     return (
         <div className="flex min-h-screen text-white bg-gradient-radial from-blue-900 via-indigo-900 to-black ml-24 mr-32">
@@ -22,7 +18,7 @@ export const ProjectPage = () => {
             </div>
 
             <div
-                className="absolute top-[45%] right-[30%] -translate-y-1/2 w-[50px] h-[50px] rounded-full -z-10"
+                className="absolute top-[40%] right-[30%] -translate-y-1/2 w-[50px] h-[50px] rounded-full"
                 style={{
                     background: "#00215A",
                     boxShadow: "0 0 160px 120px #00215A, 0 0 320px 240px #00215A",
@@ -34,44 +30,66 @@ export const ProjectPage = () => {
             <motion.div
                 className="flex flex-col flex-1 p-6 mt-4"
                 style={{ zIndex: 1 }}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
             >
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.5 }}
                 >
                     <h1 className="text-2xl font-semibold flex items-center gap-2 mt-3 mb-8">
                         <span className="w-2 h-2 rounded-full bg-blue-500" />
-                        대시보드
+                        키 정보
                     </h1>
-                    <p className="text-lg font-medium m-1 mb-7">
-                        프로젝트에 사용된 보안 AI별 시각화 대시보드를 제공합니다.
+
+                    <p className="text-lg font-medium m-1">
+                        AI모델 별 API 키 정보를 제공합니다.
+                    </p>
+
+                    <p className="text-lg font-medium m-1 mb-10">
+                        API 키는 최초 1회만 확인 가능하며, 보안상의 이유로 이후에는 다시 확인하실 수 없습니다.
                     </p>
                 </motion.div>
 
-                {loading && <p>Loading...</p>}
-                {error && <p>Error: {error}</p>}
-
-                {projects.slice().reverse().map((project, index) => (
+                {loading && (
                     <motion.div
-                        key={index}
-                        className="mb-8"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
                     >
-                        <h2 className="text-2xl font-semibold text-white mb-3">
-                            <span>
-                                {project.name}
-                                <p className="text-lg font-normal inline ml-3">{project.description}</p>
-                            </span>
-                        </h2>
-                        <ProjectItemList items={project.models} />
+                        <p>Loading...</p>
                     </motion.div>
-                ))}
+                )}
+
+                {error && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <p className="text-red-500">{error}</p>
+                    </motion.div>
+                )}
+
+                {Array.isArray(projects) && projects.length > 0 ? (
+                    projects.slice().reverse().map((project: Project, index: number) => {
+                        return (
+                            <motion.div
+                                key={index}
+                                className="mb-6"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
+                            >
+                                <KeyinfoItemList project={project} />
+                            </motion.div>
+                        );
+                    })
+                ) : (
+                    <p>생성된 프로잭트가 없습니다.</p> 
+                )}
             </motion.div>
         </div>
     );

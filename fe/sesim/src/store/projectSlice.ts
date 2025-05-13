@@ -1,50 +1,43 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Project } from "../types/ProjectTypes";
-import { fetchProjects } from "../services/projectService";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Project, Step } from "../types/ProjectTypes";
 
-interface ProjectState {
+interface DeploymentState {
     projects: Project[];
     loading: boolean;
     error: string | null;
 }
 
-const initialState: ProjectState = {
+const initialState: DeploymentState = {
     projects: [],
     loading: false,
     error: null,
 };
 
-export const fetchProjectList = createAsyncThunk<Project[]>(
-    "project/fetchProjectList",
-    async (_, thunkAPI) => {
-        try {
-            const projects = await fetchProjects();
-            return projects;
-        } catch (err: any) {
-            return thunkAPI.rejectWithValue(err.message || "프로젝트 불러오기 실패");
-        }
-    }
-);
-
-const projectSlice = createSlice({
-    name: "project",
+const keyinfoSlice = createSlice({
+    name: "keyinfo",
     initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchProjectList.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchProjectList.fulfilled, (state, action: PayloadAction<Project[]>) => {
-                state.loading = false;
-                state.projects = action.payload;
-            })
-            .addCase(fetchProjectList.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            });
+    reducers: {
+        setAllProjects: (state, action: PayloadAction<Project[]>) => {
+            state.projects = action.payload;
+        },
+        updateProjectStatus: (
+            state,
+            action: PayloadAction<{ projectId: number; steps: Step[] }>
+        ) => {
+            const { projectId, steps } = action.payload;
+            console.log("🔄 [updateProjectStatus] Received:", { projectId, steps });
+
+            const project = state.projects.find(p => p.projectId === projectId);
+
+            if (project) {
+                console.log("✅ [updateProjectStatus] Found project:", project.projectName);
+                project.steps = steps;
+            } else {
+                console.warn("⚠️ [updateProjectStatus] Project not found for ID:", projectId);
+            }
+        }
     },
 });
 
-export default projectSlice.reducer;
+export const { setAllProjects, updateProjectStatus } = keyinfoSlice.actions;
+export default keyinfoSlice.reducer;

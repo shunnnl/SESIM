@@ -4,7 +4,7 @@ import { IoCheckmarkSharp, IoCloseSharp } from "react-icons/io5";
 import { APIKeyModal } from "../Popup/APIKeyModal";
 import loading from "../../assets/lotties/pendingLottie.json";
 import deployed from "../../assets/lotties/deployedLottie.json";
-import { Project, Step, Model } from "../../types/keyinfoTypes";
+import { Project, Step, Model } from "../../types/ProjectTypes";
 import { createDeploymentApiKey } from "../../services/apiKeyService";
 import ApiKeyButton from "./ApikeyButton";
 
