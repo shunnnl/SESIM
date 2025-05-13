@@ -2,10 +2,12 @@ package com.backend.sesim.domain.deployment.service;
 
 import com.backend.sesim.domain.deployment.entity.DeploymentStep;
 import com.backend.sesim.domain.deployment.entity.Project;
+import com.backend.sesim.domain.deployment.entity.RegisterIp;
 import com.backend.sesim.domain.deployment.entity.ProjectModelInformation;
 import com.backend.sesim.domain.deployment.exception.DeploymentErrorCode;
 import com.backend.sesim.domain.deployment.repository.DeploymentStepRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectRepository;
+import com.backend.sesim.domain.deployment.repository.RegisterIpRepository;
 import com.backend.sesim.domain.deployment.util.TerraformExecutor;
 import com.backend.sesim.global.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +17,16 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.model.*;
+import com.amazonaws.services.ec2.model.IpRange;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.backend.sesim.domain.deployment.constant.DeploymentConstants.*;
 
@@ -36,6 +42,8 @@ public class DeploymentService {
     private final DeploymentStepRepository deploymentStepRepository;
     private final SqlService sqlService;
     private final DeploymentStepSSEService sseService;
+    private final RegisterIpRepository registerIpRepository;
+    private final AmazonEC2 amazonEC2;
 
     @Value("${aws.saas.access-key}")
     private String saasAccessKey;
@@ -63,6 +71,14 @@ public class DeploymentService {
             updateStepStatus(projectId, STEP_INFRASTRUCTURE, STATUS_DEPLOYING);
 
             try {
+                // 프로젝트에 등록된 IP 주소 목록 조회
+                List<String> allowedIpAddresses = registerIpRepository.findByProjectId(projectId)
+                        .stream()
+                        .map(RegisterIp::getIpNumber)
+                        .collect(Collectors.toList());
+
+                log.info("프로젝트 ID: {}에 등록된 IP 주소 수: {}", projectId, allowedIpAddresses.size());
+
                 // 운영체제에 맞는 임시 디렉토리 사용
                 String tempDir = System.getProperty("java.io.tmpdir");
                 String workingDir = Paths.get(tempDir, "terraform", deploymentId).toString();
@@ -78,7 +94,8 @@ public class DeploymentService {
                         FIXED_AMI_ID,
                         saasAccessKey,
                         saasSecretKey,
-                        ""  // 세션 토큰 불필요
+                        "",  // 세션 토큰 불필요
+                        allowedIpAddresses // 허용 IP 목록 전달
                 );
 
                 // Terraform 실행
@@ -168,6 +185,29 @@ public class DeploymentService {
                 boolean deletedDirectory = k3sSetupService.deleteFile(ec2PublicIps.get(0), deploymentId);
 
                 if(deletedDirectory) {
+                    // 완료 단계가 성공하면 보안 그룹 업데이트 시도
+                    try {
+                        // 보안 그룹 ID 찾기
+                        String securityGroupId = findSecurityGroupId(deploymentId, customerId);
+
+                        if (securityGroupId != null) {
+                            // 프로젝트에 등록된 IP 주소 목록 다시 조회
+                            List<String> updatedIpAddresses = registerIpRepository.findByProjectId(projectId)
+                                    .stream()
+                                    .map(RegisterIp::getIpNumber)
+                                    .collect(Collectors.toList());
+
+                            // SSH 포트 접근 제한 업데이트
+                            updateSshSecurityGroupRule(securityGroupId, updatedIpAddresses);
+                            log.info("보안 그룹 업데이트 완료: SSH 포트에 IP 제한 적용됨");
+                        } else {
+                            log.warn("보안 그룹을 찾을 수 없어 SSH 포트 제한 적용 실패");
+                        }
+                    } catch (Exception e) {
+                        log.error("보안 그룹 업데이트 중 오류 발생: {}", e.getMessage(), e);
+                        // 보안 그룹 업데이트 실패해도 배포는 성공으로 처리
+                    }
+
                     // 완료 단계 완료
                     updateStepStatus(projectId, STEP_COMPLETION, STATUS_DEPLOYED);
                 }
@@ -196,6 +236,104 @@ public class DeploymentService {
         }
     }
 
+    /**
+     * 태그를 기반으로 보안 그룹 ID를 찾습니다.
+     */
+    private String findSecurityGroupId(String deploymentId, String customerId) {
+        try {
+            // 보안 그룹 이름으로 검색
+            String securityGroupName = "client-node-sg-" + deploymentId;
+
+            DescribeSecurityGroupsRequest request = new DescribeSecurityGroupsRequest()
+                    .withFilters(
+                            new Filter("tag:DeploymentId").withValues(deploymentId),
+                            new Filter("tag:CustomerId").withValues(customerId)
+                    );
+
+            DescribeSecurityGroupsResult result = amazonEC2.describeSecurityGroups(request);
+
+            if (!result.getSecurityGroups().isEmpty()) {
+                return result.getSecurityGroups().get(0).getGroupId();
+            }
+
+            // 이름으로도 시도
+            request = new DescribeSecurityGroupsRequest()
+                    .withFilters(new Filter("group-name").withValues(securityGroupName));
+
+            result = amazonEC2.describeSecurityGroups(request);
+
+            if (!result.getSecurityGroups().isEmpty()) {
+                return result.getSecurityGroups().get(0).getGroupId();
+            }
+
+            log.warn("보안 그룹을 찾을 수 없음: DeploymentId={}, CustomerId={}", deploymentId, customerId);
+            return null;
+        } catch (Exception e) {
+            log.error("보안 그룹 검색 중 오류: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 보안 그룹의 SSH 규칙을 업데이트합니다.
+     * 모든 타입 호환성 문제를 방지하기 위해 단순화된 접근 방식 사용
+     */
+    private void updateSshSecurityGroupRule(String securityGroupId, List<String> allowedIpAddresses) {
+        try {
+            // Step 1: "0.0.0.0/0" IP 규칙 제거 시도
+            try {
+                amazonEC2.revokeSecurityGroupIngress(
+                        new RevokeSecurityGroupIngressRequest()
+                                .withGroupId(securityGroupId)
+                                .withIpProtocol("tcp")
+                                .withFromPort(22)
+                                .withToPort(22)
+                                .withCidrIp("0.0.0.0/0"));
+
+                log.info("모든 IP에 대한 SSH 규칙(0.0.0.0/0) 제거 완료");
+            } catch (Exception e) {
+                // 규칙이 없을 수 있으므로 오류 무시하고 진행
+                log.info("모든 IP에 대한 SSH 규칙이 없거나 제거 실패: {}", e.getMessage());
+            }
+
+            // Step 2: 허용 IP가 없으면 여기서 종료 (모든 SSH 접근 차단 유지)
+            if (allowedIpAddresses == null || allowedIpAddresses.isEmpty()) {
+                log.info("허용된 IP가 없어 SSH 접근이 모두 차단됩니다.");
+                return;
+            }
+
+            // Step 3: 허용된 각 IP 주소에 대해 SSH 규칙 추가
+            for (String ip : allowedIpAddresses) {
+                // CIDR 형식 확인 및 변환
+                String cidrIp = ip;
+                if (!ip.contains("/")) {
+                    cidrIp = ip + "/32";  // 단일 IP인 경우 /32 추가
+                }
+
+                try {
+                    // 각 IP에 대해 새 규칙 추가
+                    amazonEC2.authorizeSecurityGroupIngress(
+                            new AuthorizeSecurityGroupIngressRequest()
+                                    .withGroupId(securityGroupId)
+                                    .withIpProtocol("tcp")
+                                    .withFromPort(22)
+                                    .withToPort(22)
+                                    .withCidrIp(cidrIp));
+
+                    log.info("SSH 포트(22)에 IP {} 접근 허용 규칙 추가 완료", cidrIp);
+                } catch (Exception e) {
+                    // 동일한 규칙이 이미 존재할 수 있으므로 오류 로그만 남기고 계속 진행
+                    log.warn("IP {} 접근 규칙 추가 실패: {}", cidrIp, e.getMessage());
+                }
+            }
+
+            log.info("SSH 접근 제한 업데이트 완료: 총 {}개 IP 허용", allowedIpAddresses.size());
+        } catch (Exception e) {
+            // 전체 프로세스 중 예외 발생 시 로그만 남기고 배포 프로세스 계속 진행
+            log.error("보안 그룹 SSH 규칙 업데이트 과정에서 오류 발생: {}", e.getMessage());
+        }
+    }
 
     /**
      * 배포 단계 상태를 업데이트합니다.
