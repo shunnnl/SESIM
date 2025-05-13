@@ -22,18 +22,16 @@ const keyinfoSlice = createSlice({
         },
         updateProjectStatus: (
             state,
-            action: PayloadAction<{ projectId: number; steps: Step[] }>
+            action: PayloadAction<Project>
         ) => {
-            const { projectId, steps } = action.payload;
-            console.log("🔄 [updateProjectStatus] Received:", { projectId, steps });
+            const updatedProject = action.payload;
+            const index = state.projects.findIndex(p => p.projectId === updatedProject.projectId);
 
-            const project = state.projects.find(p => p.projectId === projectId);
-
-            if (project) {
-                console.log("✅ [updateProjectStatus] Found project:", project.projectName);
-                project.steps = steps;
+            if (index !== -1) {
+                state.projects[index] = updatedProject;
+                console.log("✅ [updateProjectStatus] 프로젝트 전체 갱신 완료:", updatedProject.projectName);
             } else {
-                console.warn("⚠️ [updateProjectStatus] Project not found for ID:", projectId);
+                console.warn("⚠️ [updateProjectStatus] 프로젝트 ID를 찾을 수 없음:", updatedProject.projectId);
             }
         }
     },

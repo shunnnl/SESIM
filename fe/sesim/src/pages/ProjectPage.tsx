@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { Sidebar } from "../components/Sidebar";
 import { Project } from "../types/ProjectTypes";
-import useDeploymentStateSSE from '../hooks/deploymentStateSSE';
+import useDeploymentStateSSE from '../hooks/projectStateSSE';
 import KeyinfoItemList from "../components/KeyInfoPageComponents/KeyInfoListItem";
 
 export const ProjectPage = () => {
@@ -83,12 +83,14 @@ export const ProjectPage = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
                             >
+                                <pre>{JSON.stringify(project, null, 2)}</pre>
+                                {/* FIXME - 연동된 데이터를 확인하기 위해 작성 삭제될 예정 */}
                                 <KeyinfoItemList project={project} />
                             </motion.div>
                         );
                     })
                 ) : (
-                    <p>생성된 프로잭트가 없습니다.</p> 
+                    <p>생성된 프로잭트가 없습니다.</p>
                 )}
             </motion.div>
         </div>
