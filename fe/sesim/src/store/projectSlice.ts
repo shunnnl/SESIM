@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Project, Step } from "../types/ProjectTypes";
+import { Project} from "../types/ProjectTypes";
 
 interface DeploymentState {
     projects: Project[];
