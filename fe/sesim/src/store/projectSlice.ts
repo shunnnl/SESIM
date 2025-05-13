@@ -1,50 +1,41 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Project } from "../types/ProjectTypes";
-import { fetchProjects } from "../services/projectService";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Project, Step } from "../types/ProjectTypes";
 
-interface ProjectState {
+interface DeploymentState {
     projects: Project[];
     loading: boolean;
     error: string | null;
 }
 
-const initialState: ProjectState = {
+const initialState: DeploymentState = {
     projects: [],
     loading: false,
     error: null,
 };
 
-export const fetchProjectList = createAsyncThunk<Project[]>(
-    "project/fetchProjectList",
-    async (_, thunkAPI) => {
-        try {
-            const projects = await fetchProjects();
-            return projects;
-        } catch (err: any) {
-            return thunkAPI.rejectWithValue(err.message || "프로젝트 불러오기 실패");
-        }
-    }
-);
-
-const projectSlice = createSlice({
-    name: "project",
+const keyinfoSlice = createSlice({
+    name: "keyinfo",
     initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchProjectList.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchProjectList.fulfilled, (state, action: PayloadAction<Project[]>) => {
-                state.loading = false;
-                state.projects = action.payload;
-            })
-            .addCase(fetchProjectList.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            });
+    reducers: {
+        setAllProjects: (state, action: PayloadAction<Project[]>) => {
+            state.projects = action.payload;
+        },
+        updateProjectStatus: (
+            state,
+            action: PayloadAction<Project>
+        ) => {
+            const updatedProject = action.payload;
+            const index = state.projects.findIndex(p => p.projectId === updatedProject.projectId);
+
+            if (index !== -1) {
+                state.projects[index] = updatedProject;
+                console.log("✅ [updateProjectStatus] 프로젝트 전체 갱신 완료:", updatedProject.projectName);
+            } else {
+                console.warn("⚠️ [updateProjectStatus] 프로젝트 ID를 찾을 수 없음:", updatedProject.projectId);
+            }
+        }
     },
 });
 
-export default projectSlice.reducer;
+export const { setAllProjects, updateProjectStatus } = keyinfoSlice.actions;
+export default keyinfoSlice.reducer;

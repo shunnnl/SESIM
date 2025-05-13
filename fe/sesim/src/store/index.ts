@@ -1,8 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import aiModelReducer from "./aiModelSlice";
-import keyinfoReducer from "./keyinfoSlice"; 
-import projectReducer from "./projectSlice"; 
+import keyinfoReducer from "./projectSlice"; 
 import apiUsageReducer from "./APIUsageSlice";
 import createProjectInfoReducer from "./createProjectInfoSlice";
 
@@ -11,7 +10,6 @@ export const store = configureStore({
         createProjectInfo: createProjectInfoReducer,
         aiModel: aiModelReducer,
         keyinfo: keyinfoReducer, 
-        project: projectReducer, 
         apiUsage: apiUsageReducer,
         auth: authReducer,
     },

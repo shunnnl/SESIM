@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { AppDispatch } from "../store";
-import { setAllProjects, updateProjectStatus } from "../store/keyinfoSlice";
+import { Project } from "../types/ProjectTypes";
+import { setAllProjects, updateProjectStatus } from "../store/projectSlice";
 
 const useDeploymentStateSSE = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -22,11 +23,14 @@ const useDeploymentStateSSE = () => {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
+                heartbeatTimeout: 10 * 60 * 1000, // 10분
             });
+
 
             eventSource.onopen = () => {
                 console.log("✅ SSE 연결 성공");
             };
+
 
             eventSource.addEventListener("INIT", (event: any) => {
                 console.log("📨 INIT 이벤트 수신:", event.data);
@@ -42,33 +46,27 @@ const useDeploymentStateSSE = () => {
                 }
             });
 
+
             eventSource.addEventListener("STATUS_UPDATE", (event: any) => {
                 console.log("📨 STATUS_UPDATE 이벤트 수신:", event.data);
                 try {
-                    const projectStatus = JSON.parse(event.data);
-                    console.log("파싱된 STATUS_UPDATE 데이터:", projectStatus);
-
-                    if (
-                        projectStatus &&
-                        typeof projectStatus.projectId === "number" &&
-                        Array.isArray(projectStatus.steps)
-                    ) {
-                        dispatch(updateProjectStatus({
-                            projectId: projectStatus.projectId,
-                            steps: projectStatus.steps,
-                        }));
-                        console.log("✅ 프로젝트 상태 업데이트 완료 (ID: " + projectStatus.projectId + ")");
+                    const data = JSON.parse(event.data);
+                    const updatedProject: Project = data.projectStatus;
+                    if (updatedProject && typeof updatedProject.projectId === "number") {
+                        dispatch(updateProjectStatus(updatedProject));
                     } else {
-                        console.warn("⚠️ STATUS_UPDATE 데이터 형식 오류", projectStatus);
+                        console.warn("⚠️ STATUS_UPDATE 데이터 형식 오류", updatedProject);
                     }
                 } catch (err) {
                     console.error("❌ STATUS_UPDATE 이벤트 파싱 오류", err);
                 }
             });
 
+
             eventSource.addEventListener("connect", (event: any) => {
                 console.log("📨 connect 이벤트 수신:", event.data);
             });
+
 
             eventSource.onerror = (err) => {
                 console.error("⚠️ SSE 연결 오류", err);
@@ -76,9 +74,9 @@ const useDeploymentStateSSE = () => {
                 console.log("🔄 SSE 연결 끊어짐. 5초 후 재연결 시도...");
                 setTimeout(createEventSource, 5000);
             };
-
             return eventSource;
         };
+
 
         const eventSource = createEventSource();
 

@@ -22,11 +22,14 @@ export const useAPIUsageSSE = () => {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
+                heartbeatTimeout: 10 * 60 * 1000,
             });
+
 
             eventSource.onopen = () => {
                 console.log("✅ API Usage SSE 연결 성공");
             };
+
 
             eventSource.onmessage = (event) => {
                 console.log("📨 일반 메시지 수신:", event.data);
@@ -46,6 +49,7 @@ export const useAPIUsageSSE = () => {
                 }
             };
 
+
             eventSource.addEventListener("INIT", (event: any) => {
                 console.log("📨 INIT 이벤트 수신:", event.data);
                 try {
@@ -58,6 +62,7 @@ export const useAPIUsageSSE = () => {
                     console.error("❌ INIT 이벤트 파싱 오류", e);
                 }
             });
+
 
             eventSource.addEventListener("USAGE_UPDATE", (event: any) => {
                 console.log("📨 USAGE_UPDATE 이벤트 수신:", event.data);
@@ -72,9 +77,11 @@ export const useAPIUsageSSE = () => {
                 }
             });
 
+
             eventSource.addEventListener("connect", (event: any) => {
                 console.log("📨 connect 이벤트 수신:", event.data);
             });
+
 
             eventSource.onerror = (err) => {
                 console.error("⚠️ SSE 오류 발생", err);
@@ -82,7 +89,6 @@ export const useAPIUsageSSE = () => {
                 console.log("🔄 5초 후 SSE 재연결 시도");
                 setTimeout(createEventSource, 5000);
             };
-
             return eventSource;
         };
 

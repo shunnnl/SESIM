@@ -61,6 +61,8 @@ export const APIUsagePage: React.FC = () => {
                         transition={{ duration: 0.6, delay: 0.4 }}
                         className="mb-6"
                     >
+                        <pre>{JSON.stringify(project, null, 2)}</pre>
+                        {/* //FIXME - 데이터 연동 확인을 위해 작성된 코드임 이후 삭제될예정 */}
                         <APIUsageListItem
                             data={{
                                 projectName: project.projectName,
