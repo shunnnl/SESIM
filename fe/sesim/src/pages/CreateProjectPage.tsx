@@ -65,7 +65,7 @@ export const CreateProjectPage = () => {
 
     const handleModalConfirm = () => {
         setShowSuccessModal(false);
-        navigate("/keyinfo");
+        navigate("/project");
     };
 
     const handleErrorModalConfirm = () => {
