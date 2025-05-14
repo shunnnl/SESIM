@@ -223,9 +223,10 @@ public class TerraformService {
             return;
         }
 
-        // IP 주소 유효성 검증을 위한 정규식 패턴
+        // IP 주소 유효성 검증을 위한 정규식 패턴 (CIDR 표기법 포함)
+        // IP 주소만 있는 형식(192.168.1.100)과 CIDR 표기법(192.168.1.100/24) 모두 허용
         Pattern ipPattern = Pattern.compile(
-                "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+                "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(/([0-9]|[1-2][0-9]|3[0-2]))?$");
 
         for (String ipAddress : ipAddresses) {
             // IP 주소 유효성 검증
@@ -234,9 +235,15 @@ public class TerraformService {
                 continue; // 유효하지 않은 IP는 건너뜀
             }
 
+            // CIDR 표기법에서 IP 부분만 추출
+            String ipOnly = ipAddress;
+            if (ipAddress.contains("/")) {
+                ipOnly = ipAddress.substring(0, ipAddress.indexOf("/"));
+            }
+
             RegisterIp registerIp = RegisterIp.builder()
                     .project(project)
-                    .ipNumber(ipAddress)
+                    .ipNumber(ipAddress)  // CIDR 형식 그대로 저장
                     .build();
 
             registerIpRepository.save(registerIp);

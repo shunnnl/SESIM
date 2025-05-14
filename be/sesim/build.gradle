@@ -43,12 +43,12 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	// AWS 검증 관련
-	implementation 'com.amazonaws:aws-java-sdk-sts:1.12.689'
-
     implementation 'com.github.mwiede:jsch:0.2.16'  // JSch의 포크된 최신 버전
+
     // AWS SDK
+	implementation 'com.amazonaws:aws-java-sdk-sts:1.12.689'
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.346'
+	implementation 'com.amazonaws:aws-java-sdk-ec2:1.12.346'  // EC2 SDK 추가
 }
 
 tasks.named('test') {

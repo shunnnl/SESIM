@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -18,7 +20,7 @@ public class TerraformTemplateService {
     public void createSaasTerraformFiles(String workspacePath, String deploymentId,
                                          String customerId, String region,
                                          String amiId, String accessKey, String secretKey,
-                                         String sessionToken) throws IOException {
+                                         String sessionToken, List<String> allowedIpAddresses) throws IOException {
         try {
             // 디렉토리 생성
             Path workspaceDir = Paths.get(workspacePath);
@@ -28,7 +30,7 @@ public class TerraformTemplateService {
             Files.writeString(workspaceDir.resolve("provider.tf"), createProviderTemplate());
             Files.writeString(workspaceDir.resolve("variables.tf"), createVariablesTemplate());
             Files.writeString(workspaceDir.resolve("vpc.tf"), createVpcTemplateWithCustomerId(deploymentId, customerId));
-            Files.writeString(workspaceDir.resolve("ec2.tf"), createEc2TemplateWithCustomerId(deploymentId, customerId));
+            Files.writeString(workspaceDir.resolve("ec2.tf"), createEc2TemplateWithCustomerId(deploymentId, customerId, allowedIpAddresses));
             Files.writeString(workspaceDir.resolve("iam.tf"), createIamTemplateWithCustomerId(deploymentId, customerId));
             Files.writeString(workspaceDir.resolve("keypair.tf"), createKeypairTemplateWithCustomerId(deploymentId, customerId));
             Files.writeString(workspaceDir.resolve("outputs.tf"), createOutputsTemplate());
@@ -129,91 +131,130 @@ public class TerraformTemplateService {
     /**
      * ec2.tf 파일 템플릿을 고객 ID 태그와 함께 생성합니다.
      */
-    public String createEc2TemplateWithCustomerId(String deploymentId, String customerId) {
+    public String createEc2TemplateWithCustomerId(String deploymentId, String customerId, List<String> allowedIpAddresses) {
+        // 서비스 포트에 대한 CIDR 블록 (지정된 IP만 허용)
+        String cidrBlocks;
+        if (allowedIpAddresses == null || allowedIpAddresses.isEmpty()) {
+            cidrBlocks = "[\"0.0.0.0/0\"]";  // 모든 IP 허용
+        } else {
+            // 각 IP 주소를 CIDR 형식으로 확인
+            List<String> formattedCidrs = allowedIpAddresses.stream()
+                    .map(ip -> {
+                        // 이미 CIDR 형식인 경우 그대로 사용
+                        if (ip.contains("/")) {
+                            return "\"" + ip + "\"";
+                        } else {
+                            // 단일 IP인 경우 /32 추가 (정확한 단일 IP 지정)
+                            return "\"" + ip + "/32\"";
+                        }
+                    })
+                    .collect(Collectors.toList());
+
+            cidrBlocks = "[" + String.join(", ", formattedCidrs) + "]";
+        }
+
+        // SSH는 배포를 위해 항상 모든 IP에서 접근 가능하도록 설정
+        String sshCidrBlocks = "[\"0.0.0.0/0\"]";
+
+        // VPC CIDR 블록 - 클러스터 내부 통신용
+        String vpcCidrBlock = "\"10.10.0.0/16\"";
+
+        log.info("배포 서버 접근용 SSH 포트: {}", sshCidrBlocks);
+        log.info("서비스 포트 보안 그룹 CIDR 블록 설정: {}", cidrBlocks);
+        log.info("클러스터 내부 통신용 VPC CIDR 블록: {}", vpcCidrBlock);
+
         return String.format("""
     resource "aws_security_group" "client_sg" {
       name        = "client-node-sg-%s"
       description = "Allow required ports for customer access"
       vpc_id      = aws_vpc.customer_vpc.id
 
-      // SSH 접근
+      // SSH 접근 - 배포를 위해 모든 IP 허용
       ingress {
         from_port   = 22
         to_port     = 22
         protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
+      }
+      
+      // 클러스터 내부 통신 - VPC 내 모든 노드 간에 모든 포트 허용
+      ingress {
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = [%s]
       }
 
-      // Kubernetes NodePort 범위
+      // Kubernetes NodePort 범위 - 외부 접근
       ingress {
         from_port   = 30000
         to_port     = 32767
         protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
       }
       
-      // Kubernetes API Server
+      // Kubernetes API Server - 외부 접근
       ingress {
         from_port   = 6443
         to_port     = 6443
         protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
       }
       
-      // HTTPS
+      // HTTPS - 외부 접근
       ingress {
         from_port   = 443
         to_port     = 443
         protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
       }
       
-      // HTTP
+      // HTTP - 외부 접근
       ingress {
         from_port   = 80
         to_port     = 80
         protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
       }
       
-      // 추가 포트: Kubelet API
+      // 추가 포트: Kubelet API - 외부 접근
       ingress {
         from_port   = 10250
         to_port     = 10250
         protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
       }
       
-       // 추가 포트: 8080 (API 서버 비보안 포트) - 같은 보안그룹 내에서만 접근 가능
-       ingress {
-         from_port   = 8080
-         to_port     = 8080
-         protocol    = "tcp"
-         self        = true 
-       }
+      // 추가 포트: 8080 (API 서버 비보안 포트) - 같은 보안그룹 내에서만 접근 가능
+      ingress {
+        from_port   = 8080
+        to_port     = 8080
+        protocol    = "tcp"
+        self        = true 
+      }
       
-      // DNS (UDP)
+      // DNS (UDP) - 외부 접근
       ingress {
         from_port   = 53
         to_port     = 53
         protocol    = "udp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
       }
       
-      // Flannel VXLAN (UDP)
+      // Flannel VXLAN (UDP) - 외부 접근
       ingress {
         from_port   = 8472
         to_port     = 8472
         protocol    = "udp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
       }
       
-      // ICMP - 모든 타입
+      // ICMP - 모든 타입 - 외부 접근
       ingress {
         from_port   = -1
         to_port     = -1
         protocol    = "icmp"
-        cidr_blocks = ["0.0.0.0/0"]
+        cidr_blocks = %s
       }
 
       egress {
@@ -251,7 +292,13 @@ public class TerraformTemplateService {
         CustomerId = "%s"
       }
     }
-    """, deploymentId, deploymentId, deploymentId, customerId, deploymentId, deploymentId, customerId);
+    """, deploymentId,
+                sshCidrBlocks,
+                vpcCidrBlock,  // VPC 내부 통신용
+                cidrBlocks, cidrBlocks, cidrBlocks, cidrBlocks,
+                cidrBlocks, cidrBlocks, cidrBlocks, cidrBlocks,
+                deploymentId, deploymentId, customerId,
+                deploymentId, deploymentId, customerId);
     }
 
     /**
