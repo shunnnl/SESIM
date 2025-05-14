@@ -3,7 +3,7 @@ import backgroundImage from "../../assets/images/create-project-bg.webp";
 
 export const CreateProjectTitleImageWithText: React.FC = () => {
     return (
-        <div className="grid w-full min-h-[200px] md:min-h-[300px] lg:min-h-[400px]">
+        <div className="relative z-10 grid w-full min-h-[200px] md:min-h-[300px] lg:min-h-[400px]">
             <img 
                 src={backgroundImage}
                 alt="PageBackground"
