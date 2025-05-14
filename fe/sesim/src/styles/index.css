@@ -28,7 +28,7 @@
 /* 1000px까지만 그라데이션, 그 아래는 #04101D */
 .bg-gradient-1000 {
     background: linear-gradient(to bottom, #000000 0%, #04101D 100%);
-    height: 1000px;
+    min-height: 1000px;
     width: 100%;
 }
 

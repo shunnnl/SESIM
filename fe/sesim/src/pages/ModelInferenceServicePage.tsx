@@ -28,7 +28,12 @@ export const ModelInferenceServicePage: React.FC = () => {
                 <ServiceDetailsSection isInView={isInView} />
             </div>
 
-            <div className="text-white container-padding">
+            <div
+                className="text-white container-padding"
+                style={{
+                    background: "linear-gradient(to bottom, #000000 0px, #04101D 1000px, #04101D 100%)"
+                }}
+            >
                 <h1 className="text-5xl font-bold text-center">사용자 가이드</h1>
                 <UserGuideSection />
             </div>
