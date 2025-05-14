@@ -343,6 +343,13 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
                             );
                         })}
                     </div>
+                    {selectedModels.some(model => selectedInstanceIdxMap[model.id] === undefined) && (
+                        <div className="mt-4 p-4 bg-[#FF7E7E] bg-opacity-10 border border-[#FF7E7E] rounded-lg">
+                            <p className="text-[#FF7E7E] text-[14px]">
+                                ⚠️ 모든 모델의 서버 사양을 선택해주세요. 서버 사양이 선택되지 않은 모델이 있습니다.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ import { RootState } from "../store";
 import { FirstStep } from "../components/CreateProject/FirstStep";
 import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
+import { FifthStep } from "../components/CreateProject/FifthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import { ProgressStepper } from "../components/CreateProject/ProgressStepper";
 import { ProjectErrorModal } from "../components/CreateProject/ProjectErrorModal";
@@ -15,12 +16,24 @@ import { CreateProjectTitleImageWithText } from "../components/CreateProject/Cre
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
 
 export const CreateProjectPage = () => {
+    // Router & Redux
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const selectedModels = useSelector((state: RootState) => state.createProjectInfo.selectedModels);
     const createProjectInfo = useSelector((state: RootState) => state.createProjectInfo);
+
+    // Refs
+    const secondStepRef = useRef<HTMLDivElement>(null);
+    const thirdStepRef = useRef<HTMLDivElement>(null);
+    const forthStepRef = useRef<HTMLDivElement>(null);
+    const fifthStepRef = useRef<HTMLDivElement>(null);
+
+    // Step States
     const [firstStepDone, setFirstStepDone] = useState(false);
     const [secondStepDone, setSecondStepDone] = useState(false);
+    const [fifthStepDone, setFifthStepDone] = useState(false);
+
+    // Project Configuration States
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
     const [roleArns, setRoleArns] = useState<any[]>([]);
     const [models, setModels] = useState<any[]>([]);
@@ -28,14 +41,16 @@ export const CreateProjectPage = () => {
     const [infrastructure, setInfrastructure] = useState<any[]>([]);
     const [combinedPrices, setCombinedPrices] = useState<any[]>([]);
     const [selectedInstanceIdxMap, setSelectedInstanceIdxMap] = useState<{ [modelId: string]: number }>({});
-    const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined);
+
+    // Modal States
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
-    const secondStepRef = useRef<HTMLDivElement>(null);
-    const thirdStepRef = useRef<HTMLDivElement>(null);
-    const forthStepRef = useRef<HTMLDivElement>(null);
+
+    // Computed States
+    const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) && fifthStepDone;
+
 
     const handleCreateProject = async () => {
         setIsLoading(true);
@@ -62,10 +77,12 @@ export const CreateProjectPage = () => {
         }
     };
 
+
     const handleModalConfirm = () => {
         setShowSuccessModal(false);
         navigate("/keyinfo");
     };
+
 
     const handleErrorModalConfirm = () => {
         setShowErrorModal(false);
@@ -88,7 +105,6 @@ export const CreateProjectPage = () => {
         <div>
             <CreateProjectTitleImageWithText />
 
-            {/* 진행 단계 표시 */}
             <ProgressStepper
                 currentStep={
                     !firstStepDone ? 0 :
@@ -97,6 +113,7 @@ export const CreateProjectPage = () => {
                     3
                 }
             />
+
             <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? " pb-[200px]" : ""}`}>
                 <FirstStep
                     roleArns={roleArns}
@@ -126,7 +143,15 @@ export const CreateProjectPage = () => {
                     onInstanceMapChange={setSelectedInstanceIdxMap}
                     currentStep={selectedModels.length > 0 ? 3 : -1}
                 />
+                <FifthStep 
+                    ref={fifthStepRef}
+                    show={selectedModels.length > 0 && selectedInstancePrice > 0}
+                    setFifthStepDone={setFifthStepDone}
+                    currentStep={selectedModels.length > 0 && selectedInstancePrice > 0 ? 4 : -1}
+                />
             </div>
+
+            {/* Fixed Bottom Bar */}
             <div
                 className={`fixed left-0 bottom-0 w-full z-50 transition-all duration-500
                     ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
@@ -153,6 +178,7 @@ export const CreateProjectPage = () => {
                 </div>
             </div>
 
+            {/* Modals */}
             <ProjectStartModal 
                 isOpen={showSuccessModal}
                 onConfirm={handleModalConfirm}
