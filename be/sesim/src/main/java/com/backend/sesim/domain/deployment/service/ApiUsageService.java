@@ -67,9 +67,12 @@ public class ApiUsageService {
 
         // 모델 정보 ID와 API 이름으로 기존 사용량 조회
         Long informationId = modelInfo.getId();
-        Optional<ApiUsage> existingUsage = apiUsageRepository.findByInformationIdAndApiName(informationId, apiName);
-
         boolean isUpdated = false;
+
+        // Optional<ApiUsage> existingUsage = apiUsageRepository.findByInformationIdAndApiName(informationId, apiName);
+
+        // 비관적 락을 사용한 조회
+        Optional<ApiUsage> existingUsage = apiUsageRepository.findByInformationIdAndApiNameWithLock(informationId, apiName);
 
         if (existingUsage.isPresent()) {
             // 기존 사용량이 있으면 새 값으로 완전히 대체
