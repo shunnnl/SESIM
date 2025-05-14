@@ -30,11 +30,16 @@ export const MainLayout = () => {
 
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
+            const titleImageHeight = 400;
             
-            if (currentScrollY > lastScrollY) {
+            if (currentScrollY > titleImageHeight) {
                 setShowNavbar(false);
             } else {
-                setShowNavbar(true);
+                if (currentScrollY > lastScrollY) {
+                    setShowNavbar(false);
+                } else {
+                    setShowNavbar(true);
+                }
             }
             
             setLastScrollY(currentScrollY);

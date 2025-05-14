@@ -18,9 +18,10 @@ interface ForthStepProps {
     setSelectedInstancePrice: (price: number) => void;
     onInstanceMapChange?: (map: { [modelId: string]: number }) => void;
     currentStep: number;
+    setForthStepDone?: (done: boolean) => void;
 }
 
-export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedModels, show, regions, infrastructure, combinedPrices, setSelectedInstancePrice, onInstanceMapChange, currentStep }, ref) => {
+export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedModels, show, regions, infrastructure, combinedPrices, setSelectedInstancePrice, onInstanceMapChange, currentStep, setForthStepDone }, ref) => {
     const [selectedModel, setSelectedModel] = useState<any>(null);
     const [selectedAwsIdxMap, setSelectedAwsIdxMap] = useState<{ [modelId: string]: number }>({});
     const [selectedTypeMap, setSelectedTypeMap] = useState<{ [modelId: string]: string }>({});
@@ -153,6 +154,13 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
             }, 100);
         }
     }, [show, ref]);
+
+    useEffect(() => {
+        if (setForthStepDone) {
+            const isForthStepDone = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined);
+            setForthStepDone(isForthStepDone);
+        }
+    }, [selectedModels, selectedInstanceIdxMap, setForthStepDone]);
 
     return (
         <div 

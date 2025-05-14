@@ -5,7 +5,7 @@ export const Footer = () => {
     const location = useLocation();
 
     return (
-        <div className={`${location.pathname === "/ai-model" || location.pathname === "/model-inference-service" || location.pathname === "/sdk-download" ? "bg-black" : ""}`}>
+        <div>
             <div className="border-t-2 border-white/20 mt-auto px-4 md:px-[68px] py-2 md:py-[17px]">
                 <div className="text-white/60 flex flex-col gap-2 md:gap-4">
                     <SesimLogoFooter />

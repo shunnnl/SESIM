@@ -32,6 +32,7 @@ export const CreateProjectPage = () => {
     const [firstStepDone, setFirstStepDone] = useState(false);
     const [secondStepDone, setSecondStepDone] = useState(false);
     const [fifthStepDone, setFifthStepDone] = useState(false);
+    const [forthStepDone, setForthStepDone] = useState(false);
 
     // Project Configuration States
     const [selectedInstancePrice, setSelectedInstancePrice] = useState<number>(0);
@@ -49,7 +50,7 @@ export const CreateProjectPage = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     // Computed States
-    const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) && fifthStepDone;
+    const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) && forthStepDone && fifthStepDone;
 
 
     const handleCreateProject = async () => {
@@ -110,7 +111,8 @@ export const CreateProjectPage = () => {
                     !firstStepDone ? 0 :
                     !secondStepDone ? 1 :
                     selectedModels.length === 0 ? 2 :
-                    3
+                    !selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) ? 3 :
+                    4
                 }
             />
 
@@ -142,6 +144,7 @@ export const CreateProjectPage = () => {
                     setSelectedInstancePrice={setSelectedInstancePrice}
                     onInstanceMapChange={setSelectedInstanceIdxMap}
                     currentStep={selectedModels.length > 0 ? 3 : -1}
+                    setForthStepDone={setForthStepDone}
                 />
                 <FifthStep 
                     ref={fifthStepRef}
