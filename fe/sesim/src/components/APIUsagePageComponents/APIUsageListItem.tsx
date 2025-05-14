@@ -1,16 +1,7 @@
-import { Doughnut } from "react-chartjs-2";
-import type { ChartOptions } from "chart.js";
+import { useState, useEffect } from "react";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import {
-    Chart as ChartJS,
-    ArcElement,
-    Tooltip,
-    Legend,
-    Title,
-    CategoryScale,
-    LinearScale,
-    DoughnutController
-} from "chart.js";
+import { LuChevronDown } from "react-icons/lu";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title, CategoryScale, LinearScale, DoughnutController } from "chart.js";
 
 ChartJS.register(
     ArcElement,
@@ -22,28 +13,6 @@ ChartJS.register(
     DoughnutController,
     ChartDataLabels
 );
-
-const centerTextPlugin = {
-    id: "centerText",
-    afterDraw: (chart: any) => {
-        const { ctx } = chart;
-        const { width, height } = chart.chartArea;  
-
-        ctx.save();
-        const text = chart.options.plugins?.centerText?.text || "0h";
-
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.font = "bold 20px sans-serif";
-        ctx.fillStyle = "white";
-
-        const centerX = width / 2 + chart.chartArea.left; 
-        const centerY = height / 2 + chart.chartArea.top;  
-
-        ctx.fillText(`총합: ${text}`, centerX, centerY);
-        ctx.restore();
-    }
-};
 
 interface ModelCost {
     modelName: string;
@@ -62,220 +31,108 @@ interface ProjectData {
 
 interface APIUsageListItemProps {
     data: ProjectData;
+    isFirst?: boolean;
+    isLast?: boolean;
+    isExpanded?: boolean;
 }
 
-export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({ data }) => {
+export const APIUsageListItem: React.FC<APIUsageListItemProps> = ({
+    data,
+    isFirst,
+    isLast,
+    isExpanded: initialExpanded
+}) => {
+    const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
-    const colors = ["#0038FF", "#CB3CFF", "#00C2FF", "#00FF99", "#FFCC00", "#FF4D4D"];
-
-    const totalUsageTime = data.modelCosts.reduce((acc, model) => acc + model.usageTime, 0);
-
-    const chartData = {
-        labels: data.modelCosts.map((model) => model.modelName),
-        datasets: [
-            {
-                data: totalUsageTime > 0
-                    ? data.modelCosts.map((model) => (model.usageTime / totalUsageTime) * 100)
-                    : data.modelCosts.map(() => 1),
-                backgroundColor: data.modelCosts.map((_, idx) => colors[idx % colors.length]),
-                borderWidth: 0
-            }
-        ]
-    };
-
-    const hexToRgba = (hex: string, alpha: number) => {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    };
-
-    const chartOptions = {
-        responsive: true,
-        cutout: "60%",
-        plugins: {
-            tooltip: {
-                enabled: false
-            },
-            legend: {
-                position: "bottom",
-                display : false,
-                labels: {
-                    color: "white",
-                    boxWidth: 6,
-                    boxHeight: 6,
-                    padding: 12,
-                    generateLabels: function (chart: any) {
-                        const data = chart.data;
-                        if (data.labels.length && data.datasets.length) {
-                            return data.labels.map((label: string, i: number) => {
-                                const meta = chart.getDatasetMeta(0);
-                                const style = meta.controller.getStyle(i);
-
-                                return {
-                                    text: label,
-                                    fillStyle: colors[i % colors.length],
-                                    hidden: false,
-                                    lineCap: style.borderCapStyle,
-                                    lineDash: style.borderDash,
-                                    lineDashOffset: style.borderDashOffset,
-                                    lineJoin: style.borderJoinStyle,
-                                    lineWidth: style.borderWidth,
-                                    strokeStyle: style.borderColor,
-                                    pointStyle: style.pointStyle,
-                                    rotation: style.rotation
-                                };
-                            });
-                        }
-                        return [];
-                    }
-                }
-            },
-            centerText: {
-                text: `${parseFloat(totalUsageTime.toFixed(1))}h`
-            },
-            datalabels: {
-                color: "white",
-                formatter: (value: number, context: any) => {
-                    const label = context.chart.data.labels?.[context.dataIndex];
-                    return totalUsageTime > 0
-                        ? `${label}\n${value.toFixed(1)}%`
-                        : label;
-                },
-                font: {
-                    size: 14,
-                    weight: "bold"
-                },
-                anchor: "center",
-                align: "center",
-                textAlign: "center"
-            }
-        },
-        animation: {
-            delay: 300,
-            duration: 1000,
-            easing: 'easeInOutQuad'
-        }
-    } as unknown as ChartOptions<"doughnut">;
+    useEffect(() => {
+        setIsExpanded(initialExpanded);
+    }, [initialExpanded]);
 
     return (
-        <div
-            className="w-full bg-darkitembg rounded-xl p-4 flex flex-col justify-start h-auto border border-slate-500"
-            style={{
-                boxShadow: "0px 0px 10px rgba(116, 208, 244, 0.2)",
-                backgroundSize: "cover",
-                backgroundPosition: "center"
-            }}
-        >
-            <h2 className="text-2xl font-bold text-white mb-4 ml-4">{data.projectName}</h2>
-
-            <div className="flex my-6">
-                <div className="w-1.5/5 flex justify-center items-center">
-                    <Doughnut
-                        data={chartData}
-                        options={chartOptions}
-                        plugins={[centerTextPlugin, ChartDataLabels]}
+        <div className="flex flex-col w-full">
+            <div
+                className={`flex flex-row justify-between items-center px-10 py-4 bg-[#111828] cursor-pointer
+                    ${isFirst ? "rounded-t-[20px]" : ""}
+                    ${isLast && !isExpanded ? "rounded-b-[20px]" : ""}`}
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                <div className="flex flex-row items-center gap-4">
+                    <div className="w-2 h-2 rounded-full bg-[#9DC6FF]" />
+                    <span className="text-[22px] font-medium text-white">{data.projectName}</span>
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                    <span className="text-[17px] text-[#616365]">{isExpanded ? "접기" : "펼치기"}</span>
+                    <LuChevronDown 
+                        size={20} 
+                        color="#616365"
+                        className={`transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
                     />
                 </div>
-
-                <table className="w-3/5 mx-auto text-white text-lg font-medium">
-                    <thead>
-                        <tr className="border-b border-gray-500">
-                            <th className="px-4 py-2 text-center">모델명</th>
-                            <th className="px-4 py-2 text-center">API 요청 수</th>
-                            <th className="px-4 py-2 text-center">사용 시간</th>
-                            <th className="px-4 py-2 text-center">비용</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {data.modelCosts.map((model, index) => {
-                            const hex = colors[index % colors.length];
-                            const rgba = hexToRgba(hex, 0.15);
-
-                            return (
-                                <tr key={index}
-                                    className="text-white text-center"
-                                    style={{ height: "2em" }}>
-                                    <td className="px-4 py-0"
-                                        style={{ position: "relative" }}>
-                                        <div
-                                            style={{
-                                                position: "absolute",
-                                                left: 0,
-                                                right: 0,
-                                                height: "2em",
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                                backgroundColor: rgba,
-                                                zIndex: 0,
-                                            }}
-                                        ></div>
-                                        <span style={{ position: "relative", zIndex: 1 }}>{model.modelName}</span>
-                                    </td>
-                                    <td className="px-4 py-0"
-                                        style={{ position: "relative" }}>
-                                        <div
-                                            style={{
-                                                position: "absolute",
-                                                left: 0,
-                                                right: 0,
-                                                height: "2em",
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                                backgroundColor: rgba,
-                                                zIndex: 0,
-                                            }}
-                                        ></div>
-                                        <span style={{ position: "relative", zIndex: 1 }}>{model.apiRequests}</span>
-                                    </td>
-                                    <td className="px-4 py-0"
-                                        style={{ position: "relative" }}>
-                                        <div
-                                            style={{
-                                                position: "absolute",
-                                                left: 0,
-                                                right: 0,
-                                                height: "2em",
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                                backgroundColor: rgba,
-                                                zIndex: 0,
-                                            }}
-                                        ></div>
-                                        <span style={{ position: "relative", zIndex: 1 }}>{model.usageTime.toFixed(1)}h</span>
-                                    </td>
-                                    <td className="px-4 py-0"
-                                        style={{ position: "relative" }}>
-                                        <div
-                                            style={{
-                                                position: "absolute",
-                                                left: 0,
-                                                right: 0,
-                                                height: "2em",
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                                backgroundColor: rgba,
-                                                zIndex: 0,
-                                            }}
-                                        ></div>
-                                        <span style={{ position: "relative", zIndex: 1 }}>{model.cost}</span>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-
-                    <tfoot>
-                        <tr className="border-t border-gray-500 font-semibold text-xl text-center">
-                            <td className="px-4 py-2 text-2xl text-center">Total</td>
-                            <td className="px-4 py-2 text-center">{data.totalApiRequests}</td>
-                            <td className="px-4 py-2 text-center">{data.usageTime.toFixed(1)}h</td>
-                            <td className="px-4 py-2 text-center">{data.totalCost}</td>
-                        </tr>
-                    </tfoot>
-                </table>
             </div>
+
+            {isExpanded && (
+                <div className={`bg-[#343E57] px-8 py-8 ${isLast ? 'rounded-b-[20px]' : ''}`}>
+                    <div className="flex flex-col lg:flex-row gap-8">
+
+                        <div className="flex-1">
+                            <div className="grid grid-cols-4 gap-4">
+                                {/* 테이블 헤더 */}
+                                <div className="col-span-4 grid grid-cols-4 gap-4 py-3 border-b border-[#3E4764]">
+                                    <div className="text-center">
+                                        <span className="text-[17px] font-medium text-[#9DC6FF]">모델명</span>
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="text-[17px] font-medium text-[#9DC6FF]">API 요청수</span>
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="text-[17px] font-medium text-[#9DC6FF]">사용시간</span>
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="text-[17px] font-medium text-[#9DC6FF]">금액</span>
+                                    </div>
+                                </div>
+
+                                {/* 테이블 본문 */}
+                                {data.modelCosts.map((model, index) => (
+                                    <div 
+                                        key={index} 
+                                        className="col-span-4 grid grid-cols-4 gap-4 py-2 border-b border-[#36405D] last:border-b-0"
+                                    >
+                                        <div className="text-center">
+                                            <span className="text-[15px] text-white">{model.modelName}</span>
+                                        </div>
+                                        <div className="text-center">
+                                            <span className="text-[15px] text-white">{model.apiRequests.toLocaleString()}</span>
+                                        </div>
+                                        <div className="text-center">
+                                            <span className="text-[15px] text-white">{model.usageTime.toFixed(1)}h</span>
+                                        </div>
+                                        <div className="text-center">
+                                            <span className="text-[15px] text-white">{model.cost}</span>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {/* 테이블 푸터 */}
+                                <div className="col-span-4 grid grid-cols-4 gap-4 py-2 border-t justify-center border-[#3E4764] bg-[#242B3A] rounded-[10px]">
+                                    <div className="text-center items-center">
+                                        <span className="text-[17px] font-medium text-[#9DC6FF]">Total</span>
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="text-[17px] font-medium text-white">{data.totalApiRequests.toLocaleString()}</span>
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="text-[17px] font-medium text-white">{data.usageTime.toFixed(1)}h</span>
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="text-[17px] font-medium text-white">{data.totalCost}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
