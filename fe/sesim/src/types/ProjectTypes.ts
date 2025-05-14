@@ -9,11 +9,13 @@ export interface Model {
     modelId: number;
     modelName: string;
     description: string;
+    grafanaUrl:string;
 }
 
 export interface Project {
     projectId: number;
     projectName: string;
+    description:string;
     albAddress: string | null;
     grafanaUrl: string;
     allowedIps: string[];
