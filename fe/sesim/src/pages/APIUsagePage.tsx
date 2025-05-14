@@ -1,211 +1,300 @@
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
-import { LuActivity, LuTrendingUp, LuWallet, LuClock, LuRadius, LuTableProperties } from "react-icons/lu";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { RootState } from "../store";
+import { useState, useEffect, useRef } from "react";
+import { LuFilter, LuClock, LuChevronDown } from "react-icons/lu";
 import { Sidebar } from "../components/Sidebar";
-import { useAPIUsageSSE } from "../hooks/useAPIUsageSSE";
-import { APIUsageListItem } from "../components/APIUsagePageComponents/APIUsageListItem";
+import { APIUsageProject } from "../types/APIUsageTypes";
+import { AllProjectsPeriodView } from "../components/APIUsagePageComponents/AllProjectsPeriodView";
 
-interface ModelUsage {
-    modelName: string;
-    projects: {
-        projectName: string;
-        totalRequests: number;
-        totalHours: number;
-        totalCost: number;
-    }[];
-}
-
-interface ChartData {
-    modelName: string;
-    [key: string]: string | number;
-}
-
-const GLASS_COLORS = [
-    'rgba(255, 150, 170)',
-    'rgba(255, 200, 150)',
-    'rgba(255, 180, 150)',
-    'rgba(200, 200, 255)',
-    'rgba(150, 220, 180)',
-    'rgba(255, 160, 180)'
+// 더미 데이터
+export const dummyProjects: APIUsageProject[] = [
+    {
+        projectId: 1,
+        projectName: "SSAFY 프로젝트",
+        projectTotalRequestCount: 1500,
+        projectTotalSeconds: 7200,
+        projectTotalCost: 150.5,
+        models: [
+            {
+                modelId: 1,
+                modelName: "GPT-4",
+                totalRequestCount: 800,
+                totalSeconds: 3600,
+                hourlyRate: 0.03,
+                totalCost: 80.5
+            },
+            {
+                modelId: 2,
+                modelName: "GPT-3.5",
+                totalRequestCount: 700,
+                totalSeconds: 3600,
+                hourlyRate: 0.02,
+                totalCost: 70.0
+            }
+        ]
+    },
+    {
+        projectId: 2,
+        projectName: "삼성전자 AI 프로젝트",
+        projectTotalRequestCount: 2500,
+        projectTotalSeconds: 10800,
+        projectTotalCost: 250.75,
+        models: [
+            {
+                modelId: 1,
+                modelName: "GPT-4",
+                totalRequestCount: 1500,
+                totalSeconds: 7200,
+                hourlyRate: 0.03,
+                totalCost: 150.75
+            },
+            {
+                modelId: 3,
+                modelName: "Claude",
+                totalRequestCount: 1000,
+                totalSeconds: 3600,
+                hourlyRate: 0.025,
+                totalCost: 100.0
+            }
+        ]
+    },
+    {
+        projectId: 3,
+        projectName: "현대자동차 챗봇",
+        projectTotalRequestCount: 3000,
+        projectTotalSeconds: 14400,
+        projectTotalCost: 350.25,
+        models: [
+            {
+                modelId: 2,
+                modelName: "GPT-3.5",
+                totalRequestCount: 2000,
+                totalSeconds: 10800,
+                hourlyRate: 0.02,
+                totalCost: 200.25
+            },
+            {
+                modelId: 3,
+                modelName: "Claude",
+                totalRequestCount: 1000,
+                totalSeconds: 3600,
+                hourlyRate: 0.025,
+                totalCost: 150.0
+            }
+        ]
+    },
+    {
+        projectId: 4,
+        projectName: "현대자동차 챗봇2",
+        projectTotalRequestCount: 3000,
+        projectTotalSeconds: 14400,
+        projectTotalCost: 350.25,
+        models: [
+            {
+                modelId: 2,
+                modelName: "GPT-3.5",
+                totalRequestCount: 2000,
+                totalSeconds: 10800,
+                hourlyRate: 0.02,
+                totalCost: 200.25
+            },
+            {
+                modelId: 3,
+                modelName: "Claude",
+                totalRequestCount: 1000,
+                totalSeconds: 3600,
+                hourlyRate: 0.025,
+                totalCost: 150.0
+            }
+        ]
+    },
+    {
+        projectId: 5,
+        projectName: "현대자동차 챗봇3",
+        projectTotalRequestCount: 3000,
+        projectTotalSeconds: 14400,
+        projectTotalCost: 350.25,
+        models: [
+            {
+                modelId: 2,
+                modelName: "GPT-3.5",
+                totalRequestCount: 2000,
+                totalSeconds: 10800,
+                hourlyRate: 0.02,
+                totalCost: 200.25
+            },
+            {
+                modelId: 3,
+                modelName: "Claude",
+                totalRequestCount: 1000,
+                totalSeconds: 3600,
+                hourlyRate: 0.025,
+                totalCost: 150.0
+            }
+        ]
+    },
+    {
+        projectId: 6,
+        projectName: "현대자동차 챗봇4",
+        projectTotalRequestCount: 3000,
+        projectTotalSeconds: 14400,
+        projectTotalCost: 350.25,
+        models: [
+            {
+                modelId: 2,
+                modelName: "GPT-3.5",
+                totalRequestCount: 2000,
+                totalSeconds: 10800,
+                hourlyRate: 0.02,
+                totalCost: 200.25
+            },
+            {
+                modelId: 3,
+                modelName: "Claude",
+                totalRequestCount: 1000,
+                totalSeconds: 3600,
+                hourlyRate: 0.025,
+                totalCost: 150.0
+            }
+        ]
+    }
 ];
 
-const CHART_STYLES = {
-    container: "flex flex-col px-[24px] py-[16px] bg-[#242B3A] rounded-[20px] gap-5 w-full",
-    title: "text-md font-semibold text-[#DEDEDE]",
-    chartHeight: "h-[250px]",
-    grid: {
-        strokeDasharray: "3 3",
-        stroke: "rgba(62, 72, 101, 0.15)",
-        vertical: false
-    },
-    axis: {
-        stroke: "#DEDEDE",
-        tick: {
-            fontSize: 13,
-            fill: '#DEDEDE'
-        },
-        axisLine: {
-            stroke: 'rgba(62, 72, 101, 0.2)'
-        }
-    },
-    tooltip: {
-        backgroundColor: 'rgba(28, 34, 45, 0.95)',
-        backdropFilter: 'blur(15px)',
-        border: '1px solid rgba(62, 72, 101, 0.4)',
-        borderRadius: '12px',
-        color: '#FFFFFF !important',
-        fontSize: '14px',
-        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-        padding: '12px 16px',
-        whiteSpace: 'pre-line'
-    },
-    legend: {
-        paddingTop: '4px',
-        paddingBottom: '4px',
-        color: '#DEDEDE',
-        fontSize: '14px',
-        textAlign: 'right' as const
-    },
-    bar: {
-        barSize: 30,
-        radius: [4, 4, 0, 0] as [number, number, number, number],
-        style: {
-            filter: 'blur(0px)',
-            backdropFilter: 'blur(20px)'
-        }
-    }
-};
+interface MonthOption {
+    value: string;
+    label: string;
+}
 
 export const APIUsagePage: React.FC = () => {
-    const projects = useSelector((state: RootState) => state.apiUsage.projects);
+    // const projects = useSelector((state: RootState) => state.apiUsage.projects);
+    const projects = dummyProjects; // 더미 데이터 사용
+    const [selectedProject, setSelectedProject] = useState<string>("all");
+    const [selectedMonth, setSelectedMonth] = useState<string>("all");
+    const [isProjectOpen, setIsProjectOpen] = useState(false);
+    const [isMonthOpen, setIsMonthOpen] = useState(false);
+    const [monthOptions, setMonthOptions] = useState<MonthOption[]>([]);
+    const projectDropdownRef = useRef<HTMLDivElement>(null);
+    const monthDropdownRef = useRef<HTMLDivElement>(null);
 
-    useAPIUsageSSE();
+    const clickProjectFilter = () => {
+        setIsProjectOpen(!isProjectOpen)
+        setIsMonthOpen(false)
+    }
 
-    const transformModelUsage = (): ModelUsage[] => {
 
-        const modelMap = new Map<string, ModelUsage>();
+    const clickMonthFilter = () => {
+        setIsMonthOpen(!isMonthOpen)
+        setIsProjectOpen(false)
+    }
 
-        projects.forEach(project => {
-            project.models.forEach(model => {
-                const existing = modelMap.get(model.modelName) || {
-                    modelName: model.modelName,
-                    projects: []
-                };
 
-                existing.projects.push({
-                    projectName: project.projectName,
-                    totalRequests: model.totalRequestCount,
-                    totalHours: model.totalSeconds / 3600,
-                    totalCost: model.totalCost
-                });
+    const handleSelectProject = (value: string) => {
+        setSelectedProject(value);
+        setIsProjectOpen(false);
+    };
 
-                modelMap.set(model.modelName, existing);
+
+    const handleSelectMonth = (value: string) => {
+        setSelectedMonth(value);
+        setIsMonthOpen(false);
+    };
+
+
+    const getSelectedProjectName = () => {
+        if (selectedProject === "all") return "모든 프로젝트";
+        const project = projects.find(p => p.projectId.toString() === selectedProject);
+        return project?.projectName || "모든 프로젝트";
+    };
+
+
+    // 최근 6개월 데이터 생성
+    const generateMonths = (): MonthOption[] => {
+        const months: MonthOption[] = [
+            {
+                value: "all",
+                label: "전체 기간"
+            }
+        ];
+        const today = new Date();
+
+        for (let i = 0; i < 6; i++) {
+            const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            months.push({
+                value: date.toISOString().slice(0, 7),
+                label: `${date.getFullYear()}년 ${date.getMonth() + 1}월`
             });
-        });
-
-        return Array.from(modelMap.values());
+        }
+        return months;
     };
 
-    const modelUsageData = transformModelUsage();
 
-    const formatChartData = () => {
-        const formattedData = modelUsageData.map(model => {
-            const data: ChartData = { modelName: model.modelName };
-            model.projects.forEach(project => {
-                data[`${project.projectName}_requests`] = project.totalRequests;
-                data[`${project.projectName}_hours`] = project.totalHours;
-                data[`${project.projectName}_cost`] = project.totalCost;
-            });
-            return data;
-        });
-
-        return formattedData.sort((a, b) => {
-            const aTotal = projects.reduce((sum, project) => sum + (a[`${project.projectName}_cost`] as number || 0), 0);
-            const bTotal = projects.reduce((sum, project) => sum + (b[`${project.projectName}_cost`] as number || 0), 0);
-            return bTotal - aTotal;
-        });
+    const getSelectedMonthLabel = () => {
+        const month = monthOptions.find(m => m.value === selectedMonth);
+        return month?.label || "전체 기간";
     };
 
-    const chartData = formatChartData();
 
-    const calculateTotalUsage = () => {
-        const totalMap = new Map<string, { totalRequests: number; totalHours: number; totalCost: number }>();
-
-        projects.forEach(project => {
-            project.models.forEach(model => {
-                const existing = totalMap.get(model.modelName) || {
-                    totalRequests: 0,
-                    totalHours: 0,
-                    totalCost: 0
-                };
-
-                existing.totalRequests += model.totalRequestCount;
-                existing.totalHours += model.totalSeconds / 3600;
-                existing.totalCost += model.totalCost;
-
-                totalMap.set(model.modelName, existing);
-            });
-        });
-
-        return Array.from(totalMap.entries()).map(([modelName, data]) => ({
-            name: modelName,
-            value: data.totalCost,
-            requests: data.totalRequests,
-            hours: data.totalHours
-        }));
+    const renderContent = () => {
+        if (selectedMonth === "all" && selectedProject === "all") {
+            return (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <AllProjectsPeriodView />
+                </motion.div>
+            );
+        } else if (selectedMonth === "all" && selectedProject !== "all") {
+            return (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                </motion.div>
+            );
+        } else if (selectedMonth !== "all" && selectedProject === "all") {
+            return (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                </motion.div>
+            );
+        } else if (selectedMonth !== "all" && selectedProject !== "all") {
+            return (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                </motion.div>
+            );
+        }
     };
 
-    const totalUsageData = calculateTotalUsage();
 
-    const renderBarChart = (title: string, dataKey: string, icon: React.ReactNode) => {
-        const recentProjects = projects.slice(-3);
+    useEffect(() => {
+        setMonthOptions(generateMonths());
 
-        return (
-            <div className={CHART_STYLES.container}>
-                <div className="flex items-center gap-2">
-                    <div className="w-[32px] h-[32px] rounded-[16px] bg-[#242B3A] flex items-center justify-center">
-                        {icon}
-                    </div>
-                    <p className={CHART_STYLES.title}>{title}</p>
-                </div>
-                <div className={CHART_STYLES.chartHeight}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                            data={chartData}
-                            margin={{ top: 8, right: 20, left: 0, bottom: 0 }}
-                            barGap={2}
-                            barCategoryGap={12}
-                        >
-                            <CartesianGrid {...CHART_STYLES.grid} />
-                            <XAxis dataKey="modelName" {...CHART_STYLES.axis} />
-                            <YAxis {...CHART_STYLES.axis} />
-                            <Tooltip
-                                contentStyle={CHART_STYLES.tooltip}
-                                cursor={{ fill: 'rgba(62, 72, 101, 0.1)' }}
-                            />
-                            <Legend
-                                wrapperStyle={CHART_STYLES.legend}
-                                iconType="circle"
-                                iconSize={8}
-                                align="right"
-                            />
-                            {recentProjects.map((project, index) => (
-                                <Bar
-                                    key={`${project.projectName}_${dataKey}`}
-                                    dataKey={`${project.projectName}_${dataKey}`}
-                                    name={project.projectName}
-                                    fill={GLASS_COLORS[index % GLASS_COLORS.length]}
-                                    {...CHART_STYLES.bar}
-                                />
-                            ))}
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-            </div>
-        );
-    };
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                projectDropdownRef.current &&
+                !projectDropdownRef.current.contains(event.target as Node) &&
+                monthDropdownRef.current &&
+                !monthDropdownRef.current.contains(event.target as Node)
+            ) {
+                setIsProjectOpen(false);
+                setIsMonthOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     return (
         <div className="flex min-h-screen text-white container-padding">
@@ -223,16 +312,16 @@ export const APIUsagePage: React.FC = () => {
                 >
                     {/* 제목 */}
                     <motion.h1
-                        className="text-2xl font-semibold flex items-center mb-2"
+                        className="text-xl font-semibold flex items-center mb-1"
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        API 사용량 / 금액
+                        API 사용 대시보드
                     </motion.h1>
 
                     <motion.p
-                        className="text-md font-medium text-[#DEDEDE]"
+                        className="text-sm font-medium text-gray-400"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
@@ -241,154 +330,96 @@ export const APIUsagePage: React.FC = () => {
                         정량화된 사용 데이터를 기반으로 보안 모델 운영을 효율화하세요.
                     </motion.p>
 
-                    {/* 통계 정보 */}
-                    <div className="flex flex-col my-[32px] gap-6">
-                        <div className="flex flex-row gap-6 w-full">
-                            <div className="flex flex-row px-[24px] py-[16px] bg-[#242B3A] rounded-[20px] gap-5 w-full items-center">
-                                <div className="w-[48px] h-[48px] rounded-[32px] bg-[#5F9FED] flex items-center justify-center">
-                                    <LuActivity size={28} color="#242B3A" />
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-sm font-medium text-[#DEDEDE]">전체 API 사용량</p>
-                                    <p className="text-2xl font-bold text-white">250</p>
-                                </div>
-                            </div>
-                            <div className="flex flex-row px-[24px] py-[16px] bg-[#242B3A] rounded-[20px] gap-5 w-full items-center">
-                                <div className="w-[48px] h-[48px] rounded-[32px] bg-[#88D6BE] flex items-center justify-center">
-                                    <LuWallet size={28} color="#242B3A" />
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-sm font-medium text-[#DEDEDE]">전체 비용</p>
-                                    <p className="text-2xl font-bold text-white">$100.12</p>
-                                </div>
-                            </div>
-                            <div className="flex flex-row px-[24px] py-[16px] bg-[#242B3A] rounded-[20px] gap-5 w-full items-center">
-                                <div className="w-[52px] h-[52px] rounded-[32px] bg-[#837CF7] flex items-center justify-center">
-                                    <LuTrendingUp size={28} color="#242B3A" />
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <p className="text-sm font-medium text-[#DEDEDE]">최대 비용 프로젝트</p>
-                                    <p className="text-2xl font-bold text-white">Sesim</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* 그래프 */}
-                        <div className="flex flex-row gap-6">
-                            {renderBarChart("최근 3개 프로젝트 API 요청 수 비교", "requests", <LuActivity size={20} color="#DEDEDE" />)}
-                            {renderBarChart("최근 3개 프로젝트 사용 시간 비교 (h)", "hours", <LuClock size={20} color="#DEDEDE" />)}
-                        </div>
-
-                        <div className="flex flex-row gap-6">
-                            {renderBarChart("최근 3개 프로젝트 비용 비교 ($)", "cost", <LuWallet size={20} color="#DEDEDE" />)}
-
-                            <div className={CHART_STYLES.container + " w-[30%]"}>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-[32px] h-[32px] rounded-[16px] bg-[#242B3A] flex items-center justify-center">
-                                        <LuRadius size={20} color="#DEDEDE" />
-                                    </div>
-                                    <p className={CHART_STYLES.title}>최근 3개 프로젝트 모델 사용 비율</p>
-                                </div>
-                                <div className={CHART_STYLES.chartHeight}>
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart margin={{ top: 0, right: 20, bottom: 0, left: 20 }}>
-                                            <Pie
-                                                data={totalUsageData.slice(-3)}
-                                                cx="50%"
-                                                cy="50%"
-                                                labelLine={true}
-                                                outerRadius={80}
-                                                innerRadius={56}
-                                                paddingAngle={5}
-                                                fill="#8884d8"
-                                                stroke="rgba(62, 72, 101, 0)"
-                                                dataKey="value"
-                                            >
-                                                {totalUsageData.slice(-3).map((_, index) => (
-                                                    <Cell
-                                                        key={`cell-${index}`}
-                                                        fill={GLASS_COLORS[index % GLASS_COLORS.length]}
-                                                        style={{
-                                                            filter: 'blur(0px)',
-                                                            backdropFilter: 'blur(20px)'
-                                                        }}
-                                                    />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip
-                                                itemStyle={{ color: '#FFFFFF' }}
-                                                labelStyle={{ color: '#FFFFFF' }}
-                                                contentStyle={{
-                                                    backgroundColor: 'rgba(28, 34, 45, 0.95)',
-                                                    backdropFilter: 'blur(15px)',
-                                                    border: '1px solid rgba(62, 72, 101, 0.4)',
-                                                    borderRadius: '12px',
-                                                    color: '#FFFFFF !important',
-                                                    fontSize: '14px',
-                                                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-                                                    padding: '12px 16px',
-                                                    whiteSpace: 'pre-line'
-                                                }}
-                                            />
-                                            <Legend
-                                                wrapperStyle={CHART_STYLES.legend}
-                                                iconType="circle"
-                                                iconSize={8}
-                                                align="center"
-                                                verticalAlign="bottom"
-                                                formatter={(value, entry) => {
-                                                    const name = typeof value === 'string' ? value.replace(/:$/, '') : value;
-                                                    const percent = entry.payload && entry.payload.value
-                                                        ? (entry.payload.value / totalUsageData.slice(-3).reduce((sum, item) => sum + item.value, 0)) * 100
-                                                        : 0;
-                                                    return `${name} (${percent.toFixed(0)}%)`;
-                                                }}
-                                            />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* 프로젝트별 모델 사용량 비교 */}
-                        <div className="flex flex-col px-[24px] pt-[16px] pb-[24px] bg-[#242B3A] rounded-[20px] gap-5 w-full">
-                            <div className="flex flex-row items-center justify-start gap-2">
-                                <div className="w-[32px] h-[32px] rounded-[16px] bg-[#242B3A] flex items-center justify-center">
-                                    <LuTableProperties size={20} color="#DEDEDE" />
-                                </div>
-                                <p className="text-md font-semibold text-left text-[#DEDEDE]">
-                                    프로젝트별 모델 사용량 비교
-                                </p>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                {projects.map((project, index) => (
-                                    <motion.div
-                                        key={project.projectId}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                    {/* 필터 */}
+                    <div className="flex flex-row items-center justify-between mt-4 px-4 py-1 bg-[#1D2433] rounded-[16px]">
+                        <div className="flex flex-row">
+                            {/* 프로젝트 선택 */}
+                            <div
+                                className="relative flex items-center gap-3 px-2 py-2"
+                                ref={projectDropdownRef}
+                            >
+                                <LuFilter
+                                    className="text-[#DEDEDE]"
+                                    size={18}
+                                />
+                                <div className="relative">
+                                    <button
+                                        onClick={() => clickProjectFilter()}
+                                        className="flex items-center gap-2 min-w-[150px] justify-between text-[#DEDEDE] cursor-pointer focus:outline-none"
                                     >
-                                        <APIUsageListItem 
-                                            data={{
-                                                projectName: project.projectName,
-                                                usageTime: project.projectTotalSeconds / 3600,
-                                                totalCost: `$${project.projectTotalCost.toFixed(2)}`,
-                                                totalApiRequests: project.projectTotalRequestCount,
-                                                modelCosts: project.models.map((model) => ({
-                                                    modelName: model.modelName,
-                                                    cost: `$${model.totalCost.toFixed(2)}`,
-                                                    usageTime: model.totalSeconds / 3600,
-                                                    apiRequests: model.totalRequestCount,
-                                                })),
-                                            }}
-                                            isFirst={index === 0}
-                                            isLast={index === projects.length - 1}
+                                        <span>{getSelectedProjectName()}</span>
+                                        <LuChevronDown
+                                            className={`transition-transform duration-200 ${isProjectOpen ? "rotate-180" : ""}`}
+                                            size={16}
                                         />
-                                    </motion.div>
-                                ))}
+                                    </button>
+
+                                    {isProjectOpen && (
+                                        <div className="absolute top-full -left-4 mt-2 w-full min-w-[180px] bg-[#242B3A] rounded-[10px] border border-[rgba(62,72,101,0.4)] shadow-lg z-50 overflow-hidden">
+                                            <div className="max-h-[240px] overflow-y-auto scrollbar-custom">
+                                                <div
+                                                    className={`px-4 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer 
+                                                        ${selectedProject === "all" ? "bg-[rgba(255,255,255,0.1)] font-medium" : "text-[#DEDEDE]"}`}
+                                                    onClick={() => handleSelectProject("all")}
+                                                >
+                                                    모든 프로젝트
+                                                </div>
+                                                {projects.map((project: APIUsageProject) => (
+                                                    <div
+                                                        key={project.projectId}
+                                                        className={`px-4 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer 
+                                                            ${selectedProject === project.projectId.toString() ? "bg-[rgba(255,255,255,0.1)] font-medium" : "text-[#DEDEDE]"}`}
+                                                        onClick={() => handleSelectProject(project.projectId.toString())}
+                                                    >
+                                                        {project.projectName}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* 월 선택 */}
+                            <div
+                                className="flex items-center gap-3 pl-6 py-2"
+                                ref={monthDropdownRef}
+                            >
+                                <LuClock className="text-[#DEDEDE]" size={18} />
+                                <div className="relative">
+                                    <button
+                                        onClick={() => clickMonthFilter()}
+                                        className="flex items-center gap-2 min-w-[150px] justify-between text-[#DEDEDE] cursor-pointer focus:outline-none"
+                                    >
+                                        <span>{getSelectedMonthLabel()}</span>
+                                        <LuChevronDown
+                                            className={`transition-transform duration-200 ${isMonthOpen ? "rotate-180" : ""}`}
+                                            size={16}
+                                        />
+                                    </button>
+
+                                    {isMonthOpen && (
+                                        <div className="absolute top-full -left-4 mt-2 w-full min-w-[180px] bg-[#242B3A] rounded-[10px] border border-[rgba(62,72,101,0.4)] shadow-lg z-50 overflow-hidden">
+                                            <div className="max-h-[240px] overflow-y-auto scrollbar-custom">
+                                                {monthOptions.map((month: MonthOption) => (
+                                                    <div
+                                                        key={month.value}
+                                                        className={`px-4 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer 
+                                                            ${selectedMonth === month.value ? "bg-[rgba(255,255,255,0.1)] font-medium" : "text-[#DEDEDE]"}`}
+                                                        onClick={() => handleSelectMonth(month.value)}
+                                                    >
+                                                        {month.label}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {/* 컨텐츠 영역 */}
+                    {renderContent()}
                 </motion.div>
             </div>
         </div>
