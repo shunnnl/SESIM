@@ -6,6 +6,7 @@ import com.backend.sesim.domain.deployment.entity.RegisterIp;
 import com.backend.sesim.domain.deployment.entity.ProjectModelInformation;
 import com.backend.sesim.domain.deployment.exception.DeploymentErrorCode;
 import com.backend.sesim.domain.deployment.repository.DeploymentStepRepository;
+import com.backend.sesim.domain.deployment.repository.ProjectModelInfoRepository;
 import com.backend.sesim.domain.deployment.repository.ProjectRepository;
 import com.backend.sesim.domain.deployment.repository.RegisterIpRepository;
 import com.backend.sesim.domain.deployment.util.TerraformExecutor;
@@ -40,6 +41,7 @@ public class DeploymentService {
     private final K3sSetupService k3sSetupService;
     private final ProjectRepository projectRepository;
     private final DeploymentStepRepository deploymentStepRepository;
+    private final ProjectModelInfoRepository projectModelInfoRepository;
     private final SqlService sqlService;
     private final DeploymentStepSSEService sseService;
     private final RegisterIpRepository registerIpRepository;
@@ -119,6 +121,13 @@ public class DeploymentService {
                     String albAddress = "http://" + masterIp;
                     project.updateAlbAddress(albAddress);
                     projectRepository.save(project);
+
+                    // 최신 모델 정보 목록으로 갱신
+                    List<ProjectModelInformation> freshModelInfos = refreshModelInformationList(modelInfos);
+
+                    // ALB 주소가 업데이트된 후 Grafana URL 업데이트
+                    updateGrafanaUrls(project, freshModelInfos);
+
                     log.info("ALB 주소 업데이트: {}", albAddress);
                 } else {
                     throw new RuntimeException("EC2 인스턴스 IP 주소를 찾을 수 없습니다.");
@@ -369,5 +378,63 @@ public class DeploymentService {
                 break;
             }
         }
+    }
+
+    /**
+     * ALB 주소가 생성된 후 grafanaUrl을 업데이트합니다.
+     * @param project 업데이트된 ALB 주소를 가진 프로젝트
+     * @param modelInfos 업데이트할 모델 정보 목록
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected void updateGrafanaUrls(Project project, List<ProjectModelInformation> modelInfos) {
+        if (project.getAlbAddress() == null || project.getAlbAddress().isEmpty()) {
+            log.warn("ALB 주소가 null이거나 비어있어 Grafana URL을 업데이트할 수 없습니다. 프로젝트 ID: {}", project.getId());
+            return;
+        }
+
+        String albAddress = project.getAlbAddress();
+        log.info("프로젝트 ID: {}의 모델 Grafana URL 업데이트 시작, ALB 주소: {}", project.getId(), albAddress);
+
+        for (ProjectModelInformation modelInfo : modelInfos) {
+            try {
+                // 모델의 grafana_model_url 가져오기
+                String grafanaModelUrlPath = modelInfo.getModel().getGrafanaModelUrl();
+
+                // URL 구성 - albAddress에는 이미 http://가 포함되어 있음
+                String fullGrafanaUrl;
+
+                // grafanaModelUrlPath가 /로 시작하는지 확인
+                if (grafanaModelUrlPath.startsWith("/")) {
+                    // 슬래시로 시작하면 그대로 결합
+                    fullGrafanaUrl = albAddress + grafanaModelUrlPath;
+                } else {
+                    // 슬래시로 시작하지 않으면 슬래시 추가
+                    fullGrafanaUrl = albAddress + "/" + grafanaModelUrlPath;
+                }
+
+                // Grafana URL 업데이트
+                modelInfo.updateGrafanaUrl(fullGrafanaUrl);
+
+                // 변경 사항을 DB에 저장 (이 부분이 빠져있었습니다)
+                projectModelInfoRepository.save(modelInfo);
+
+                log.info("모델 정보 ID: {}의 Grafana URL 업데이트 및 저장 완료: {}", modelInfo.getId(), fullGrafanaUrl);
+            } catch (Exception e) {
+                // 한 모델 업데이트 실패해도 다른 모델은 계속 진행
+                log.error("모델 정보 ID: {}의 Grafana URL 업데이트 중 오류 발생: {}", modelInfo.getId(), e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * 모델 정보 목록을 최신 상태로 새로고침합니다.
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected List<ProjectModelInformation> refreshModelInformationList(List<ProjectModelInformation> modelInfos) {
+        List<Long> modelInfoIds = modelInfos.stream()
+                .map(ProjectModelInformation::getId)
+                .collect(Collectors.toList());
+
+        return projectModelInfoRepository.findAllWithModelByIdIn(modelInfoIds);
     }
 }

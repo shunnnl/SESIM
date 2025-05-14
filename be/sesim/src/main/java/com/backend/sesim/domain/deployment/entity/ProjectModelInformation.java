@@ -41,4 +41,11 @@ public class ProjectModelInformation extends TimeStampEntity {
 
     @Column(name = "model_api_key", length = 255)
     private String modelApiKey;
+
+    @Column(name = "grafana_url", length = 100)
+    private String grafanaUrl;
+
+    public void updateGrafanaUrl(String grafanaUrl) {
+        this.grafanaUrl = grafanaUrl;
+    }
 }

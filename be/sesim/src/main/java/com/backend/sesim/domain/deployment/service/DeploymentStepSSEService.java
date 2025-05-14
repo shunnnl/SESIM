@@ -140,16 +140,6 @@ public class DeploymentStepSSEService {
                 .map(RegisterIp::getIpNumber)
                 .collect(Collectors.toList());
 
-        // Grafana URL 생성
-        String grafanaUrl = "";
-        if (project.getAlbAddress() != null && !project.getAlbAddress().isEmpty()) {
-            String albAddress = project.getAlbAddress();
-            if (!albAddress.endsWith("/")) {
-                grafanaUrl = albAddress + "/grafana";
-            } else {
-                grafanaUrl = albAddress + "grafana";
-            }
-        }
 
         // isDeployed 판단 - COMPLETION 단계가 DEPLOYED 상태인지 확인
         boolean isDeployed = false;
@@ -165,8 +155,8 @@ public class DeploymentStepSSEService {
         return ProjectStatusResponse.builder()
                 .projectId(project.getId())
                 .projectName(project.getName())
+                .description(project.getDescription())
                 .albAddress(project.getAlbAddress())
-                .grafanaUrl(grafanaUrl)
                 .allowedIps(allowedIps)
                 .isDeployed(isDeployed)
                 .steps(steps.stream()
@@ -187,10 +177,14 @@ public class DeploymentStepSSEService {
                                 }
                             }
 
+                            // information 테이블에서 직접 grafanaUrl 가져오기
+                            String modelGrafanaUrl = modelInfo.getGrafanaUrl();
+
                             return new ProjectStatusResponse.ModelInfo(
                                     modelInfo.getModel().getId(),
                                     modelInfo.getModel().getName(),
-                                    description);  // 모델별 설명 추가
+                                    description,
+                                    modelGrafanaUrl);  // 모델별 설명 추가
                         })
                         .collect(Collectors.toList()))
                 .build();
