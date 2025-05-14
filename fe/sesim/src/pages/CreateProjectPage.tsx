@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
+import { HelpButton } from "../components/common/HelpButton";
 import { FirstStep } from "../components/CreateProject/FirstStep";
 import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
@@ -16,7 +17,6 @@ import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingM
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { CreateProjectTitleImageWithText } from "../components/CreateProject/CreateProjectTitleImageWithText";
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
-import { HelpButton } from "../components/common/HelpButton";
 
 export const CreateProjectPage = () => {
     // Router & Redux

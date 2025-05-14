@@ -4,7 +4,7 @@ import { MainRoutes } from "./MainRoutes";
 import { AuthModals } from "./AuthModals";
 import { Navbar } from "../components/Navbar/Navbar";
 import { Footer } from "../components/Footer/Footer";
-import ScrollToTop from "../components/common/ScrollToTop";
+import { ScrollToTop } from "../utils/ScrollToTopUtils";
 import { MypageRoutes, mypageRoutes } from "./MypageRoutes";
 import { getPageBackgroundClass } from "../utils/backgroundUtils";
 
