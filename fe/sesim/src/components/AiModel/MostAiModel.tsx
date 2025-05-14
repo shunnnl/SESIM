@@ -6,11 +6,11 @@ import backgroundImage from "../../assets/images/carousel-bg.webp";
 export const MostAiModel = () => {
     return (
         <div 
-            className="bg-cover bg-center bg-no-repeat" 
+            className="bg-cover bg-center bg-no-repeat h-screen flex items-center justify-center" 
             style={{ backgroundImage: `url(${backgroundImage})` }}
         >
             <motion.div 
-                className="container-padding flex flex-col items-center gap-[15px] mt-[80px] pb-[100px] text-white"
+                className="container-padding flex flex-col items-center gap-[15px] pb-[100px] text-white"
                 initial={{ opacity: 0, y: 70 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}

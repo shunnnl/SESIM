@@ -23,11 +23,11 @@ export const SdkDownloadPage = () => {
             />
             <div 
                 ref={ref}
-                className="bg-cover bg-center bg-no-repeat h-screen" 
+                className="bg-cover bg-center bg-no-repeat h-screen flex items-center justify-center" 
                 style={{ backgroundImage: `url(${BackgroundImage})` }}
             >
                 <motion.div
-                    className="flex justify-between gap-[50px] pt-[140px] container-padding text-white relative z-10"
+                    className="flex justify-between gap-[50px] container-padding text-white relative z-10"
                     initial={{ opacity: 0, y: 70 }}
                     animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 70 }}
                     transition={{ duration: 1, delay: 0, ease: "easeOut" }}
