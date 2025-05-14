@@ -98,7 +98,7 @@ export const FifthStep = forwardRef<HTMLDivElement, FifthStepProps>(({ show, set
                                     maxLength={100}
                                     value={ipInput}
                                     onChange={(e) => {
-                                        setIpInput(e.target.value);
+                                        setIpInput(e.target.value.trim());
                                         setError("");
                                     }}
                                     className="mt-[15px] w-[300px] h-[50px] bg-transparent border-[#D9D9D9] border-[2px] rounded-[10px] p-[10px] text-[16px] text-[#ffffff] placeholder:text-[#A3A3A3]" 

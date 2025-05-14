@@ -8,6 +8,7 @@ import { ForthStep } from "../components/CreateProject/ForthStep";
 import { FifthStep } from "../components/CreateProject/FifthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
 import { ProgressStepper } from "../components/CreateProject/ProgressStepper";
+import { BackgroundBlobs } from "../components/CreateProject/BackgroundBlobs";
 import { ProjectErrorModal } from "../components/CreateProject/ProjectErrorModal";
 import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
 import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingModal";
@@ -103,7 +104,9 @@ export const CreateProjectPage = () => {
     }, []);
 
     return (
-        <div>
+        <div className="relative overflow-hidden">
+            <div className="bg-gradient-1000 absolute top-0 left-0 w-full z-0"></div>
+            <BackgroundBlobs />
             <CreateProjectTitleImageWithText />
 
             <ProgressStepper
@@ -116,7 +119,7 @@ export const CreateProjectPage = () => {
                 }
             />
 
-            <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? " pb-[200px]" : ""}`}>
+            <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? " pb-[200px]" : ""} relative z-10`}>
                 <FirstStep
                     roleArns={roleArns}
                     setFirstStepDone={setFirstStepDone}
