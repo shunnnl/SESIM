@@ -16,7 +16,7 @@ import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal
 import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingModal";
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { CreateProjectTitleImageWithText } from "../components/CreateProject/CreateProjectTitleImageWithText";
-import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
+import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig, clearAllowedIpAddresses } from "../store/createProjectInfoSlice";
 
 export const CreateProjectPage = () => {
     // Router & Redux
@@ -58,6 +58,8 @@ export const CreateProjectPage = () => {
     // Computed States
     const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) && forthStepDone && fifthStepDone;
 
+    // 하단 바가 보일 때 버튼을 위로 올릴 높이(px)
+    const bottomBarHeight = selectedModels.length > 0 && selectedInstancePrice > 0 ? 120 : 32;
 
     const handleCreateProject = async () => {
         setIsLoading(true);
@@ -66,8 +68,8 @@ export const CreateProjectPage = () => {
             projectName: createProjectInfo.projectName,
             projectDescription: createProjectInfo.projectDescription,
             modelConfigs: createProjectInfo.modelConfigs,
+            allowedIpAddresses : createProjectInfo.allowedIpAddresses,
         };
-
         const response = await createProject(projectInfo);
         
         if (response.success === true) {
@@ -76,6 +78,7 @@ export const CreateProjectPage = () => {
             dispatch(clearProjectInfo());
             dispatch(clearSelectedModels());
             dispatch(clearModelConfig());
+            dispatch(clearAllowedIpAddresses());
             setShowSuccessModal(true);
         } else {
             setIsLoading(false);
@@ -117,11 +120,8 @@ export const CreateProjectPage = () => {
     }, []);
 
     return (
-        <div className="relative overflow-hidden">
-            <div className="bg-gradient-1000 absolute top-0 left-0 w-full z-0"></div>
-            <BackgroundBlobs />
+        <>
             <CreateProjectTitleImageWithText />
-
             <ProgressStepper
                 currentStep={
                     !firstStepDone ? 0 :
@@ -131,87 +131,90 @@ export const CreateProjectPage = () => {
                     4
                 }
             />
+            <div className="relative overflow-hidden">
+                <div className="bg-gradient-1000 absolute top-0 left-0 w-full z-0"></div>
+                <BackgroundBlobs />
+                <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? " pb-[200px]" : ""} relative z-10`}>
+                    <FirstStep
+                        roleArns={roleArns}
+                        setFirstStepDone={setFirstStepDone}
+                        currentStep={!firstStepDone ? 0 : -1}
+                    />
+                    <SecondStep 
+                        ref={secondStepRef}
+                        show={firstStepDone}
+                        setSecondStepDone={setSecondStepDone}
+                        currentStep={firstStepDone && !secondStepDone ? 1 : -1}
+                    />
+                    <ThirdStep
+                        ref={thirdStepRef}
+                        models={models}
+                        show={secondStepDone}
+                        currentStep={secondStepDone && selectedModels.length === 0 ? 2 : -1}
+                    />
+                    <ForthStep
+                        ref={forthStepRef}
+                        regions={regions}
+                        infrastructure={infrastructure}
+                        selectedModels={selectedModels}
+                        combinedPrices={combinedPrices}
+                        show={selectedModels.length > 0}
+                        setSelectedInstancePrice={setSelectedInstancePrice}
+                        onInstanceMapChange={setSelectedInstanceIdxMap}
+                        currentStep={selectedModels.length > 0 ? 3 : -1}
+                        setForthStepDone={setForthStepDone}
+                    />
+                    <FifthStep 
+                        ref={fifthStepRef}
+                        show={selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined)}
+                        setFifthStepDone={setFifthStepDone}
+                        currentStep={selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) ? 4 : -1}
+                    />
+                </div>
 
-            <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? " pb-[200px]" : ""} relative z-10`}>
-                <FirstStep
-                    roleArns={roleArns}
-                    setFirstStepDone={setFirstStepDone}
-                    currentStep={!firstStepDone ? 0 : -1}
-                />
-                <SecondStep 
-                    ref={secondStepRef}
-                    show={firstStepDone}
-                    setSecondStepDone={setSecondStepDone}
-                    currentStep={firstStepDone && !secondStepDone ? 1 : -1}
-                />
-                <ThirdStep
-                    ref={thirdStepRef}
-                    models={models}
-                    show={secondStepDone}
-                    currentStep={secondStepDone && selectedModels.length === 0 ? 2 : -1}
-                />
-                <ForthStep
-                    ref={forthStepRef}
-                    regions={regions}
-                    infrastructure={infrastructure}
-                    selectedModels={selectedModels}
-                    combinedPrices={combinedPrices}
-                    show={selectedModels.length > 0}
-                    setSelectedInstancePrice={setSelectedInstancePrice}
-                    onInstanceMapChange={setSelectedInstanceIdxMap}
-                    currentStep={selectedModels.length > 0 ? 3 : -1}
-                    setForthStepDone={setForthStepDone}
-                />
-                <FifthStep 
-                    ref={fifthStepRef}
-                    show={selectedModels.length > 0 && selectedInstancePrice > 0}
-                    setFifthStepDone={setFifthStepDone}
-                    currentStep={selectedModels.length > 0 && selectedInstancePrice > 0 ? 4 : -1}
-                />
-            </div>
-
-            <HelpButton up={showScrollTop} extraBottom={selectedModels.length > 0 && selectedInstancePrice > 0 ? 120 : 32} />
-            <ScrollToTopButton show={showScrollTop} extraBottom={selectedModels.length > 0 && selectedInstancePrice > 0 ? 120 : 32} />
-            
-            <div
-                className={`fixed left-0 bottom-0 w-full z-50 transition-all duration-500
-                    ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
-                `}
-                style={{ maxHeight: "1000px" }}
-            >
-                <div className="border-t border-[#3C3D5C] bg-[#242C4D] py-[20px]">
-                    <div className="flex justify-between items-center px-4 md:px-12">
-                        <div>
-                            <p className="text-[30px] font-bold text-[#3893FF]">$ {selectedInstancePrice.toFixed(2)} / h</p>
-                            <p className="text-[16px] font-medium text-[#A3A3A3]">활성화된 인스턴스(서버) 당 요금</p>
+                <HelpButton up={showScrollTop} extraBottom={bottomBarHeight} />
+                <ScrollToTopButton show={showScrollTop} extraBottom={bottomBarHeight} />
+                
+                <div
+                    className={`fixed left-0 bottom-0 w-full z-50 transition-all duration-500
+                        ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
+                    `}
+                    style={{ maxHeight: "1000px" }}
+                >
+                    <div className="border-t border-[#3C3D5C] bg-[#242C4D] py-[20px]">
+                        <div className="flex justify-between items-center px-4 md:px-12">
+                            <div>
+                                <p className="text-[30px] font-bold text-[#3893FF]">$ {selectedInstancePrice.toFixed(2)} / h</p>
+                                <p className="text-[16px] font-medium text-[#A3A3A3]">활성화된 인스턴스(서버) 당 요금</p>
+                            </div>
+                            <button
+                                className={`bg-[#3893FF] text-white font-bold py-[10px] px-[20px] rounded-[5px] w-[200px]
+                                    transition-all duration-200
+                                    ${!isAllSelected ? "opacity-50 cursor-not-allowed bg-gray-400" : ""}
+                                `}
+                                disabled={!isAllSelected}
+                                onClick={handleCreateProject}
+                            >
+                                프로젝트 생성
+                            </button>
                         </div>
-                        <button
-                            className={`bg-[#3893FF] text-white font-bold py-[10px] px-[20px] rounded-[5px] w-[200px]
-                                transition-all duration-200
-                                ${!isAllSelected ? "opacity-50 cursor-not-allowed bg-gray-400" : ""}
-                            `}
-                            disabled={!isAllSelected}
-                            onClick={handleCreateProject}
-                        >
-                            프로젝트 생성
-                        </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Modals */}
-            <ProjectStartModal 
-                isOpen={showSuccessModal}
-                onConfirm={handleModalConfirm}
-            />
-            <ProjectLoadingModal 
-                isOpen={isLoading}
-            />
-            <ProjectErrorModal
-                isOpen={showErrorModal}
-                onConfirm={handleErrorModalConfirm}
-                errorMessage={errorMessage}
-            />
-        </div>
+                {/* Modals */}
+                <ProjectStartModal 
+                    isOpen={showSuccessModal}
+                    onConfirm={handleModalConfirm}
+                />
+                <ProjectLoadingModal 
+                    isOpen={isLoading}
+                />
+                <ProjectErrorModal
+                    isOpen={showErrorModal}
+                    onConfirm={handleErrorModalConfirm}
+                    errorMessage={errorMessage}
+                />
+            </div>
+        </>
     );
 };

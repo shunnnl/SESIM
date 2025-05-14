@@ -1,4 +1,6 @@
 import { useState, useEffect, forwardRef, RefObject } from "react";
+import { useDispatch } from "react-redux";
+import { setAllowedIpAddresses } from "../../store/createProjectInfoSlice";
 import { CheckMyIp } from "./CheckMyIp";
 import { IoClose } from "react-icons/io5";
 import { BsCircleFill } from "react-icons/bs";
@@ -58,6 +60,7 @@ export const FifthStep = forwardRef<HTMLDivElement, FifthStepProps>(({ show, set
     const [ipInput, setIpInput] = useState<string>("");
     const [ipList, setIpList] = useState<string[]>([]);
     const [error, setError] = useState<string>("");
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (show && ref && typeof ref !== "function" && (ref as RefObject<HTMLDivElement>).current) {
@@ -73,7 +76,8 @@ export const FifthStep = forwardRef<HTMLDivElement, FifthStepProps>(({ show, set
 
     useEffect(() => {
         setFifthStepDone(ipList.length > 0);
-    }, [ipList, setFifthStepDone]);
+        dispatch(setAllowedIpAddresses(ipList));
+    }, [ipList, setFifthStepDone, dispatch]);
 
     return (
         <div 
