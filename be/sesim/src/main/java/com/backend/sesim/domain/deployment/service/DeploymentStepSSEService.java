@@ -165,6 +165,7 @@ public class DeploymentStepSSEService {
         return ProjectStatusResponse.builder()
                 .projectId(project.getId())
                 .projectName(project.getName())
+                .description(project.getDescription())
                 .albAddress(project.getAlbAddress())
                 .grafanaUrl(grafanaUrl)
                 .allowedIps(allowedIps)
