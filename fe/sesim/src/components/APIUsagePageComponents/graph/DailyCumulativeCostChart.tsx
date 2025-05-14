@@ -1,4 +1,4 @@
-import { AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, LabelList, Area } from 'recharts';
+import { AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area } from 'recharts';
 
 const generateDummyData = () => {
     const startDate = new Date(2025, 3, 1);
@@ -24,9 +24,9 @@ const generateDummyData = () => {
     return data;
 };
 
-export const dailyUsageData = generateDummyData();
+const dailyUsageData = generateDummyData();
 
-export const chartData = dailyUsageData.map(item => ({
+const chartData = dailyUsageData.map(item => ({
     day: item.formattedDate,
     dailyUsage: item.dailyUsage,
     totalAPI: item.cumulativeTotal
