@@ -18,7 +18,7 @@ interface GuideNoticeAndFAQProps {
 export const GuideNoticeAndFAQ: React.FC<GuideNoticeAndFAQProps> = ({ noticeList, faqList }) => (
     <div className="mt-[100px]">
         <div className="flex flex-row gap-[50px]">
-            <div className="flex-2">
+            <div className="flex-1">
                 <div className="flex flex-row gap-[10px] items-center">
                     <IoWarningOutline className="text-[#cf4a24] text-4xl" />
                     <h3 className="text-2xl font-bold">주의 사항</h3>
@@ -36,7 +36,7 @@ export const GuideNoticeAndFAQ: React.FC<GuideNoticeAndFAQProps> = ({ noticeList
                 </div>
             </div>
 
-            <div className="flex-3">
+            <div className="flex-1">
                 <div className="flex flex-row gap-[10px] items-center">
                     <BsQuestionCircle className="text-[#9DC6FF] text-3xl" />
                     <h3 className="text-2xl font-bold">자주 묻는 질문</h3>
