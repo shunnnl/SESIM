@@ -1,14 +1,15 @@
 import { useState } from "react";
 
-export const HelpButton = ({ up }: { up?: boolean }) => {
+export const HelpButton = ({ up, extraBottom = 32 }: { up?: boolean; extraBottom?: number }) => {
     const [open, setOpen] = useState(false);
 
     return (
         <div
-            className={`fixed right-8 z-50 transition-transform duration-300
-                ${up ? "bottom-28" : "bottom-8"}
-            `}
-            style={{ transition: "bottom 0.3s" }}
+            className="fixed right-8 z-[999]"
+            style={{
+                bottom: up ? extraBottom + 80 : extraBottom,
+                transition: "bottom 0.4s cubic-bezier(0.4,0,0.2,1)"
+            }}
         >
             <button
                 onClick={() => { if (!open) setOpen(true); }}

@@ -1,4 +1,4 @@
-export const ScrollToTopButton = ({ show }: { show: boolean }) => {
+export const ScrollToTopButton = ({ show, extraBottom = 32 }: { show: boolean; extraBottom?: number }) => {
     const handleClick = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
@@ -6,7 +6,11 @@ export const ScrollToTopButton = ({ show }: { show: boolean }) => {
     return show ? (
         <button
             onClick={handleClick}
-            className="fixed bottom-8 right-8 z-50 bg-[#15305F] text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:bg-[#1e418a] transition-colors"
+            className="fixed right-8 z-[999] bg-[#15305F] text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:bg-[#1e418a] transition-colors"
+            style={{
+                bottom: extraBottom,
+                transition: "bottom 0.4s cubic-bezier(0.4,0,0.2,1)"
+            }}
             aria-label="맨 위로"
         >
             <svg

@@ -170,8 +170,8 @@ export const CreateProjectPage = () => {
                 />
             </div>
 
-            <HelpButton up={showScrollTop}/>
-            <ScrollToTopButton show={showScrollTop} />
+            <HelpButton up={showScrollTop} extraBottom={selectedModels.length > 0 && selectedInstancePrice > 0 ? 120 : 32} />
+            <ScrollToTopButton show={showScrollTop} extraBottom={selectedModels.length > 0 && selectedInstancePrice > 0 ? 120 : 32} />
             
             <div
                 className={`fixed left-0 bottom-0 w-full z-50 transition-all duration-500
