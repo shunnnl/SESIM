@@ -1,4 +1,4 @@
-\import { SesimLogoFooter } from "./SesimLogoFooter"
+import { SesimLogoFooter } from "./SesimLogoFooter"
 
 export const Footer = () => {
 
