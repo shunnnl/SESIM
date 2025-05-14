@@ -1,10 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, LabelList } from 'recharts';
-
-const data = [
-  { month: '25년 03월', totalCost: 320000 },
-  { month: '25년 04월', totalCost: 420000 },
-  { month: '25년 05월', totalCost: 550000 },
-];
+import { CostPerMonth } from '../../../store/APIUsageSlice';
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -33,13 +28,19 @@ const CustomLegend = () => {
 };
 
 
-export default function MonthlyTotalCostChart() {
+const getMaxCost = (data: CostPerMonth[] | null) => {
+  if (!data) return 0;
+  return Math.max(...data.map(item => item.cost));
+};
+
+
+export default function MonthlyTotalCostChart({ data }: { data: CostPerMonth[] | null }) {
   return (
     <div className="w-full h-80 p-4">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={data}
-          margin={{ top: 4, right: 4, left: 4, bottom: 4 }}
+          data={data ?? []}
+          margin={{ top: 20, right: 4, left: 4, bottom: 4 }}
         >
           <defs>
             <linearGradient id="gradient-purple" x1="0" y1="0" x2="0" y2="1">
@@ -62,11 +63,12 @@ export default function MonthlyTotalCostChart() {
             tickLine={{ stroke: '#6B7280' }}
             tickFormatter={(v) => `$${v.toLocaleString()}`}
             style={{ fontSize: 12, fontWeight: 600, fill: '#9CA3AF' }}
+            domain={[0, Math.trunc(getMaxCost(data) * 1.2 * 10) / 10]}
           />
           <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(4, 16, 29, 0.3)'}}/>
           <Legend content={<CustomLegend />} />
           <Bar
-            dataKey="totalCost"
+            dataKey="cost"
             name="총 비용"
             fill="url(#gradient-purple)"
             stroke="rgba(79, 70, 229, 0.7)"
@@ -74,7 +76,7 @@ export default function MonthlyTotalCostChart() {
             barSize={30}
           >
             <LabelList
-              dataKey="totalCost"
+              dataKey="cost"
               position="top"
               offset={10}
               formatter={(value: number) => `$${value.toLocaleString()}`}
