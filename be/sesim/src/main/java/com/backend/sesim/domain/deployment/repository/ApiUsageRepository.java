@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +22,10 @@ public interface ApiUsageRepository extends JpaRepository<ApiUsage, Long> {
 
     @Query("SELECT COALESCE(SUM(a.totalSeconds), 0) FROM ApiUsage a WHERE a.information.id = :informationId")
     int sumTotalSecondsByInformationId(@Param("informationId") Long informationId);
+
+    @Query("SELECT a FROM ApiUsage a WHERE a.information.id = :infoId AND a.intervalDate BETWEEN :start AND :end")
+    List<ApiUsage> findByInfoIdAndIntervalDateBetween(@Param("infoId") Long infoId,
+        @Param("start") Date start,
+        @Param("end") Date end);
+
 }

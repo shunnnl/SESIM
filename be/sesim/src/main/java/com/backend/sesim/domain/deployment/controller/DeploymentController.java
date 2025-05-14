@@ -1,6 +1,7 @@
 package com.backend.sesim.domain.deployment.controller;
 
 import com.backend.sesim.domain.deployment.dto.request.ApiKeyCheckRequest;
+import com.backend.sesim.domain.deployment.dto.request.ApiUsageIntervalRequest;
 import com.backend.sesim.domain.deployment.dto.request.ApiUsageUpdateRequest;
 import com.backend.sesim.domain.deployment.dto.request.TerraformDeployRequest;
 import com.backend.sesim.domain.deployment.dto.response.*;
@@ -26,7 +27,6 @@ public class DeploymentController {
     private final DeploymentStepSSEService deploymentStepSSEService;
     private final ApiUsageService apiUsageService;
     private final ApiUsageSSEService apiUsageSSEService;
-
 
     @Operation(summary = "SaaS 계정에 리소스 배포", description = "SaaS 계정에 AWS 리소스를 배포합니다.")
     @PostMapping("/terraform")
@@ -54,7 +54,6 @@ public class DeploymentController {
         return deploymentStepSSEService.subscribe();
     }
 
-
     @Operation(summary = "API 사용량 업데이트", description = "API 사용량 정보를 업데이트합니다.")
     @PostMapping("/api-usage")
     public CommonResponseDto<?> updateApiUsage(@RequestBody ApiUsageUpdateRequest request) {
@@ -68,5 +67,10 @@ public class DeploymentController {
         return apiUsageSSEService.subscribe();
     }
 
-
+    @Operation(summary = "API 사용량 특정 기간 조회", description = "API 사용량을 시작시간과 마지막 시간까지에 대한 일자별/월별 정보를 제공합니다.")
+    @GetMapping(value = "/api-usage/interval")
+    public CommonResponseDto<ApiUsageIntervalResponse> getIntervalApiUsage(ApiUsageIntervalRequest request) {
+        ApiUsageIntervalResponse response = apiUsageService.getIntervalApiUsage(request);
+        return CommonResponseDto.ok(response);
+    }
 }

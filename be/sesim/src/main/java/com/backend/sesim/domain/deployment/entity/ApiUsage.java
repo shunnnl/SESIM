@@ -1,5 +1,7 @@
 package com.backend.sesim.domain.deployment.entity;
 
+import java.util.Date;
+
 import com.backend.sesim.global.entity.TimeStampEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +34,9 @@ public class ApiUsage extends TimeStampEntity {
 
     @Column(name = "total_seconds", nullable = false)
     private int totalSeconds;
+
+    @Column(name = "interval_date", nullable = false)
+    private Date intervalDate;
 
     /**
      * 사용량 업데이트
