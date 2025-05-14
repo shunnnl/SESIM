@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SesimLogo } from "./SesimLogo";
 import { RootState } from "../../store";
 import { NavbarMenu } from "./NavbarMenu";
@@ -20,6 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const [isScrolled, setIsScrolled] = useState(false);
 
     const user = useSelector((state: RootState) => state.auth.user);
@@ -30,6 +31,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
     const triggerRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    
+    const isMypageRoute = location.pathname === "/apiusage" || location.pathname === "/project";
 
     const handleLoginModalOpen = () => {
         setSidebarOpen(false);
@@ -71,8 +74,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     }, []);
 
     return (
-        <nav className={`border-b-2 border-white/20 sticky top-0 z-50 transition-all duration-400 ${isScrolled ? "backdrop-blur-md bg-black/50" : ""}`}>
-            <div className="flex justify-between items-center h-[50px] md:h-[60px] lg:h-[70px] container-padding">
+
+        <nav className={`border-b-2 ${isMypageRoute ? "border-[#242B3A]" : "border-white/20"} sticky top-0 z-50 transition-all duration-400 ${isScrolled ? "backdrop-blur-md bg-black/50" : ""}`}>
+            <div className="flex justify-between items-center h-[50px] md:h-[70px] lg:h-[86px] container-padding">
                 <div className="flex items-center gap-4 md:gap-1 lg:gap-[40px]" >
                     <SesimLogo />
                     <div className="hidden md:flex">
