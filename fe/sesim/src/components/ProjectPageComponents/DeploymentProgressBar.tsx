@@ -69,7 +69,7 @@ const DeploymentProgressBar: React.FC<Props> = ({ steps }) => {
     const renderStateIcon = (step: Step) => {
         if (step.stepStatus === "FAILED") {
             return (
-                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#c75050] z-10">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#e56161] z-10">
                     {stateConfig.FAILED.icon}
                 </div>
             );
