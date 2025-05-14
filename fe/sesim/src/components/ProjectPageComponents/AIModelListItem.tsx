@@ -20,7 +20,7 @@ interface AIModelListProps {
 
 const AIModelListItem: React.FC<AIModelListProps> = ({ items, projectId, isDeployed }) => {
     const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4, bgImage5, bgImage6];
-    const [apiKeys, setApiKeys] = useState<{ [key: number]: string }>({});
+    const [, setApiKeys] = useState<{ [key: number]: string }>({});
 
     const handleGenerateKey = async (projectId: number, modelId: number) => {
         try {
