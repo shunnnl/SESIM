@@ -4,10 +4,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+import { IpListModal } from "./IPListModal";
+import AIModelListItem from "./AIModelListItem";
 import { Project } from "../../types/ProjectTypes";
 import DeploymentProgressBar from "./DeploymentProgressBar";
-import AIModelListItem from "./AIModelListItem";
-import { IpListModal } from "./IpListModal";
 
 interface Props {
     project: Project;
