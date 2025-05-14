@@ -1,8 +1,6 @@
-import { useLocation } from "react-router-dom";
 import { SesimLogoFooter } from "./SesimLogoFooter"
 
 export const Footer = () => {
-    const location = useLocation();
 
     return (
         <div>
