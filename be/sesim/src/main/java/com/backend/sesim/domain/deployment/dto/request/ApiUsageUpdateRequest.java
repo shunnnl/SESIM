@@ -1,5 +1,7 @@
 package com.backend.sesim.domain.deployment.dto.request;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,4 +22,6 @@ public class ApiUsageUpdateRequest {
     private int totalRequestCount;
 
     private int totalSeconds;
+
+    private LocalDate intervalDate;
 }
