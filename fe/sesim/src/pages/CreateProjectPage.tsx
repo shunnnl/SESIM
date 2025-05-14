@@ -127,8 +127,7 @@ export const CreateProjectPage = () => {
                     !firstStepDone ? 0 :
                     !secondStepDone ? 1 :
                     selectedModels.length === 0 ? 2 :
-                    !selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) ? 3 :
-                    4
+                    !selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) ? 3 : 4
                 }
             />
             <div className="relative overflow-hidden">
