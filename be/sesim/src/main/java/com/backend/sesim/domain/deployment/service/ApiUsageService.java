@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class ApiUsageService {
         String apiName = request.getApiName();
         int totalRequestCount = request.getTotalRequestCount();
         int totalSeconds = request.getTotalSeconds();
+        Date intervalDate = Date.from((request.getIntervalDate()).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
         // 프로젝트 ID와 모델 ID로 ProjectModelInformation 찾기
         ProjectModelInformation modelInfo = projectModelInfoRepository.findByProjectIdAndModelId(projectId, modelId)
@@ -72,36 +74,35 @@ public class ApiUsageService {
         // Optional<ApiUsage> existingUsage = apiUsageRepository.findByInformationIdAndApiName(informationId, apiName);
 
         // 비관적 락을 사용한 조회
-        Optional<ApiUsage> existingUsage = apiUsageRepository.findByInformationIdAndApiNameWithLock(informationId, apiName);
+        Optional<ApiUsage> existingUsage = apiUsageRepository.findByInfoIdAndApiNameAndIntervalDateWithLock(
+            informationId, apiName, intervalDate);
 
+        // 2. 있으면 업데이트
         if (existingUsage.isPresent()) {
-            // 기존 사용량이 있으면 새 값으로 완전히 대체
             ApiUsage usage = existingUsage.get();
 
-            // 값이 변경되었는지 확인
-            if (usage.getTotalRequestCount() != totalRequestCount ||
-                    usage.getTotalSeconds() != totalSeconds) {
-
+            if (usage.getTotalRequestCount() != totalRequestCount || usage.getTotalSeconds() != totalSeconds) {
                 usage.updateCounts(totalRequestCount, totalSeconds);
                 apiUsageRepository.save(usage);
                 isUpdated = true;
 
-                log.info("API 사용량 덮어쓰기: projectId={}, modelId={}, apiName={}, 총 요청={}회, 총 시간={}초",
-                        projectId, modelId, apiName, totalRequestCount, totalSeconds);
+                log.info("API 사용량 덮어쓰기: projectId={}, modelId={}, apiName={}, intervalDate={}, 요청={}, 시간={}, 간격={}",
+                    projectId, modelId, apiName, intervalDate, totalRequestCount, totalSeconds, intervalDate);
             }
         } else {
-            // 없으면 새로 생성
+            // 3. 없으면 새로 생성
             ApiUsage newUsage = ApiUsage.builder()
-                    .information(modelInfo)
-                    .apiName(apiName)
-                    .totalRequestCount(totalRequestCount)
-                    .totalSeconds(totalSeconds)
-                    .build();
+                .information(modelInfo)
+                .apiName(apiName)
+                .totalRequestCount(totalRequestCount)
+                .totalSeconds(totalSeconds)
+                .intervalDate(intervalDate)
+                .build();
             apiUsageRepository.save(newUsage);
             isUpdated = true;
 
-            log.info("API 사용량 새로 생성: projectId={}, modelId={}, apiName={}, 요청={}회, 시간={}초",
-                    projectId, modelId, apiName, totalRequestCount, totalSeconds);
+            log.info("API 사용량 새로 생성: projectId={}, modelId={}, apiName={}, intervalDate={}, 요청={}, 시간={}, 간격={}",
+                projectId, modelId, apiName, intervalDate, totalRequestCount, totalSeconds, intervalDate);
         }
 
         // 변경사항이 있는 경우에만 SSE 알림 전송

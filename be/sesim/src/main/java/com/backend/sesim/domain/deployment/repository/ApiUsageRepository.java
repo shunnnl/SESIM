@@ -27,10 +27,14 @@ public interface ApiUsageRepository extends JpaRepository<ApiUsage, Long> {
 
     // 비관적 락을 적용한 새 메서드 추가
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT a FROM ApiUsage a WHERE a.information.id = :informationId AND a.apiName = :apiName")
-    Optional<ApiUsage> findByInformationIdAndApiNameWithLock(
-            @Param("informationId") Long informationId,
-            @Param("apiName") String apiName);
+    @Query("SELECT a FROM ApiUsage a " +
+        "WHERE a.information.id = :informationId " +
+        "AND a.apiName = :apiName " +
+        "AND a.intervalDate = :intervalDate")
+    Optional<ApiUsage> findByInfoIdAndApiNameAndIntervalDateWithLock(
+        @Param("informationId") Long informationId,
+        @Param("apiName") String apiName,
+        @Param("intervalDate") Date intervalDate);
 
     @Query("SELECT a FROM ApiUsage a WHERE a.information.id = :infoId AND a.intervalDate BETWEEN :start AND :end")
     List<ApiUsage> findByInfoIdAndIntervalDateBetween(@Param("infoId") Long infoId,
