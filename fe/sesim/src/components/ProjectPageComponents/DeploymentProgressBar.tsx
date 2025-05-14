@@ -52,8 +52,6 @@ const DeploymentProgressBar: React.FC<Props> = ({ steps }) => {
     let statusColor = "";
     let statusBgStyle = {};
 
-
-
     if (deployingStep) {
         statusText = `${stepDescriptions[deployingStep.stepOrder]?.main} 진행중`;
         statusColor = "text-[#A196FF]";
@@ -62,12 +60,10 @@ const DeploymentProgressBar: React.FC<Props> = ({ steps }) => {
         statusText = `${stepDescriptions[failedStep.stepOrder]?.main} 실패`;
         statusColor = "text-[#FF9698]";
         statusBgStyle = { backgroundColor: "rgba(255, 73, 73, 0.2)" };
-
     } else if (allDeployed) {
         statusText = "배포완료";
         statusColor = "text-[#96FFB2]";
         statusBgStyle = { backgroundColor: "rgba(73, 255, 167, 0.2)" };
-
     }
 
     const renderStateIcon = (step: Step) => {

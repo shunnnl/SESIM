@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FaRegCopy } from "react-icons/fa6";
+import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
-import "react-toastify/dist/ReactToastify.css";
 import { Project } from "../../types/ProjectTypes";
 import DeploymentProgressBar from "./DeploymentProgressBar";
 import AIModelListItem from "./AIModelListItem";
@@ -45,6 +45,7 @@ const ProjectItemList: React.FC<Props> = ({ project }) => {
             toast.error("복사 실패: " + err.message);
         });
     };
+
 
     const handleIpListModalOpen = () => {
         setIsIpListModalOpen(true);
@@ -98,19 +99,16 @@ const ProjectItemList: React.FC<Props> = ({ project }) => {
                         position: "relative",
                         border: "1px solid transparent",
                         borderRadius: "9999px",
-                        backgroundImage:
-                            "linear-gradient(#242B3A, #242B3A), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
+                        backgroundImage: "linear-gradient(#242B3A, #242B3A), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
                         backgroundOrigin: "border-box",
                         backgroundClip: "padding-box, border-box",
                         color: "white",
                     }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundImage =
-                            "linear-gradient(to right, #5A316C, #513176, #2C3273), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
+                        e.currentTarget.style.backgroundImage = "linear-gradient(to right, #5A316C, #513176, #2C3273), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
                     }}
                     onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundImage =
-                            "linear-gradient(#242B3A, #242B3A), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
+                        e.currentTarget.style.backgroundImage = "linear-gradient(#242B3A, #242B3A), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
                     }}
                     onClick={handleIpListModalOpen}
                 >
@@ -118,7 +116,7 @@ const ProjectItemList: React.FC<Props> = ({ project }) => {
                 </button>
             </div>
 
-                <DeploymentProgressBar steps={project.steps}/>
+            <DeploymentProgressBar steps={project.steps} />
 
             <div className="flex items-center ml-3 mt-6 mb-4">
                 <div className="w-1 h-5 bg-blue-400 mr-3 rounded-sm" />

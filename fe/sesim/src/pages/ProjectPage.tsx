@@ -31,7 +31,7 @@ export const ProjectPage = () => {
                         transition={{ duration: 0.5 }}
                     >
                         <h1 className="text-2xl font-semibold flex items-center gap-2 mt-1 mb-3">
-                                프로젝트
+                            프로젝트
                         </h1>
 
                         <p className="text-lg font-medium m-1 mb-6">

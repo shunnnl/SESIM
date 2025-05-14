@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { FaRegCopy } from "react-icons/fa6";
 import { RiArrowRightWideLine } from "react-icons/ri";
+import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { Model } from "../../types/ProjectTypes";
 import bgImage from "../../assets/images/model-bg-1.webp";
 import bgImage2 from "../../assets/images/model-bg-2.webp";
@@ -9,8 +11,6 @@ import bgImage4 from "../../assets/images/model-bg-4.webp";
 import bgImage5 from "../../assets/images/model-bg-5.webp";
 import bgImage6 from "../../assets/images/model-bg-6.webp";
 import { createDeploymentApiKey } from "../../services/apiKeyService";
-import { toast } from "react-toastify";
-import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 
 interface AIModelListProps {
     items: Model[];
