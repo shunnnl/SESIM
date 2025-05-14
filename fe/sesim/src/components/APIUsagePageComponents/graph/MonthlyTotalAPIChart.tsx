@@ -1,10 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, LabelList } from 'recharts';
-
-const data = [
-  { month: '25년 03월', totalAPI: 230 },
-  { month: '25년 04월', totalAPI: 140 },
-  { month: '25년 05월', totalAPI: 450 },
-];
+import { RequestCountPerMonth } from '../../../store/APIUsageSlice';
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -33,13 +28,19 @@ const CustomLegend = () => {
 };
 
 
-export default function MonthlyTotalAPIChart() {
+const getMaxValue = (data: RequestCountPerMonth[] | null) => {
+  if (!data) return 0;
+  return Math.max(...data.map(item => item.requestCount));
+};
+
+
+export default function MonthlyTotalAPIChart({ data }: { data: RequestCountPerMonth[] | null }) {
   return (
     <div className="w-full h-80 p-4">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={data}
-          margin={{ top: 4, right: 4, left: 4, bottom: 4 }}
+          data={data ?? []}
+          margin={{ top: 20, right: 4, left: 4, bottom: 4 }}
         >
           <defs>
             <linearGradient id="gradient-mint" x1="0" y1="0" x2="0" y2="1">
@@ -62,11 +63,12 @@ export default function MonthlyTotalAPIChart() {
             tickLine={{ stroke: '#6B7280' }}
             tickFormatter={(v) => `$${v.toLocaleString()}`}
             style={{ fontSize: 12, fontWeight: 600, fill: '#9CA3AF' }}
+            domain={[0, Math.round(getMaxValue(data) * 1.2 / 100) * 100]}
           />
           <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(4, 16, 29, 0.3)'}}/>
           <Legend content={<CustomLegend />} />
           <Bar
-            dataKey="totalAPI"
+            dataKey="requestCount"
             name="총 API 요청 수"
             fill="url(#gradient-mint)"
             stroke="rgba(58, 120, 128, 0.7)"
@@ -74,10 +76,10 @@ export default function MonthlyTotalAPIChart() {
             barSize={30}
           >
             <LabelList
-              dataKey="totalAPI"
+              dataKey="requestCount"
               position="top"
               offset={10}
-              formatter={(value: number) => `$${value.toLocaleString()}`}
+              formatter={(value: number) => `${value.toLocaleString()}`}
               style={{ fill: '#EEEEEE', fontSize: 12, fontWeight: 500 }}
             />
           </Bar>
