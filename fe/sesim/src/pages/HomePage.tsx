@@ -52,7 +52,7 @@ const AnimatedDetailButton = () => {
 export const HomePage: React.FC = () => {
     return (
         <div className="flex flex-col gap-8 md:gap-12 lg:gap-[72px] text-white container-padding">
-            <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[250px] md:mt-[300px] lg:mt-[300px]">
+            <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[250px] md:mt-[300px] lg:mt-[320px]">
                 <MainText />
                 <SubText />
             </div>

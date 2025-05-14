@@ -85,9 +85,10 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
 
     useEffect(() => {
         if (selectedModel && regions.length > 0 && !selectedRegionMap[selectedModel.id]) {
+            const seoulRegion = regions.find(region => region.code === 'ap-northeast-2');
             setSelectedRegionMap(prev => ({
                 ...prev,
-                [selectedModel.id]: regions[0]
+                [selectedModel.id]: seoulRegion || regions[0]
             }));
         }
         if (selectedModel && !selectedAwsIdxMap[selectedModel.id]) {
@@ -161,12 +162,12 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
             <FormStepHeader
                 step="04"
                 title="서버 사양 선택" 
-                description="AI 모델별 하드웨어 구성 선택"
-                must={true}
-                information="서버 사양은 프로젝트 생성 이후 변경할 수 없습니다."
+                information="서버사양은 프로젝트 생성 이후 변경할 수 없습니다."
+                description1="선택한 보안 AI 모델을 실행할 서버 사양을 설정해주세요."
+                description2="모델별로 적절한 리소스가 사전에 제안되며, 필요한 경우 직접 조정도 가능합니다."
                 currentStep={currentStep}
             />
-            <div className="mt-[15px]">
+            <div className="mt-[30px]">
                 {selectedModels.length > 0 && (
                     <div className="flex w-fit mb-[15px]">
                         {[...selectedModels]
@@ -203,7 +204,7 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
                                         className={`flex items-center gap-[10px] rounded-[5px] px-[20px] py-[10px] w-[250px]
                                             ${selectedAwsIdxMap[selectedModel.id] === idx && !isDisabled
                                                 ? "border-[#F97316] border-[3px] bg-[#FFFFFF]"
-                                                : "border border-[#D9D9D9] bg-[#FFFFFF]"}
+                                                : "border border-[#D9D9D9] bg-[#D2D2D2]"}
                                             ${isDisabled ? "cursor-not-allowed" : ""}
                                         `}
                                         onClick={() => !isDisabled && handleAwsClick(selectedModel, idx)}
@@ -230,7 +231,7 @@ export const ForthStep = forwardRef<HTMLDivElement, ForthStepProps>(({ selectedM
                                                 className={`w-[28px] h-[30px] ${isDisabled ? "grayscale" : ""}`} 
                                             />
                                         )}
-                                        <p className={`text-[16px] font-medium ${isDisabled ? "text-[#A3A3A3]" : "text-[#000000]"}`}>{label}</p>
+                                        <p className={`text-[16px] font-medium ${isDisabled ? "text-[#707070]" : "text-[#000000]"}`}>{label}</p>
                                     </button>
                                 );
                             })}

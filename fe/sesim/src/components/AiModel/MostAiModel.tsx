@@ -10,7 +10,7 @@ export const MostAiModel = () => {
             style={{ backgroundImage: `url(${backgroundImage})` }}
         >
             <motion.div 
-                className="container-padding flex flex-col items-center gap-[15px] pt-[44px] pb-[100px] text-white"
+                className="container-padding flex flex-col items-center gap-[15px] mt-[80px] pb-[100px] text-white"
                 initial={{ opacity: 0, y: 70 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}

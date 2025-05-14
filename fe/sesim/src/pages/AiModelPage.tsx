@@ -5,6 +5,7 @@ import { getAiModels } from "../services/aiModelService";
 import backgroundImage from "../assets/images/ai-model-bg.webp";
 import { AllAiModels } from "../components/AiModel/AllAiModels";
 import { MostAiModel } from "../components/AiModel/MostAiModel";
+import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 
 export const AiModelPage: React.FC = () => {
@@ -21,7 +22,7 @@ export const AiModelPage: React.FC = () => {
 
 
     return (
-        <div>
+        <SnapScrollContainer>
             <PageTitleImageWithText
                 title="AI 모델"
                 description1="SESIM은 고객 데이터를 외부로 보내지 않고,"
@@ -32,7 +33,7 @@ export const AiModelPage: React.FC = () => {
                 <MostAiModel />
                 <AllAiModels />
             </div>
-        </div>
+        </SnapScrollContainer>
     );
 };
 
