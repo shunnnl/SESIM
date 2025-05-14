@@ -1,12 +1,13 @@
 package com.backend.sesim.domain.deployment.repository;
 
 import com.backend.sesim.domain.deployment.entity.ApiUsage;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,4 +22,11 @@ public interface ApiUsageRepository extends JpaRepository<ApiUsage, Long> {
 
     @Query("SELECT COALESCE(SUM(a.totalSeconds), 0) FROM ApiUsage a WHERE a.information.id = :informationId")
     int sumTotalSecondsByInformationId(@Param("informationId") Long informationId);
+
+    // 비관적 락을 적용한 새 메서드 추가
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT a FROM ApiUsage a WHERE a.information.id = :informationId AND a.apiName = :apiName")
+    Optional<ApiUsage> findByInformationIdAndApiNameWithLock(
+            @Param("informationId") Long informationId,
+            @Param("apiName") String apiName);
 }
