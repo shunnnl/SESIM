@@ -1,163 +1,13 @@
 import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { LuFilter, LuClock, LuChevronDown } from "react-icons/lu";
 import { Sidebar } from "../components/Sidebar";
 import { APIUsageProject } from "../types/APIUsageTypes";
-import { AllProjectsPeriodView } from "../components/APIUsagePageComponents/AllProjectsPeriodView";
-
-// 더미 데이터
-export const dummyProjects: APIUsageProject[] = [
-    {
-        projectId: 1,
-        projectName: "SSAFY 프로젝트",
-        projectTotalRequestCount: 1500,
-        projectTotalSeconds: 7200,
-        projectTotalCost: 150.5,
-        models: [
-            {
-                modelId: 1,
-                modelName: "GPT-4",
-                totalRequestCount: 800,
-                totalSeconds: 3600,
-                hourlyRate: 0.03,
-                totalCost: 80.5
-            },
-            {
-                modelId: 2,
-                modelName: "GPT-3.5",
-                totalRequestCount: 700,
-                totalSeconds: 3600,
-                hourlyRate: 0.02,
-                totalCost: 70.0
-            }
-        ]
-    },
-    {
-        projectId: 2,
-        projectName: "삼성전자 AI 프로젝트",
-        projectTotalRequestCount: 2500,
-        projectTotalSeconds: 10800,
-        projectTotalCost: 250.75,
-        models: [
-            {
-                modelId: 1,
-                modelName: "GPT-4",
-                totalRequestCount: 1500,
-                totalSeconds: 7200,
-                hourlyRate: 0.03,
-                totalCost: 150.75
-            },
-            {
-                modelId: 3,
-                modelName: "Claude",
-                totalRequestCount: 1000,
-                totalSeconds: 3600,
-                hourlyRate: 0.025,
-                totalCost: 100.0
-            }
-        ]
-    },
-    {
-        projectId: 3,
-        projectName: "현대자동차 챗봇",
-        projectTotalRequestCount: 3000,
-        projectTotalSeconds: 14400,
-        projectTotalCost: 350.25,
-        models: [
-            {
-                modelId: 2,
-                modelName: "GPT-3.5",
-                totalRequestCount: 2000,
-                totalSeconds: 10800,
-                hourlyRate: 0.02,
-                totalCost: 200.25
-            },
-            {
-                modelId: 3,
-                modelName: "Claude",
-                totalRequestCount: 1000,
-                totalSeconds: 3600,
-                hourlyRate: 0.025,
-                totalCost: 150.0
-            }
-        ]
-    },
-    {
-        projectId: 4,
-        projectName: "현대자동차 챗봇2",
-        projectTotalRequestCount: 3000,
-        projectTotalSeconds: 14400,
-        projectTotalCost: 350.25,
-        models: [
-            {
-                modelId: 2,
-                modelName: "GPT-3.5",
-                totalRequestCount: 2000,
-                totalSeconds: 10800,
-                hourlyRate: 0.02,
-                totalCost: 200.25
-            },
-            {
-                modelId: 3,
-                modelName: "Claude",
-                totalRequestCount: 1000,
-                totalSeconds: 3600,
-                hourlyRate: 0.025,
-                totalCost: 150.0
-            }
-        ]
-    },
-    {
-        projectId: 5,
-        projectName: "현대자동차 챗봇3",
-        projectTotalRequestCount: 3000,
-        projectTotalSeconds: 14400,
-        projectTotalCost: 350.25,
-        models: [
-            {
-                modelId: 2,
-                modelName: "GPT-3.5",
-                totalRequestCount: 2000,
-                totalSeconds: 10800,
-                hourlyRate: 0.02,
-                totalCost: 200.25
-            },
-            {
-                modelId: 3,
-                modelName: "Claude",
-                totalRequestCount: 1000,
-                totalSeconds: 3600,
-                hourlyRate: 0.025,
-                totalCost: 150.0
-            }
-        ]
-    },
-    {
-        projectId: 6,
-        projectName: "현대자동차 챗봇4",
-        projectTotalRequestCount: 3000,
-        projectTotalSeconds: 14400,
-        projectTotalCost: 350.25,
-        models: [
-            {
-                modelId: 2,
-                modelName: "GPT-3.5",
-                totalRequestCount: 2000,
-                totalSeconds: 10800,
-                hourlyRate: 0.02,
-                totalCost: 200.25
-            },
-            {
-                modelId: 3,
-                modelName: "Claude",
-                totalRequestCount: 1000,
-                totalSeconds: 3600,
-                hourlyRate: 0.025,
-                totalCost: 150.0
-            }
-        ]
-    }
-];
+import { getAPIUsage } from "../services/apiUsageService";
+import { ProjectAllPeriodsView } from "../components/APIUsagePageComponents/ProjectAllPeriodsView";
+import { AllProjectsMonthlyView } from "../components/APIUsagePageComponents/AllProjectsMonthlyView";
+import { AllProjectsAllPeriodsView } from "../components/APIUsagePageComponents/AllProjectsAllPeriodsView";
+import { getMonthOptionsByCreatedAtFunc, getAllProjectsAllPeriodsData, AllProjectsAllPeriodsData, getProjectAllPeriodsData, ProjectAllPeriodsData } from "../store/APIUsageSlice";
 
 interface MonthOption {
     value: string;
@@ -165,15 +15,17 @@ interface MonthOption {
 }
 
 export const APIUsagePage: React.FC = () => {
-    // const projects = useSelector((state: RootState) => state.apiUsage.projects);
-    const projects = dummyProjects; // 더미 데이터 사용
+    const [projects, setProjects] = useState<APIUsageProject[]>([]);
     const [selectedProject, setSelectedProject] = useState<string>("all");
     const [selectedMonth, setSelectedMonth] = useState<string>("all");
     const [isProjectOpen, setIsProjectOpen] = useState(false);
     const [isMonthOpen, setIsMonthOpen] = useState(false);
     const [monthOptions, setMonthOptions] = useState<MonthOption[]>([]);
+    const [allProjectsAllPeriodsData, setAllProjectsAllPeriodsData] = useState<AllProjectsAllPeriodsData | null>(null);
+    const [projectAllPeriodsData, setProjectAllPeriodsData] = useState<ProjectAllPeriodsData | null>(null);
     const projectDropdownRef = useRef<HTMLDivElement>(null);
     const monthDropdownRef = useRef<HTMLDivElement>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const clickProjectFilter = () => {
         setIsProjectOpen(!isProjectOpen)
@@ -190,6 +42,7 @@ export const APIUsagePage: React.FC = () => {
     const handleSelectProject = (value: string) => {
         setSelectedProject(value);
         setIsProjectOpen(false);
+        setProjectAllPeriodsData(getProjectAllPeriodsData(projects, parseInt(selectedProject)));
     };
 
 
@@ -203,27 +56,6 @@ export const APIUsagePage: React.FC = () => {
         if (selectedProject === "all") return "모든 프로젝트";
         const project = projects.find(p => p.projectId.toString() === selectedProject);
         return project?.projectName || "모든 프로젝트";
-    };
-
-
-    // 최근 6개월 데이터 생성
-    const generateMonths = (): MonthOption[] => {
-        const months: MonthOption[] = [
-            {
-                value: "all",
-                label: "전체 기간"
-            }
-        ];
-        const today = new Date();
-
-        for (let i = 0; i < 6; i++) {
-            const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
-            months.push({
-                value: date.toISOString().slice(0, 7),
-                label: `${date.getFullYear()}년 ${date.getMonth() + 1}월`
-            });
-        }
-        return months;
     };
 
 
@@ -241,7 +73,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <AllProjectsPeriodView />
+                    <AllProjectsAllPeriodsView data={allProjectsAllPeriodsData} />
                 </motion.div>
             );
         } else if (selectedMonth === "all" && selectedProject !== "all") {
@@ -251,6 +83,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
+                    <ProjectAllPeriodsView projectName={getSelectedProjectName()} data={projectAllPeriodsData} />
                 </motion.div>
             );
         } else if (selectedMonth !== "all" && selectedProject === "all") {
@@ -260,6 +93,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
+                    <AllProjectsMonthlyView month={getSelectedMonthLabel()} />
                 </motion.div>
             );
         } else if (selectedMonth !== "all" && selectedProject !== "all") {
@@ -269,14 +103,37 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
+                    <AllProjectsMonthlyView month={getSelectedMonthLabel()} />
                 </motion.div>
             );
         }
     };
 
 
+    const getAPIUsageData = async () => {
+        setIsLoading(true);
+
+        try {
+            const data = await getAPIUsage();
+
+            if (data.success) {
+                console.log(data.data.projects);
+                setProjects(data.data.projects);
+                setMonthOptions(getMonthOptionsByCreatedAtFunc(data.data.userCreatedAt));
+                setAllProjectsAllPeriodsData(getAllProjectsAllPeriodsData(data.data.projects));
+            } else {
+                console.error(data.error);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+
     useEffect(() => {
-        setMonthOptions(generateMonths());
+        getAPIUsageData();
 
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -296,12 +153,27 @@ export const APIUsagePage: React.FC = () => {
         };
     }, []);
 
+
+    if (isLoading) {
+        return (
+            <div className="flex min-h-screen text-white container-padding">
+                <div>
+                    <Sidebar />
+                </div>
+                <div>
+                    {/* TODO: 로딩 애니메이션 적용하기 */}
+                    로딩중..
+                </div>
+            </div>
+        )
+    }
+
+
     return (
         <div className="flex min-h-screen text-white container-padding">
             <div>
                 <Sidebar />
             </div>
-
             <div className="my-[44px] ml-[44px] w-full h-full">
                 <motion.div
                     className="flex flex-col flex-1"
