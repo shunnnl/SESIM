@@ -30,17 +30,12 @@ export const ProjectPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <h1 className="text-2xl font-semibold flex items-center gap-2 mt-3 mb-8">
-                            <span className="w-2 h-2 rounded-full bg-blue-500" />
-                            키 정보
+                        <h1 className="text-2xl font-semibold flex items-center gap-2 mt-1 mb-3">
+                                프로젝트
                         </h1>
 
-                        <p className="text-lg font-medium m-1">
-                            AI모델 별 API 키 정보를 제공합니다.
-                        </p>
-
-                        <p className="text-lg font-medium m-1 mb-10">
-                            API 키는 최초 1회만 확인 가능하며, 보안상의 이유로 이후에는 다시 확인하실 수 없습니다.
+                        <p className="text-lg font-medium m-1 mb-6">
+                            생성한 프로젝트의 상세 정보를 확인하세요.
                         </p>
                     </motion.div>
 
