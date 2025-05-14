@@ -16,7 +16,6 @@ public class ProjectStatusResponse {
     private String projectName;
     private String description;
     private String albAddress;
-    private String grafanaUrl;
     private List<String> allowedIps;   // 허용된 IP 주소 목록
     private List<StepStatus> steps;
     private List<ModelInfo> models;
@@ -41,5 +40,6 @@ public class ProjectStatusResponse {
         private Long modelId;
         private String modelName;
         private String description;
+        private String grafanaUrl;
     }
 }
