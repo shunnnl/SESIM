@@ -5,10 +5,8 @@ interface SnapScrollContainerProps {
     snapHeight?: number;
 }
 
-export const SnapScrollContainer: React.FC<SnapScrollContainerProps> = ({ 
-    children, 
-    snapHeight = window.innerHeight 
-}) => {
+export const SnapScrollContainer: React.FC<SnapScrollContainerProps> = ({ children, snapHeight = window.innerHeight }) => {
+    
     useEffect(() => {
         const handleScroll = (e: WheelEvent) => {
             const scrollPosition = window.scrollY;
