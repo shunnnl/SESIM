@@ -43,4 +43,7 @@ public class Model extends TimeStampEntity {
 
     @Column(name = "model_price_per_hour", nullable = false, columnDefinition = "DOUBLE DEFAULT 0.0")
     private Double modelPricePerHour;
+
+    @Column(name = "grafana_model_url", nullable = false)
+    private String grafanaModelUrl;
 }
