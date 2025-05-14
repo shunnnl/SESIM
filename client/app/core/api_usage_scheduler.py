@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 import requests
 from app.core.config import settings
@@ -33,6 +34,7 @@ def send_usage_aggregates():
                 "apiName": row.name,
                 "totalRequestCount": row.request_count,
                 "totalSeconds": row.latency_sum
+                "intervalDate": datetime.now().strftime("%Y-%m-%d")
             }
 
             requests.post(API_URL, json=payload)
