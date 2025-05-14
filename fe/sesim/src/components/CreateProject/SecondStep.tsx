@@ -54,10 +54,11 @@ export const SecondStep = forwardRef<HTMLDivElement, SecondStepProps>(({ setSeco
             <FormStepHeader
                 step="02"
                 title="프로젝트 기본 정보" 
-                description="프로젝트는 여러 보안 AI 모델을 관리하는 단위입니다. 프로젝트 이름과 설명을 입력하여 AI 모델들을 체계적으로 관리할 수 있습니다."
+                description1="생성할 프로젝트의 이름과 설명을 입력해주세요."
+                description2="이 정보는 AI 모델 및 서버 리소스 관리에 사용됩니다."
                 currentStep={currentStep}
             />
-            <div className="mt-[15px]">
+            <div className="mt-[30px]">
                 <BigCard>
                     <div>
                         <p className="text-[16px] font-bold">프로젝트 이름 <span className="text-[#FF7E7E]">*</span></p>

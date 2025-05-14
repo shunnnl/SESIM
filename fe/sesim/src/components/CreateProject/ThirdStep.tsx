@@ -54,13 +54,13 @@ export const ThirdStep = forwardRef<HTMLDivElement, ThirdStepProps>(({ show, mod
             <FormStepHeader
                 step="03"
                 title="보안 AI 모델 선택" 
-                description="사용할 보안 AI 모델을 선택해 주세요 (1개이상)"
-                must={true}
                 information="모델은 프로젝트 생성 이후 변경할 수 없습니다."
+                description1="프로젝트에 사용할 보안 AI 모델을 선택해주세요. (1개이상)"
+                description2="각 모델은 탐지 대상과 분석 방식이 다르므로, 업무 목적에 맞는 모델을 선택하는 것이 중요합니다."
                 currentStep={currentStep}
             />
             <div className="px-[20px] pb-[20px]">
-                <div className="mt-[15px] mr-[200px] grid grid-cols-3 gap-[20px]">
+                <div className="mt-[30px] mr-[200px] grid grid-cols-3 gap-[20px]">
                     {models.map((model, idx) => (
                         <SmallCard
                             key={idx}

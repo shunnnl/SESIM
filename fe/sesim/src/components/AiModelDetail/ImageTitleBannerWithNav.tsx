@@ -10,7 +10,7 @@ interface ImageTitleBannerWithNavProps {
 
 export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = ({ modelName, description, selectedTab, setSelectedTab }) => {
     return (
-        <div className="grid w-full  min-h-[200px] md:min-h-[300px] lg:min-h-[400px]">
+        <div className="grid w-full h-screen min-h-[200px] md:min-h-[300px] lg:min-h-[400px]">
             <img
                 src={backgroundImage}
                 alt="PageBackground"
@@ -18,11 +18,11 @@ export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = (
             />
             <div className="relative bg-[#0A0C35]/30 flex flex-col justify-center items-center col-start-1 row-start-1 min-h-[300px] pb-[70px]">
                 <div 
-                    className="flex flex-col justify-center items-center text-center flex-1"
+                    className="flex flex-col justify-center items-center text-center flex-1 gap-[10px]"
                     style={{ paddingTop: "5%" }}
                 >
-                    <h1 className="text-white text-[28px] md:text-[42px] lg:text-[54px] font-bold">{modelName}</h1>
-                    <p className="text-white text-[16px] md:text-[20px] lg:text-[24px] font-normal">
+                    <h1 className="text-white text-[28px] md:text-[42px] lg:text-6xl font-bold">{modelName}</h1>
+                    <p className="text-white text-[16px] md:text-[20px] lg:text-2xl font-normal">
                         { description }
                     </p>
                 </div>

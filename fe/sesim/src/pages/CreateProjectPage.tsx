@@ -6,13 +6,12 @@ import { FirstStep } from "../components/CreateProject/FirstStep";
 import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
-import backgroundImage from "../assets/images/create-project-bg.webp";
 import { ProgressStepper } from "../components/CreateProject/ProgressStepper";
 import { ProjectErrorModal } from "../components/CreateProject/ProjectErrorModal";
 import { ProjectStartModal } from "../components/CreateProject/ProjectStartModal";
-import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingModal";
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
+import { CreateProjectTitleImageWithText } from "../components/CreateProject/CreateProjectTitleImageWithText";
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
 
 export const CreateProjectPage = () => {
@@ -87,12 +86,8 @@ export const CreateProjectPage = () => {
 
     return (
         <div>
-            <PageTitleImageWithText
-                title="프로젝트 생성"
-                description1="개인 맞춤형 AI 보안 프로젝트 생성"
-                description2=""
-                backgroundImage={backgroundImage}
-            />
+            <CreateProjectTitleImageWithText />
+
             {/* 진행 단계 표시 */}
             <ProgressStepper
                 currentStep={

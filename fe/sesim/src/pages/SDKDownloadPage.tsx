@@ -66,10 +66,10 @@ export const SdkDownloadPage = () => {
                                     alt="info"
                                     className="w-[30px] h-[30px]"
                                 />
-                                <p className="text-[16px] font-bold">SESIM을 처음이용하신다면, SESIM SDK를 먼저 다운로드 하세요!</p>
+                                <p className="text-[16px] font-bold">SESIM을 처음이용하신다면, SDK를 먼저 다운로드 하세요!</p>
                             </p>
                             <AnimatedButton
-                                text="SESIM SDK 다운로드 하러 가기"
+                                text="SESIM SDK 다운로드"
                                 link="/"
                                 width="370px"
                             />

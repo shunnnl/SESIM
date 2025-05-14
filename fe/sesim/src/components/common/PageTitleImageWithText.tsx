@@ -81,7 +81,7 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                             </motion.div>
                         )}
                         <motion.h1 
-                            className="text-white text-[28px] md:text-[42px] lg:text-5xl font-bold"
+                            className="text-white text-[28px] md:text-[42px] lg:text-6xl font-bold"
                             initial={{ opacity: 0, y: 70 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, delay: subtitle ? 0.5 : 0, ease: "easeOut" }}
@@ -94,8 +94,8 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1, delay: subtitle ? 0.9 : 0.4, ease: "easeOut" }}
                     >
-                        {description1 && <p className="text-white text-[16px] md:text-[20px] lg:text-xl font-normal">{description1}</p>}
-                        {description2 && <p className="text-white text-[16px] md:text-[20px] lg:text-xl font-normal">{description2}</p>}
+                        {description1 && <p className="text-white text-[16px] md:text-[20px] lg:text-2xl font-normal">{description1}</p>}
+                        {description2 && <p className="text-white text-[16px] md:text-[20px] lg:text-2xl font-normal">{description2}</p>}
                     </motion.div>
                     { buttonText === "프로젝트 생성하기" && (
                         <motion.div
