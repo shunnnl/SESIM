@@ -7,6 +7,7 @@ import { ThirdStep } from "../components/CreateProject/ThirdStep";
 import { ForthStep } from "../components/CreateProject/ForthStep";
 import { FifthStep } from "../components/CreateProject/FifthStep";
 import { SecondStep } from "../components/CreateProject/SecondStep";
+import { ScrollToTopButton } from "../components/common/ScrollToTopButton";
 import { ProgressStepper } from "../components/CreateProject/ProgressStepper";
 import { BackgroundBlobs } from "../components/CreateProject/BackgroundBlobs";
 import { ProjectErrorModal } from "../components/CreateProject/ProjectErrorModal";
@@ -15,6 +16,7 @@ import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingM
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { CreateProjectTitleImageWithText } from "../components/CreateProject/CreateProjectTitleImageWithText";
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig } from "../store/createProjectInfoSlice";
+import { HelpButton } from "../components/common/HelpButton";
 
 export const CreateProjectPage = () => {
     // Router & Redux
@@ -49,6 +51,9 @@ export const CreateProjectPage = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+
+    // ScrollTop States
+    const [showScrollTop, setShowScrollTop] = useState(false);
 
     // Computed States
     const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) && forthStepDone && fifthStepDone;
@@ -101,6 +106,14 @@ export const CreateProjectPage = () => {
             setCombinedPrices(deployOptions.data.combinedPrices);
         };
         fetchDeployOptions();
+    }, []);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 200);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     return (
@@ -157,7 +170,9 @@ export const CreateProjectPage = () => {
                 />
             </div>
 
-            {/* Fixed Bottom Bar */}
+            <HelpButton up={showScrollTop}/>
+            <ScrollToTopButton show={showScrollTop} />
+            
             <div
                 className={`fixed left-0 bottom-0 w-full z-50 transition-all duration-500
                     ${selectedModels.length > 0 && selectedInstancePrice > 0 ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
