@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from urllib.parse import urlparse
 
 from app.core.config import settings
 from app.core.extractors.nginx_extractor import parse_log_lines
@@ -43,6 +44,8 @@ def handle_prediction(request: PredictRequest, db: Session, api_key: str) -> Pre
             "client_ip": log["client_ip"],
             "method": log["method"],
             "url": log["url"],
+            "domain": urlparse(log["url"]).netloc,  # 도메인 추출
+            "path": urlparse(log["url"]).path,  # 경로 추출
             "status_code": int(log["status_code"]),
             "is_attack": result["is_attack"],
             "attack_score": result["attack_score"]
