@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { AnimatedButton } from "../components/common/AnimatedButton";
+import { AboutPage } from "./AboutPage";
+import mainBackgroundImage from "../assets/images/cyber-security-bg.webp";
 
 const MainText = () => {
     return (
@@ -52,14 +54,21 @@ const AnimatedDetailButton = () => {
 
 export const HomePage: React.FC = () => {
     return (
-        <div className="flex flex-col gap-8 md:gap-12 lg:gap-[72px] text-white container-padding">
-            <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[250px] md:mt-[300px] lg:mt-[320px]">
-                <MainText />
-                <SubText />
+        <div>
+            <div
+                className="bg-cover bg-center bg-no-repeat h-screen flex flex-col justify-center gap-8 md:gap-12 lg:gap-[72px] text-white container-padding"
+                style={{ backgroundImage: `url(${mainBackgroundImage})` }}
+            >
+                <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[100px]">
+                    <MainText />
+                    <SubText />
+                </div>
+                <div>
+                    <AnimatedDetailButton />
+                </div>
             </div>
-            <div>
-                <AnimatedDetailButton />
-            </div>
+
+            <AboutPage />
         </div>
     );
 };
