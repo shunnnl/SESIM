@@ -7,6 +7,5 @@ export const getPageBackgroundClass = (pathname: string): string => {
         return "bg-[#04101D] min-h-screen";
     }
 
-    return "bg-[#0A0C35] min-h-screen";
+    return "bg-[#000000] min-h-screen";
 };
-

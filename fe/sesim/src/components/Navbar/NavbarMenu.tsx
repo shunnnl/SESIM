@@ -56,13 +56,13 @@ export const NavbarMenu: React.FC = () => {
                             transition={{ duration: 0.2 }}
                             className="absolute -left-16 translate-x-1/2 top-1/2 translate-y-1/2"
                     >
-                        <div className="mt-[60px] w-48 bg-[#07142B] rounded-[20px] shadow-[0px_0px_15px_rgba(116,208,244,0.4)] border border-[#3C3D5C] overflow-hidden">
+                        <div className="mt-[60px] py-2 w-48 bg-[#04101D] rounded-[20px] shadow-[0px_0px_15px_rgba(116,208,244,0.4)] border border-[#3C3D5C] overflow-hidden">
                             {models.map((model) => (
                                 <Link
                                     key={model.id}
                                     to={model.path}
                                     onClick={() => setIsOpen(false)}
-                                    className="text-[16px] block px-4 py-3 text-white hover:bg-[#3893FF] transition-colors duration-200"
+                                    className="text-[16px] block px-4 py-3 text-white hover:text-gray-500 transition-colors duration-200"
                                 >
                                     {model.name}
                                 </Link>
