@@ -125,7 +125,7 @@ const DeploymentProgressBar: React.FC<Props> = ({ steps }) => {
         <div>
             <div className="flex items-center my-8 ml-3 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
                 <div className="w-1 h-5 bg-blue-400 mr-3 rounded-sm" />
-                <h3 className="text-lg font-semibold mr-2">배포 상태</h3>
+                <h3 className="font-semibold text-md text-gray-200">배포 상태</h3>
                 {statusText && (
                     <span
                         className={`text-xs font-medium ml-2 px-3 py-[1.5px] rounded-full ${statusColor}`}

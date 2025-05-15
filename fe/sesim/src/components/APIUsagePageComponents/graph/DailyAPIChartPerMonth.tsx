@@ -61,14 +61,6 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   return null;
 };
 
-const modelColors = {
-  1: "#033486",
-  2: "#EC4899",
-  3: "#8B5CF6",
-  4: "#F59E0B",
-  5: "#3A7880",
-};
-
 const modelNames = {
   1: "GPT-4",
   2: "GPT-3.5",

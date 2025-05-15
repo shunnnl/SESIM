@@ -89,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             <div
                                 ref={triggerRef}
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                className={`flex flex-row items-center py-[10px] px-[10px] lg:px-[16px] lg:gap-[10px] border border-white/50 rounded-[50px] cursor-pointer min-w-fit hover:border-white/0 hover:shadow-[0px_0px_15px_rgba(116,208,244,0.4)] transition-all duration-300 ${isDropdownOpen ? "border-white/0 shadow-[0px_0px_15px_rgba(116,208,244,0.4)]" : ""}`}
+                                className={`flex flex-row items-center py-[10px] px-[10px] lg:px-[16px] lg:gap-[10px] border border-white/30 rounded-[50px] cursor-pointer min-w-fit hover:border-white/0 hover:shadow-[0px_0px_15px_rgba(116,208,244,0.4)] transition-all duration-300 ${isDropdownOpen ? "border-white/0 shadow-[0px_0px_15px_rgba(116,208,244,0.4)]" : ""}`}
                             >
                                 <span className="hidden lg:block font-semibold text-[16px] leading-[21px] text-white flex-none order-0">
                                     {user?.nickname}
