@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { toast } from "react-toastify";
 import { FaRegCopy } from "react-icons/fa6";
 import { RiArrowRightWideLine } from "react-icons/ri";
