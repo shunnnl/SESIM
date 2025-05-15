@@ -46,7 +46,7 @@ export const UserGuideSection = ({ initialStep }: UserGuideSectionProps) => {
     return (
         <div 
             ref={sectionRef} 
-            className="relative flex pb-[100px]  container-padding"
+            className="relative flex pb-[100px] container-padding"
             style={{
                 background: "linear-gradient(to bottom, #000000 0px, #04101D 1000px, #04101D 100%)"
             }}

@@ -44,7 +44,12 @@ export const AiModelDetailPage = () => {
                     setSelectedTab={setSelectedTab}
                 />
             </div>
-            <div className="container-padding my-[44px] text-white relative z-10">
+            <div 
+                className="container-padding py-[44px] text-white relative z-10"
+                style={{
+                    background: "linear-gradient(to bottom, #000000 0px, #04101D 300px, #04101D 100%)"
+                }}
+            >
                 { selectedTab === "description" && (
                     <motion.div 
                         className="py-[44px]"
@@ -52,10 +57,6 @@ export const AiModelDetailPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                     >
-                        <div className="flex flex-col items-center gap-[15px]">
-                            <BlueCircle />
-                            <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">특징</h1>
-                        </div>
                         <div>
                             <div className="mt-[2px]">
                                 {features.map((feature, index) => (
@@ -67,20 +68,20 @@ export const AiModelDetailPage = () => {
                                         viewport={{ once: true, amount: 0.2 }}
                                     >
                                         <h2
-                                            className={`text-[80px] font-bold text-[#0075FF]/50 ${index % 2 === 1 ? "ml-[34%]" : ""}`}
+                                            className={`text-[80px] font-bold text-[#718AA1]/50 ${index % 2 === 1 ? "ml-[34%]" : ""}`}
                                         >
                                             0{index + 1}
                                         </h2>
                                         <div className={`flex gap-8 items-start w-full mb-10 ${index % 2 === 1 ? "flex-row-reverse" : ""}`}>
                                             <div className="flex flex-col gap-4 flex-[2] min-w-0 ml-[50px]">
-                                                <div className="bg-gradient-to-l from-transparent to-[#367DF8] px-8 py-3 mb-2 rounded-[10px]">
+                                                <div className="bg-gradient-to-r from-[#4483A6] to-[#367DF8]/0 px-8 py-3 mb-2 rounded-[10px]">
                                                     <p className="text-[30px] font-bold">{feature.featureSummary}</p>
                                                 </div>
                                                 <p className="text-[20px] font-medium flex items-center gap-[10px]">
-                                                    <BsCircleFill className="text-[#0075FF] w-[10px] h-[10px]" /> {feature.featureOverview}
+                                                    <BsCircleFill className="text-[#718AA1] w-[10px] h-[10px]" /> {feature.featureOverview}
                                                 </p>
                                                 <p className="text-[20px] font-medium flex items-center gap-[10px]">
-                                                    <BsCircleFill className="text-[#0075FF] w-[10px] h-[10px]" /> {feature.featureDetail}
+                                                    <BsCircleFill className="text-[#718AA1] w-[10px] h-[10px]" /> {feature.featureDetail}
                                                 </p>
                                             </div>
                                             <div className="flex-[1] flex items-center justify-center min-w-[1]">
@@ -105,10 +106,6 @@ export const AiModelDetailPage = () => {
                         transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                     >
                         <div className="flex flex-col gap-[10px]">
-                            <div className="flex flex-col items-center">
-                                <BlueCircle />
-                                <h1 className="text-[24px] md:text-[32px] lg:text-[37px] font-bold">예시 코드</h1>
-                            </div>
                             <div className="flex flex-col gap-[15px]">
                                 <div>
                                     <p>사용자의 로그 데이터를 기반으로 학습시켜 개인 맞춤형 보안 탐지 모델로 활용할 수 있습니다.</p>
@@ -131,7 +128,7 @@ export const AiModelDetailPage = () => {
                                 
                                 <AnimatedButton
                                     text="SESIM SDK 다운로드 하러 가기" 
-                                    link="/" 
+                                    link="/sdk-download" 
                                     width="370px" 
                                 />
                             </div>
