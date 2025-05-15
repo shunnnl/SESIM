@@ -22,22 +22,27 @@ export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = (
                     <div className="flex flex-col justify-center items-center text-center flex-1 gap-[10px]" style={{ paddingTop: "5%" }}>
                         <motion.h1
                             className="text-white text-[28px] md:text-[42px] lg:text-6xl font-bold"
-                            initial={{ opacity: 0, y: 40 }}
+                            initial={{ opacity: 0, y: 60 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 1, ease: "easeOut" }}
+                            transition={{ duration: 1.2, ease: "easeOut" }}
                         >
                             {modelName}
                         </motion.h1>
                         <motion.p
-                            className="text-white text-[16px] md:text-[20px] lg:text-2xl font-normal"
-                            initial={{ opacity: 0, y: 40 }}
+                            className="w-[63%] text-white text-[16px] md:text-[20px] lg:text-2xl font-normal"
+                            initial={{ opacity: 0, y: 60 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                            transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
                         >
                             {description}
                         </motion.p>
                     </div>
-                    <div className="absolute z-30 flex items-center justify-center gap-[32px] md:gap-[60px] lg:gap-[100px] bg-[#000000]/40 w-full h-[48px] md:h-[60px] lg:h-[70px] absolute bottom-0 left-0 z-10">
+                    <motion.div
+                        className="absolute z-30 flex items-center justify-center gap-[32px] md:gap-[60px] lg:gap-[100px] bg-[#000000]/40 w-full h-[48px] md:h-[60px] lg:h-[70px] absolute bottom-0 left-0 z-10"
+                        initial={{ opacity: 0, y: 60 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0, ease: "easeOut" }}
+                    >
                         <button
                             className={`text-white text-[18px] md:text-[22px] lg:text-[24px] font-bold hover:text-gray-300 transition-colors ${selectedTab === "description" ? "underline" : ""}`}
                             onClick={() => setSelectedTab("description")}
@@ -51,7 +56,7 @@ export const ImageTitleBannerWithNav: React.FC<ImageTitleBannerWithNavProps> = (
                         >
                             예시 코드
                         </button>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </div>

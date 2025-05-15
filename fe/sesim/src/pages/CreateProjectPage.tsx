@@ -145,8 +145,12 @@ export const CreateProjectPage = () => {
                     !selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) ? 3 : 4
                 }
             />
-            <div className="relative overflow-hidden">
-                <div className="bg-gradient-1000 absolute top-0 left-0 w-full z-0"></div>
+            <div 
+                className="relative overflow-hidden"
+                style={{
+                    background: "linear-gradient(to bottom, #000000 0px, #04101D 500px, #04101D 100%)"
+                }}
+            >
                 <BackgroundBlobs />
                 <div className={`container-padding text-white py-[120px]${selectedModels.length > 0 && selectedInstancePrice > 0 ? " pb-[200px]" : ""} relative z-10`}>
                     <FirstStep

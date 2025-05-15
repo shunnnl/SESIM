@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import infoIcon from "../assets/images/info.webp";
 import PageBackground from "../assets/images/sdk-download-bg.webp";
@@ -7,10 +7,21 @@ import BackgroundImage from "../assets/images/sdk-download-content-bg.webp";
 import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
 import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
+import { getSdkExampleCode } from "../services/aiModelService";
+import { useState } from "react";
 
 export const SdkDownloadPage = () => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.3 });
+    const [sdkExampleCode, setSdkExampleCode] = useState<string>("");
+
+    useEffect(() => {
+        const fetchSdkExampleCode = async () => {
+            const response = await getSdkExampleCode();
+            setSdkExampleCode(response.data.codeExample);
+        };
+        fetchSdkExampleCode();
+    }, []);
 
     return (
         <SnapScrollContainer>
@@ -80,11 +91,11 @@ export const SdkDownloadPage = () => {
                         animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
                         transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
                     >
-                        <ExampleCodeBox />
+                        <ExampleCodeBox codeString={sdkExampleCode} />
                     </motion.div>
                 </motion.div>
                 <motion.div
-                    className="absolute top-[73%] left-[66%] -translate-y-1/2 w-[100px] h-[100px] rounded-full"
+                    className="absolute top-[73%] left-[62%] -translate-y-1/2 w-[200px] h-[100px] rounded-full"
                     style={{
                         background: "#063584",
                         boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
