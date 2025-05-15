@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ import com.backend.sesim.domain.deployment.repository.ProjectModelInfoRepository
 import com.backend.sesim.domain.deployment.repository.ProjectRepository;
 import com.backend.sesim.domain.iam.entity.RoleArn;
 import com.backend.sesim.domain.iam.repository.RoleArnRepository;
+import com.backend.sesim.domain.resourcemanagement.entity.Model;
 import com.backend.sesim.domain.user.entity.User;
 import com.backend.sesim.domain.user.repository.UserRepository;
 import com.backend.sesim.global.exception.GlobalException;
@@ -789,39 +791,43 @@ public class ApiUsageService {
 		Date lastMonthStart = Date.from(startOfLastMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		Date lastMonthEnd = Date.from(endOfLastMonth.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
 
-		// 이번 달과 지난달 데이터 조회
+		// 이번 달과 지난 달의 사용량 조회
 		List<ApiUsage> thisMonthUsage = apiUsageRepository.findByProjectIdsAndDateRange(projectIds, thisMonthStart,
 			nowDate);
 		List<ApiUsage> lastMonthUsage = apiUsageRepository.findByProjectIdsAndDateRange(projectIds, lastMonthStart,
 			lastMonthEnd);
 
-		// 이번 달 요약
+		// 요약 집계
 		double totalCost = thisMonthUsage.stream().mapToDouble(this::getUsageCost).sum();
 		int totalRequests = thisMonthUsage.stream().mapToInt(ApiUsage::getTotalRequestCount).sum();
 		int totalSeconds = thisMonthUsage.stream().mapToInt(ApiUsage::getTotalSeconds).sum();
 
-		// 지난 달 요약
 		double lastTotalCost = lastMonthUsage.stream().mapToDouble(this::getUsageCost).sum();
 		int lastTotalRequests = lastMonthUsage.stream().mapToInt(ApiUsage::getTotalRequestCount).sum();
 		int lastTotalSeconds = lastMonthUsage.stream().mapToInt(ApiUsage::getTotalSeconds).sum();
 
-		// 프로젝트 + 모델 정보 정리
-		List<ApiUsageInitResponse.ProjectSummary> projectSummaries = projects.stream().map(project -> {
-			List<ApiUsageInitResponse.ModelSummary> models = project.getModelInformations().stream()
-				.map(info -> ApiUsageInitResponse.ModelSummary.builder()
-					.modelId(info.getModel().getId())
-					.name(info.getModel().getName())
-					.modelPricePerHour(info.getModel().getModelPricePerHour())
-					.build())
-				.toList();
-
-			return ApiUsageInitResponse.ProjectSummary.builder()
+		// 프로젝트 정보만 추출
+		List<ApiUsageInitResponse.ProjectSummary> projectSummaries = projects.stream()
+			.map(project -> ApiUsageInitResponse.ProjectSummary.builder()
 				.projectId(project.getId())
 				.name(project.getName())
 				.description(project.getDescription())
-				.models(models)
-				.build();
-		}).toList();
+				.build())
+			.toList();
+
+		// 사용자가 사용하는 모델 목록을 중복 없이 추출
+		Set<Model> uniqueModels = projects.stream()
+			.flatMap(p -> p.getModelInformations().stream())
+			.map(ProjectModelInformation::getModel)
+			.collect(Collectors.toSet());
+
+		List<ApiUsageInitResponse.ModelSummary> modelSummaries = uniqueModels.stream()
+			.map(model -> ApiUsageInitResponse.ModelSummary.builder()
+				.modelId(model.getId())
+				.name(model.getName())
+				.modelPricePerHour(model.getModelPricePerHour())
+				.build())
+			.toList();
 
 		return ApiUsageInitResponse.builder()
 			.createdAt(user.getCreatedAt().toLocalDate())
@@ -832,6 +838,7 @@ public class ApiUsageService {
 			.lastTotalRequests(lastTotalRequests)
 			.lastTotalSeconds(lastTotalSeconds)
 			.projects(projectSummaries)
+			.models(modelSummaries)
 			.build();
 	}
 

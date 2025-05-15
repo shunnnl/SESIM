@@ -25,6 +25,7 @@ public class ApiUsageInitResponse {
 	private int lastTotalSeconds; // 지난달 사용시간
 
 	private List<ProjectSummary> projects; // 해당 사용자의 프로젝트 목록
+	private List<ModelSummary> models; // 해당 사용자가 사용중인 모델 목록
 
 	@Getter
 	@NoArgsConstructor
@@ -34,7 +35,6 @@ public class ApiUsageInitResponse {
 		private Long projectId;
 		private String name;
 		private String description;
-		private List<ModelSummary> models;
 	}
 
 	@Getter
