@@ -21,6 +21,8 @@ def create_ai_result_table():
         Column("client_ip", String(15), nullable=False),
         Column("method", String(255)),
         Column("url", String(2000)),
+        Column("domain", String(255)),
+        Column("path", String(2000)),
         Column("status_code", CHAR(3)),
         Column("is_attack", Boolean, nullable=False),
         Column("attack_score", Float),
