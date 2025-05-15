@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import backgroundImage from "../assets/images/about-bg.webp";
 import { SesimFunctions } from "../components/About/SesimFunctions";
+import { SesimArchitecture } from "../components/About/SesimArchitecture";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
 import { SesimFunctionsDescription } from "../components/About/SesimFunctionsDescription";
 
@@ -34,10 +35,20 @@ export const AboutPage: React.FC = () => {
                 >
                     <SesimFunctionsDescription />
                 </motion.div>
+
+                <motion.div
+                    className="text-white py-[100px] relative z-10"
+                    initial={{ opacity: 0, y: 70 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                    viewport={{ once: true, amount: 0.2 }}
+                >
+                    <SesimArchitecture />
+                </motion.div>
             </div>
 
             <div
-                className="absolute top-[52%] left-1/2 -translate-y-1/2 -translate-x-1/2 w-[200px] h-[200px] rounded-full"
+                className="absolute top-[1400px] left-1/2 -translate-y-1/2 -translate-x-1/2 w-[200px] h-[200px] rounded-full"
                 style={{
                     background: "#15305F",
                     boxShadow: "0 0 160px 120px #15305F, 0 0 320px 240px #15305F",
@@ -47,7 +58,17 @@ export const AboutPage: React.FC = () => {
             ></div>
 
             <div
-                className="absolute top-[85%] left-1/2 -translate-y-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full"
+                className="absolute top-[2300px] left-1/2 -translate-y-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full"
+                style={{
+                    background: "#15305F",
+                    boxShadow: "0 0 160px 120px #15305F, 0 0 320px 240px #15305F",
+                    opacity: 0.3,
+                    zIndex: 0
+                }}
+            ></div>
+
+            <div
+                className="absolute top-[3600px] left-1/2 -translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full"
                 style={{
                     background: "#15305F",
                     boxShadow: "0 0 160px 120px #15305F, 0 0 320px 240px #15305F",
