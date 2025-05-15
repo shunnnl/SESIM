@@ -6,7 +6,7 @@ import { SesimFunctionsDescription } from "../components/About/SesimFunctionsDes
 
 export const AboutPage: React.FC = () => {
     return (
-        <div>
+        <div className="relative">
             <PageTitleImageWithText
                 subtitle="About SESIM"
                 title="SESIM은 어떤 서비스인가요?"
@@ -36,13 +36,22 @@ export const AboutPage: React.FC = () => {
                 </motion.div>
             </div>
 
+            <div
+                className="absolute top-[52%] left-1/2 -translate-y-1/2 -translate-x-1/2 w-[200px] h-[200px] rounded-full"
+                style={{
+                    background: "#15305F",
+                    boxShadow: "0 0 160px 120px #15305F, 0 0 320px 240px #15305F",
+                    opacity: 0.3,
+                    zIndex: 0
+                }}
+            ></div>
 
             <div
-                className="absolute top-[65%] left-1/2 -translate-y-1/2 -translate-x-1/2 w-[150px] h-[150px] rounded-full"
+                className="absolute top-[85%] left-1/2 -translate-y-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full"
                 style={{
-                    background: "#15305F/30", 
-                    boxShadow: "0 0 160px 120px #15305F/30, 0 0 320px 240px #15305F/30",
-                    opacity: 0.4,
+                    background: "#15305F",
+                    boxShadow: "0 0 160px 120px #15305F, 0 0 320px 240px #15305F",
+                    opacity: 0.3,
                     zIndex: 0
                 }}
             ></div>
