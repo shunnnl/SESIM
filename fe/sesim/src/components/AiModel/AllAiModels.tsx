@@ -9,11 +9,11 @@ export const AllAiModels = () => {
 
     return (
         <div
-            className="text-white bg-cover bg-center bg-no-repeat"
+            className="text-white bg-cover bg-center bg-no-repeat h-screen flex items-center justify-center"
             style={{ backgroundImage: `url(${backgroundImage})` }}
         >
             <motion.div
-                className="container-padding py-[100px] text-white"
+                className="container-padding text-white"
                 initial={{ opacity: 0, y: 70 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}

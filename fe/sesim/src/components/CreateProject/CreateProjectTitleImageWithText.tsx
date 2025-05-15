@@ -14,8 +14,8 @@ export const CreateProjectTitleImageWithText: React.FC = () => {
                 className="flex flex-col items-center justify-center text-center col-start-1 row-start-1"
                 style={{ paddingTop: "5%" }}
             >
-                <h1 className="text-white text-[28px] md:text-[32px] lg:text-5xl font-bold">프로젝트 생성</h1>
-                <p className="text-white text-[16px] md:text-[20px] lg:text-2xl font-normal">보안 AI를 안전하게 배포하고 실행할 나만의 프로젝트를 구성하세요.</p>
+                <p className="text-white text-lg md:text-2xl lg:text-4xl font-bold">보안 AI를 안전하게 배포하고 실행할 </p>
+                <p className="text-white text-lg md:text-2xl lg:text-4xl font-bold">나만의 프로젝트를 구성하세요.</p>
             </div>
         </div>
     );
