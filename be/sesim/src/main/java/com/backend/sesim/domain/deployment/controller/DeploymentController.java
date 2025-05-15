@@ -101,4 +101,10 @@ public class DeploymentController {
         @ModelAttribute ApiUsageIntervalRequest request) {
         return CommonResponseDto.ok(apiUsageService.getIntervalAllAllApiUsage(request));
     }
+
+    @Operation(summary = "대시보드 초기데이터", description = "대시보드 공통적으로 필요한 초기데이터를 제공합니다.")
+    @GetMapping("/api-usage/init")
+    public CommonResponseDto<ApiUsageInitResponse> getDashboardInit() {
+        return CommonResponseDto.ok(apiUsageService.getInitApiUsage());
+    }
 }

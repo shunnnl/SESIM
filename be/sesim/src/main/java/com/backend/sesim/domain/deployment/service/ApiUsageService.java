@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.backend.sesim.domain.auth.exception.AuthErrorCode;
 import com.backend.sesim.domain.deployment.dto.request.ApiUsageIntervalRequest;
 import com.backend.sesim.domain.deployment.dto.request.ApiUsageUpdateRequest;
+import com.backend.sesim.domain.deployment.dto.response.ApiUsageInitResponse;
 import com.backend.sesim.domain.deployment.dto.response.ApiUsageIntervalAllAllResponse;
 import com.backend.sesim.domain.deployment.dto.response.ApiUsageIntervalAllSpecificResponse;
 import com.backend.sesim.domain.deployment.dto.response.ApiUsageIntervalResponse;
@@ -279,7 +280,8 @@ public class ApiUsageService {
 	}
 
 	@Transactional(readOnly = true)
-	public ApiUsageIntervalSpecificSpecificResponse getIntervalSpecificSpecificApiUsage(ApiUsageIntervalRequest request) {
+	public ApiUsageIntervalSpecificSpecificResponse getIntervalSpecificSpecificApiUsage(
+		ApiUsageIntervalRequest request) {
 		Long projectId = request.getProjectId();
 		LocalDate startDate = request.getStartTime();
 		LocalDate endDate = request.getEndTime();
@@ -339,7 +341,8 @@ public class ApiUsageService {
 		// 일별 집계
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		Map<LocalDate, List<ApiUsage>> dailyGroup = currentUsages.stream()
-			.collect(Collectors.groupingBy(u -> u.getIntervalDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+			.collect(Collectors.groupingBy(
+				u -> u.getIntervalDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
 
 		List<ApiUsageIntervalSpecificSpecificResponse.DailyModelRequestDto> dailyModelRequests = new ArrayList<>();
 		List<ApiUsageIntervalSpecificSpecificResponse.DailyModelCostDto> dailyModelCosts = new ArrayList<>();
@@ -382,23 +385,30 @@ public class ApiUsageService {
 						})
 					));
 
-				List<ApiUsageIntervalSpecificSpecificResponse.ModelCountDto> modelRequestDtos = modelRequestMap.entrySet().stream()
+				List<ApiUsageIntervalSpecificSpecificResponse.ModelCountDto> modelRequestDtos = modelRequestMap.entrySet()
+					.stream()
 					.map(e -> new ApiUsageIntervalSpecificSpecificResponse.ModelCountDto(e.getKey(), e.getValue()))
 					.collect(Collectors.toList());
 
-				List<ApiUsageIntervalSpecificSpecificResponse.ModelSecondDto> modelSecondDtos = modelSecondMap.entrySet().stream()
+				List<ApiUsageIntervalSpecificSpecificResponse.ModelSecondDto> modelSecondDtos = modelSecondMap.entrySet()
+					.stream()
 					.map(e -> new ApiUsageIntervalSpecificSpecificResponse.ModelSecondDto(e.getKey(), e.getValue()))
 					.collect(Collectors.toList());
 
-				List<ApiUsageIntervalSpecificSpecificResponse.ModelCostDto> modelCostDtos = modelCostMap.entrySet().stream()
+				List<ApiUsageIntervalSpecificSpecificResponse.ModelCostDto> modelCostDtos = modelCostMap.entrySet()
+					.stream()
 					.map(e -> new ApiUsageIntervalSpecificSpecificResponse.ModelCostDto(e.getKey(), e.getValue()))
 					.collect(Collectors.toList());
 
-				dailyModelRequests.add(new ApiUsageIntervalSpecificSpecificResponse.DailyModelRequestDto(dateStr, totalReq, modelRequestDtos));
-				dailyModelSeconds.add(new ApiUsageIntervalSpecificSpecificResponse.DailyModelSecondDto(dateStr, totalSec, modelSecondDtos));
-				dailyModelCosts.add(new ApiUsageIntervalSpecificSpecificResponse.DailyModelCostDto(dateStr, totalCost, modelCostDtos));
+				dailyModelRequests.add(
+					new ApiUsageIntervalSpecificSpecificResponse.DailyModelRequestDto(dateStr, totalReq,
+						modelRequestDtos));
+				dailyModelSeconds.add(
+					new ApiUsageIntervalSpecificSpecificResponse.DailyModelSecondDto(dateStr, totalSec,
+						modelSecondDtos));
+				dailyModelCosts.add(
+					new ApiUsageIntervalSpecificSpecificResponse.DailyModelCostDto(dateStr, totalCost, modelCostDtos));
 			});
-
 
 		return ApiUsageIntervalSpecificSpecificResponse.builder()
 			.curMonthTotalCost(curTotalCost)
@@ -466,7 +476,8 @@ public class ApiUsageService {
 			int totalSec = list.stream().mapToInt(ApiUsage::getTotalSeconds).sum();
 			double totalCost = list.stream().mapToDouble(this::getUsageCost).sum();
 
-			projectRequestCounts.add(new ApiUsageIntervalAllSpecificResponse.ProjectRequestCountDto(projectId, totalReq));
+			projectRequestCounts.add(
+				new ApiUsageIntervalAllSpecificResponse.ProjectRequestCountDto(projectId, totalReq));
 			projectSeconds.add(new ApiUsageIntervalAllSpecificResponse.ProjectSecondDto(projectId, totalSec));
 			projectCosts.add(new ApiUsageIntervalAllSpecificResponse.ProjectCostDto(projectId, totalCost));
 		}
@@ -474,7 +485,8 @@ public class ApiUsageService {
 		// 일별 요약 (최신순)
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		Map<LocalDate, List<ApiUsage>> dailyGroup = currentUsages.stream()
-			.collect(Collectors.groupingBy(u -> u.getIntervalDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+			.collect(Collectors.groupingBy(
+				u -> u.getIntervalDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
 
 		List<ApiUsageIntervalAllSpecificResponse.DailyProjectRequestDto> dailyProjectRequests = new ArrayList<>();
 		List<ApiUsageIntervalAllSpecificResponse.DailyProjectSecondDto> dailyProjectSeconds = new ArrayList<>();
@@ -495,30 +507,36 @@ public class ApiUsageService {
 				Map<Long, List<ApiUsage>> dailyProjectGroup = list.stream()
 					.collect(Collectors.groupingBy(u -> u.getInformation().getProject().getId()));
 
-				List<ApiUsageIntervalAllSpecificResponse.ProjectRequestCountDto> dailyReqList = dailyProjectGroup.entrySet().stream()
+				List<ApiUsageIntervalAllSpecificResponse.ProjectRequestCountDto> dailyReqList = dailyProjectGroup.entrySet()
+					.stream()
 					.map(e -> new ApiUsageIntervalAllSpecificResponse.ProjectRequestCountDto(
 						e.getKey(),
 						e.getValue().stream().mapToInt(ApiUsage::getTotalRequestCount).sum()
 					))
 					.collect(Collectors.toList());
 
-				List<ApiUsageIntervalAllSpecificResponse.ProjectSecondDto> dailySecList = dailyProjectGroup.entrySet().stream()
+				List<ApiUsageIntervalAllSpecificResponse.ProjectSecondDto> dailySecList = dailyProjectGroup.entrySet()
+					.stream()
 					.map(e -> new ApiUsageIntervalAllSpecificResponse.ProjectSecondDto(
 						e.getKey(),
 						e.getValue().stream().mapToInt(ApiUsage::getTotalSeconds).sum()
 					))
 					.collect(Collectors.toList());
 
-				List<ApiUsageIntervalAllSpecificResponse.ProjectCostDto> dailyCostList = dailyProjectGroup.entrySet().stream()
+				List<ApiUsageIntervalAllSpecificResponse.ProjectCostDto> dailyCostList = dailyProjectGroup.entrySet()
+					.stream()
 					.map(e -> new ApiUsageIntervalAllSpecificResponse.ProjectCostDto(
 						e.getKey(),
 						e.getValue().stream().mapToDouble(this::getUsageCost).sum()
 					))
 					.collect(Collectors.toList());
 
-				dailyProjectRequests.add(new ApiUsageIntervalAllSpecificResponse.DailyProjectRequestDto(dateStr, totalReq, dailyReqList));
-				dailyProjectSeconds.add(new ApiUsageIntervalAllSpecificResponse.DailyProjectSecondDto(dateStr, totalSec, dailySecList));
-				dailyProjectCosts.add(new ApiUsageIntervalAllSpecificResponse.DailyProjectCostDto(dateStr, totalCost, dailyCostList));
+				dailyProjectRequests.add(
+					new ApiUsageIntervalAllSpecificResponse.DailyProjectRequestDto(dateStr, totalReq, dailyReqList));
+				dailyProjectSeconds.add(
+					new ApiUsageIntervalAllSpecificResponse.DailyProjectSecondDto(dateStr, totalSec, dailySecList));
+				dailyProjectCosts.add(
+					new ApiUsageIntervalAllSpecificResponse.DailyProjectCostDto(dateStr, totalCost, dailyCostList));
 			});
 
 		return ApiUsageIntervalAllSpecificResponse.builder()
@@ -558,7 +576,7 @@ public class ApiUsageService {
 		double totalCost = usages.stream().mapToDouble(this::getUsageCost).sum();
 		int totalRequests = usages.stream().mapToInt(ApiUsage::getTotalRequestCount).sum();
 		int totalSeconds = usages.stream().mapToInt(ApiUsage::getTotalSeconds).sum();
-		int totalProjectCount = (int) projectIds.size();
+		int totalProjectCount = (int)projectIds.size();
 
 		// === 프로젝트별 전체 비용 ===
 		Map<Long, List<ApiUsage>> projectGroup = usages.stream()
@@ -596,9 +614,12 @@ public class ApiUsageService {
 				Long projectId = entry.getKey();
 				List<ApiUsage> list = entry.getValue();
 
-				costList.add(new ApiUsageIntervalAllAllResponse.ProjectCostDto(projectId, list.stream().mapToDouble(this::getUsageCost).sum()));
-				requestList.add(new ApiUsageIntervalAllAllResponse.ProjectRequestCountDto(projectId, list.stream().mapToInt(ApiUsage::getTotalRequestCount).sum()));
-				secondList.add(new ApiUsageIntervalAllAllResponse.ProjectSecondDto(projectId, list.stream().mapToInt(ApiUsage::getTotalSeconds).sum()));
+				costList.add(new ApiUsageIntervalAllAllResponse.ProjectCostDto(projectId,
+					list.stream().mapToDouble(this::getUsageCost).sum()));
+				requestList.add(new ApiUsageIntervalAllAllResponse.ProjectRequestCountDto(projectId,
+					list.stream().mapToInt(ApiUsage::getTotalRequestCount).sum()));
+				secondList.add(new ApiUsageIntervalAllAllResponse.ProjectSecondDto(projectId,
+					list.stream().mapToInt(ApiUsage::getTotalSeconds).sum()));
 			}
 
 			monthProjectCosts.add(new ApiUsageIntervalAllAllResponse.MonthProjectCostDto(month, costList));
@@ -626,7 +647,8 @@ public class ApiUsageService {
 					.mapToDouble(this::getUsageCost).sum();
 
 				List<ApiUsageIntervalAllAllResponse.ProjectCostDto> perProject = projectMap.entrySet().stream()
-					.map(e -> new ApiUsageIntervalAllAllResponse.ProjectCostDto(e.getKey(), e.getValue().stream().mapToDouble(this::getUsageCost).sum()))
+					.map(e -> new ApiUsageIntervalAllAllResponse.ProjectCostDto(e.getKey(),
+						e.getValue().stream().mapToDouble(this::getUsageCost).sum()))
 					.collect(Collectors.toList());
 
 				return new ApiUsageIntervalAllAllResponse.DailyProjectCostDto(date, totalDayCost, perProject);
@@ -661,7 +683,7 @@ public class ApiUsageService {
 		double totalCost = usages.stream().mapToDouble(this::getUsageCost).sum();
 		int totalRequests = usages.stream().mapToInt(ApiUsage::getTotalRequestCount).sum();
 		int totalSeconds = usages.stream().mapToInt(ApiUsage::getTotalSeconds).sum();
-		int totalModelCount = (int) usages.stream()
+		int totalModelCount = (int)usages.stream()
 			.map(u -> u.getInformation().getModel().getId())
 			.distinct()
 			.count();
@@ -691,9 +713,12 @@ public class ApiUsageService {
 				Long modelId = entry.getKey();
 				List<ApiUsage> list = entry.getValue();
 
-				costList.add(new ApiUsageIntervalSpecificAllResponse.ModelCostDto(modelId, list.stream().mapToDouble(this::getUsageCost).sum()));
-				reqList.add(new ApiUsageIntervalSpecificAllResponse.ModelRequestDto(modelId, list.stream().mapToInt(ApiUsage::getTotalRequestCount).sum()));
-				secList.add(new ApiUsageIntervalSpecificAllResponse.ModelSecondDto(modelId, list.stream().mapToInt(ApiUsage::getTotalSeconds).sum()));
+				costList.add(new ApiUsageIntervalSpecificAllResponse.ModelCostDto(modelId,
+					list.stream().mapToDouble(this::getUsageCost).sum()));
+				reqList.add(new ApiUsageIntervalSpecificAllResponse.ModelRequestDto(modelId,
+					list.stream().mapToInt(ApiUsage::getTotalRequestCount).sum()));
+				secList.add(new ApiUsageIntervalSpecificAllResponse.ModelSecondDto(modelId,
+					list.stream().mapToInt(ApiUsage::getTotalSeconds).sum()));
 			}
 
 			monthModelCosts.add(new ApiUsageIntervalSpecificAllResponse.MonthModelCostDto(month, costList));
@@ -741,6 +766,72 @@ public class ApiUsageService {
 			.monthModelRequests(monthModelRequests)
 			.monthModelSeconds(monthModelSeconds)
 			.dailyModelCosts(dailyModelCosts)
+			.build();
+	}
+
+	@Transactional(readOnly = true)
+	public ApiUsageInitResponse getInitApiUsage() {
+		Long userId = securityUtils.getCurrentUsersId();
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new GlobalException(AuthErrorCode.USER_NOT_FOUND));
+
+		List<RoleArn> roleArns = roleArnRepository.findAllByUser(user);
+		List<Project> projects = projectRepository.findAllByRoleArnIn(roleArns);
+		List<Long> projectIds = projects.stream().map(Project::getId).toList();
+
+		LocalDate now = LocalDate.now();
+		LocalDate startOfMonth = now.withDayOfMonth(1);
+		LocalDate startOfLastMonth = startOfMonth.minusMonths(1);
+		LocalDate endOfLastMonth = startOfMonth.minusDays(1);
+
+		Date thisMonthStart = Date.from(startOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date nowDate = Date.from(now.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
+		Date lastMonthStart = Date.from(startOfLastMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date lastMonthEnd = Date.from(endOfLastMonth.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
+
+		// 이번 달과 지난달 데이터 조회
+		List<ApiUsage> thisMonthUsage = apiUsageRepository.findByProjectIdsAndDateRange(projectIds, thisMonthStart,
+			nowDate);
+		List<ApiUsage> lastMonthUsage = apiUsageRepository.findByProjectIdsAndDateRange(projectIds, lastMonthStart,
+			lastMonthEnd);
+
+		// 이번 달 요약
+		double totalCost = thisMonthUsage.stream().mapToDouble(this::getUsageCost).sum();
+		int totalRequests = thisMonthUsage.stream().mapToInt(ApiUsage::getTotalRequestCount).sum();
+		int totalSeconds = thisMonthUsage.stream().mapToInt(ApiUsage::getTotalSeconds).sum();
+
+		// 지난 달 요약
+		double lastTotalCost = lastMonthUsage.stream().mapToDouble(this::getUsageCost).sum();
+		int lastTotalRequests = lastMonthUsage.stream().mapToInt(ApiUsage::getTotalRequestCount).sum();
+		int lastTotalSeconds = lastMonthUsage.stream().mapToInt(ApiUsage::getTotalSeconds).sum();
+
+		// 프로젝트 + 모델 정보 정리
+		List<ApiUsageInitResponse.ProjectSummary> projectSummaries = projects.stream().map(project -> {
+			List<ApiUsageInitResponse.ModelSummary> models = project.getModelInformations().stream()
+				.map(info -> ApiUsageInitResponse.ModelSummary.builder()
+					.modelId(info.getModel().getId())
+					.name(info.getModel().getName())
+					.modelPricePerHour(info.getModel().getModelPricePerHour())
+					.build())
+				.toList();
+
+			return ApiUsageInitResponse.ProjectSummary.builder()
+				.projectId(project.getId())
+				.name(project.getName())
+				.description(project.getDescription())
+				.models(models)
+				.build();
+		}).toList();
+
+		return ApiUsageInitResponse.builder()
+			.createdAt(user.getCreatedAt().toLocalDate())
+			.totalCost(totalCost)
+			.totalRequests(totalRequests)
+			.totalSeconds(totalSeconds)
+			.lastTotalCost(lastTotalCost)
+			.lastTotalRequests(lastTotalRequests)
+			.lastTotalSeconds(lastTotalSeconds)
+			.projects(projectSummaries)
 			.build();
 	}
 
