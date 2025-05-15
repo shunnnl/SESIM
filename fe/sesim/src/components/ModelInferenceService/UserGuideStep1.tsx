@@ -1,4 +1,5 @@
 import { UserGuideCard } from './UserGuideCard';
+import { GuideNoticeAndFAQ } from "./GuideNoticeAndFAQ";
 import Image1 from "../../assets/images/userguide-step1-1.webp";
 import Image2_01 from "../../assets/images/userguide-step1-2-01.webp";
 import Image2_02 from "../../assets/images/userguide-step1-2-02.webp";
@@ -8,7 +9,6 @@ import Image2_05 from "../../assets/images/userguide-step1-2-05.webp";
 import Image2_06 from "../../assets/images/userguide-step1-2-06.webp";
 import Image2_07_1 from "../../assets/images/userguide-step1-2-07-1.webp";
 import Image2_07_2 from "../../assets/images/userguide-step1-2-07-2.webp";
-import { GuideNoticeAndFAQ } from "./GuideNoticeAndFAQ";
 
 export const UserGuideStep1 = () => {
     return (

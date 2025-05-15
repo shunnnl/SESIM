@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "../../assets/images/userguide-step3.webp"
 import { GuideNoticeAndFAQ } from "./GuideNoticeAndFAQ";
+import Image from "../../assets/images/userguide-step3.webp"
 
 export const UserGuideStep3 = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);

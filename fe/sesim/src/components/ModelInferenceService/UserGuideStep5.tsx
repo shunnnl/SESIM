@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GuideNoticeAndFAQ } from "./GuideNoticeAndFAQ";
-import Image1 from "../../assets/images/userguide-step2-1.webp";
-import Image2 from "../../assets/images/userguide-step2-2.webp";
+import Image1 from "../../assets/images/userguide-step5-1.webp";
+import Image2 from "../../assets/images/userguide-step5-2.webp";
 
-export const UserGuideStep2 = () => {
+export const UserGuideStep5 = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalImageSrc, setModalImageSrc] = useState('');
 
@@ -38,9 +38,9 @@ export const UserGuideStep2 = () => {
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-[10px]">
                         <span className="text-[#9DC6FF] text-4xl">
-                            02
+                            05
                         </span>
-                        프로젝트 기본 정보 입력 가이드
+                        접근 허용 IP 등록 가이드
                     </h1>
 
                     <div className="mt-[80px]">
@@ -48,8 +48,8 @@ export const UserGuideStep2 = () => {
                         <div className="flex flex-row gap-[10px] mt-[15px]">
                             <div className="bg-[#495AFF] w-[6px] rounded-full"></div>
                             <div className="text-lg">
-                                <p>Sesim에서는 프로젝트 단위로 보안 AI 모델을 배포합니다.</p>
-                                <p>각 프로젝트를 식별하고 관리할 수 있도록 이름과 설명을 작성해야 합니다.</p>
+                                <p>보안 강화를 위해, Sesim은 배포된 프로젝트에 대해 지정된 IP만 접근을 허용합니다.</p>
+                                <p>즉, 사전에 등록한 IP만이 해당 모델 인프라에 접속할 수 있습니다.</p>
                             </div>
                         </div>
                     </div>
@@ -61,7 +61,7 @@ export const UserGuideStep2 = () => {
                 />
             </div>
 
-            <div className="mt-[100px] flex items-center gap-[100px]">
+            <div className="mt-[100px] flex items-start gap-[100px]">
                 <div
                     className="bg-[#04081D] rounded-[40px] w-fit px-[60px] py-[50px]"
                     style={{ boxShadow: "0 0 50px 0 #74D0F4" }}
@@ -79,8 +79,9 @@ export const UserGuideStep2 = () => {
                     <div className="flex flex-row gap-[10px] mt-[15px]">
                         <div className="bg-[#495AFF] w-[6px] rounded-full"></div>
                         <div className="text-lg">
-                            <p>1. 프로젝트 이름을 입력하세요.</p>
-                            <p className="text-[#C0C0C0]">예: “우리회사 내부망 분석용 프로젝트”</p>
+                            <p>1. 접속을 허용할 IP를 입력하세요.</p>
+                            <p className="text-[#C0C0C0]">* 개별 IP 입력: 192.168.0.1</p>
+                            <p className="text-[#C0C0C0]">* CIDR 범위 입력: 192.168.0.0/24</p>
                         </div>
                     </div>
 
@@ -89,16 +90,14 @@ export const UserGuideStep2 = () => {
                         style={{
                             borderLeft: "4px dashed #B8B8B8",
                             height: "100%",
-                            minHeight: "100px"
+                            minHeight: "50px"
                         }}
                     />
                 
                     <div className="flex flex-row gap-[10px] mt-[15px]">
                         <div className="bg-[#495AFF] w-[6px] rounded-full"></div>
                         <div className="text-lg">
-                            <p>2. 프로젝트 설명을 작성하세요.</p>
-                            <p className="text-[#C0C0C0]">어떤 데이터를 분석할지, 어떤 AI 모델을 사용할지 간단히 적어주세요.</p>
-                            <p className="text-[#C0C0C0]">예: “내부 사용자 로그인 패턴 분석을 위한 AI 모델 실험용”</p>
+                            <p>2. [IP 주소 등록] 버튼을 클릭해 리스트에 등록하세요.</p>
                         </div>
                     </div>
                 </div>
@@ -106,11 +105,12 @@ export const UserGuideStep2 = () => {
 
             <GuideNoticeAndFAQ
                 noticeList={[
-                    { text: "프로젝트 이름은 100자 내외" },
-                    { text: "프로젝트 설명은 500자 이하" }
+                    { text: "입력값은 IPv4 또는 CIDR 형식이어야 합니다." },
+                    { text: "잘못된 형식은 저장되지 않습니다." }
                 ]}
                 faqList={[
-                    { question: "프로젝트 이름을 나중에 바꿀수 있나요?", answer: "아니요! 프로젝트 이름 / 설명은 추후에 변경이 불가능합니다." },
+                    { question: "내 IP가 뭔지 모르겠어요?", answer: "[내 IP 확인하기] 버튼을 클릭하면 현재 사용 중인 IP를 자동으로 확인할 수 있습니다." },
+                    { question: "여러 개 입력 가능한가요?", answer: "네, 하나씩 추가적으로 등록 가능합니다." },
                 ]}
             />
 
