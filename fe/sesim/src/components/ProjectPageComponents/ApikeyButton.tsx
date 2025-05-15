@@ -8,15 +8,7 @@ interface ApiKeyButtonProps {
     onClick: (model: Model) => void;
 }
 
-const ApiKeyButton: React.FC<ApiKeyButtonProps> = ({
-    project,
-    model,
-    isLoading,
-    onClick
-}) => {
-    
-    let label = "API Key 확인";
-
+const ApiKeyButton: React.FC<ApiKeyButtonProps> = ({ project, model, isLoading, onClick }) => {
     return (
         <button
             className={`text-base rounded-full px-3 py-1 w-36 ml-4 relative z-0 ${project.deployed
@@ -60,7 +52,7 @@ const ApiKeyButton: React.FC<ApiKeyButtonProps> = ({
             disabled={!project.deployed
                 || isLoading}
         >
-            {label}
+            API Key 확인
         </button>
     );
 };

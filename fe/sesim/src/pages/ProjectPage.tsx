@@ -17,7 +17,7 @@ export const ProjectPage = () => {
                 <Sidebar />
             </div>
 
-            <div className="my-[48px] ml-[48px] w-full h-full">
+            <div className="my-[44px] ml-[44px] w-full h-full">
                 <motion.div
                     className="flex flex-col flex-1"
                     style={{ zIndex: 1 }}
@@ -30,11 +30,11 @@ export const ProjectPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <h1 className="text-2xl font-semibold flex items-center gap-2 mt-1 mb-3">
+                        <h1 className="text-xl font-semibold flex items-center mb-1">
                             프로젝트
                         </h1>
 
-                        <p className="text-lg font-medium m-1 mb-6">
+                        <p className="text-sm font-medium text-gray-400 mb-5">
                             생성한 프로젝트의 상세 정보를 확인하세요.
                         </p>
                     </motion.div>
@@ -64,7 +64,7 @@ export const ProjectPage = () => {
                             return (
                                 <motion.div
                                     key={index}
-                                    className="mb-6"
+                                    className="mb-5"
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}

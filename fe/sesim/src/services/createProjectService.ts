@@ -27,4 +27,3 @@ export const createProject = async (projectInfo: any) => {
 
     return response.data;
 };
-

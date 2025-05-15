@@ -1,16 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import aiModelReducer from "./aiModelSlice";
-import keyinfoReducer from "./projectSlice"; 
-import apiUsageReducer from "./APIUsageSlice";
+import keyinfoReducer from "./projectSlice";
 import createProjectInfoReducer from "./createProjectInfoSlice";
 
 export const store = configureStore({
     reducer: {
         createProjectInfo: createProjectInfoReducer,
         aiModel: aiModelReducer,
-        keyinfo: keyinfoReducer, 
-        apiUsage: apiUsageReducer,
+        keyinfo: keyinfoReducer,
         auth: authReducer,
     },
 });
