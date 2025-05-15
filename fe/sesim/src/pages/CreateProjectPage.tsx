@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,7 +18,6 @@ import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingM
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { CreateProjectTitleImageWithText } from "../components/CreateProject/CreateProjectTitleImageWithText";
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig, clearAllowedIpAddresses } from "../store/createProjectInfoSlice";
-import { motion } from "framer-motion";
 
 export const CreateProjectPage = () => {
     // Router & Redux
@@ -55,6 +55,10 @@ export const CreateProjectPage = () => {
 
     // ScrollTop States
     const [showScrollTop, setShowScrollTop] = useState(false);
+    
+    // 도움말 툴팁 상태
+    const [showHelpTooltip, setShowHelpTooltip] = useState(true);
+    const [helpBounce, setHelpBounce] = useState(true);
 
     // Computed States
     const isAllSelected = selectedModels.length > 0 && selectedModels.every(model => selectedInstanceIdxMap[model.id] !== undefined) && forthStepDone && fifthStepDone;
@@ -62,8 +66,6 @@ export const CreateProjectPage = () => {
     // 하단 바가 보일 때 버튼을 위로 올릴 높이(px)
     const bottomBarHeight = selectedModels.length > 0 && selectedInstancePrice > 0 ? 120 : 32;
 
-    const [showHelpTooltip, setShowHelpTooltip] = useState(true);
-    const [helpBounce, setHelpBounce] = useState(true);
 
     const handleCreateProject = async () => {
         setIsLoading(true);
