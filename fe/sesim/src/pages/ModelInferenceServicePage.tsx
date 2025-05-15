@@ -7,6 +7,14 @@ import BackgroundImage from "../assets/images/model-inference-service-content-bg
 import { UserGuideSection } from "../components/ModelInferenceService/UserGuideSection";
 import { ServiceDetailsSection } from "../components/ModelInferenceService/ServiceDetailsSection";
 
+const getStepFromQuery = () => {
+    const params = new URLSearchParams(window.location.search);
+    const step = parseInt(params.get("step") || "");
+    if (step >= 1 && step <= 5) return step;
+    return undefined;
+}
+
+
 export const ModelInferenceServicePage: React.FC = () => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.3 });
@@ -14,6 +22,11 @@ export const ModelInferenceServicePage: React.FC = () => {
     // 사용자 가이드 영역 스크롤탑 버튼
     const guideRef = useRef<HTMLDivElement>(null);
     const [showGuideScrollTop, setShowGuideScrollTop] = useState(false);
+    const [initialStep, setInitialStep] = useState<number | undefined>(undefined);
+
+    useEffect(() => {
+        setInitialStep(getStepFromQuery());
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -55,7 +68,7 @@ export const ModelInferenceServicePage: React.FC = () => {
                 }}
             >
                 <h1 className="text-5xl font-bold text-center">사용자 가이드</h1>
-                <UserGuideSection />
+                <UserGuideSection initialStep={initialStep} />
                 {/* 사용자 가이드 ScrollToTopButton */}
                 {showGuideScrollTop && (
                     <button

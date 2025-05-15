@@ -17,6 +17,7 @@ import { ProjectLoadingModal } from "../components/CreateProject/ProjectLoadingM
 import { getDeployOptions, getRoleArns, createProject } from "../services/createProjectService";
 import { CreateProjectTitleImageWithText } from "../components/CreateProject/CreateProjectTitleImageWithText";
 import { clearAwsSession, clearProjectInfo, clearSelectedModels, clearModelConfig, clearAllowedIpAddresses } from "../store/createProjectInfoSlice";
+import { motion } from "framer-motion";
 
 export const CreateProjectPage = () => {
     // Router & Redux
@@ -60,6 +61,9 @@ export const CreateProjectPage = () => {
 
     // 하단 바가 보일 때 버튼을 위로 올릴 높이(px)
     const bottomBarHeight = selectedModels.length > 0 && selectedInstancePrice > 0 ? 120 : 32;
+
+    const [showHelpTooltip, setShowHelpTooltip] = useState(true);
+    const [helpBounce, setHelpBounce] = useState(true);
 
     const handleCreateProject = async () => {
         setIsLoading(true);
@@ -119,6 +123,15 @@ export const CreateProjectPage = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        const tooltipTimer = setTimeout(() => setShowHelpTooltip(false), 6000);
+        const bounceTimer = setTimeout(() => setHelpBounce(false), 1500);
+        return () => {
+            clearTimeout(tooltipTimer);
+            clearTimeout(bounceTimer);
+        };
+    }, []);
+
     return (
         <>
             <CreateProjectTitleImageWithText />
@@ -171,7 +184,31 @@ export const CreateProjectPage = () => {
                     />
                 </div>
 
+                {/* 도움말 버튼과 말풍선 */}
                 <HelpButton up={showScrollTop} extraBottom={bottomBarHeight} />
+                {showHelpTooltip && (
+                    <motion.div
+                        className="fixed z-[1000] bg-white text-[#15305F] px-4 py-2 rounded-xl shadow-lg font-semibold text-sm"
+                        style={{
+                            right: 32,
+                            bottom: (bottomBarHeight + (showScrollTop ? 80 : 0) + 56 + 16),
+                        }}
+                        initial={{ opacity: 0, y: 0 }}
+                        animate={{
+                            opacity: [0, 1, 1, 0],
+                            y: helpBounce ? [0, -20, 0, -10, 0] : 0
+                        }}
+                        transition={{
+                            opacity: { duration: 5, times: [0, 0.1, 0.8, 1] },
+                            y: helpBounce
+                                ? { duration: 1.5, times: [0, 0.3, 0.6, 0.8, 1] }
+                                : { duration: 0 }
+                        }}
+                    >
+                        처음 이용하신다면 <span className="font-bold text-[#3893FF]">?</span> 버튼을 클릭해 단계별 설명을 읽고 도움을 받아보세요!
+                    </motion.div>
+                )}
+
                 <ScrollToTopButton show={showScrollTop} extraBottom={bottomBarHeight} />
                 
                 <div

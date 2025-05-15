@@ -50,7 +50,7 @@ export const UserGuideCard: React.FC<UserGuideCardProps> = ({ stepNumber, title,
             >
                 <h2 className="text-center text-4xl font-bold">{title}</h2>
 
-                <div className="mt-[50px] flex flex-col lg:flex-row justify-between">
+                <div className="mt-[50px] flex flex-col gap-[10px] lg:flex-row justify-between">
                     <div className="flex-1">
                         <div>
                             <h3 className="text-2xl font-bold">어떻게 하면 되나요?</h3>

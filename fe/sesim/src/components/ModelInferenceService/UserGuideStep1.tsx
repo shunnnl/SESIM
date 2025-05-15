@@ -55,7 +55,7 @@ export const UserGuideStep1 = () => {
                 stepNumber="01"
                 title="CloudFormation 시작"
                 howToDescriptionLines={[
-                    "이 화면에서는 CloudFormation 템플릿을 선택하는 단계입니다.",
+                    "이 화면은 CloudFormation 템플릿을 선택하는 단계입니다.",
                     "템플릿 URL이 자동으로 입력되어 있으며,",
                     "이 템플릿을 통해 리소스를 배포할 수 있습니다."
                 ]}
@@ -114,8 +114,7 @@ export const UserGuideStep1 = () => {
                 title="생성된 리소스 확인"
                 howToDescriptionLines={[
                     "이 화면은 리소스 생성이 완료된 후 나타나는 화면입니다.",
-                    "템플릿을 적용하여 생성된 IAM 역할 및 리소스들에 대한 정보를",
-                    "확인할 수 있습니다."
+                    "템플릿을 적용하여 생성된 IAM 역할 및 리소스들에 대한 정보를 확인할 수 있습니다."
                 ]}
                 userActionDescriptionLines={[
                     "생성된 리소스를 확인하고 \"리소스 클릭\"을 통해",

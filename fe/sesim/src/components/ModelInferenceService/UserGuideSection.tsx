@@ -6,7 +6,11 @@ import { UserGuideStep3 } from "./UserGuideStep3";
 import { UserGuideStep4 } from "./UserGuideStep4";
 import { UserGuideStep5 } from "./UserGuideStep5";
 
-export const UserGuideSection = () => {
+interface UserGuideSectionProps {
+    initialStep?: number;
+}
+
+export const UserGuideSection = ({ initialStep }: UserGuideSectionProps) => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const stepRefs: React.RefObject<HTMLDivElement | null>[] = [
         useRef<HTMLDivElement>(null),
@@ -28,10 +32,21 @@ export const UserGuideSection = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    // 페이지 진입 시 initialStep이 있으면 해당 스텝으로 스크롤
+    useEffect(() => {
+        if (initialStep && stepRefs[initialStep - 1]?.current) {
+            const ref = stepRefs[initialStep - 1].current;
+            if (ref) {
+                const y = ref.getBoundingClientRect().top + window.scrollY - 150;
+                window.scrollTo({ top: y, behavior: "smooth" });
+            }
+        }
+    }, [initialStep]);
+
     return (
         <div 
             ref={sectionRef} 
-            className="relative flex"
+            className="relative flex pb-[100px]"
             style={{
                 background: "linear-gradient(to bottom, #000000 0px, #04101D 1000px, #04101D 100%)"
             }}
