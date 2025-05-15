@@ -62,7 +62,7 @@ export const ModelInferenceServicePage: React.FC = () => {
 
             <div
                 ref={guideRef}
-                className="text-white container-padding"
+                className="text-white"
                 style={{
                     background: "linear-gradient(to bottom, #000000 0px, #04101D 1000px, #04101D 100%)"
                 }}

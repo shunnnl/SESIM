@@ -21,9 +21,11 @@ export const QuickNavBar = ({ stepRefs }: { stepRefs: React.RefObject<HTMLDivEle
 
     useEffect(() => {
         const handleScroll = () => {
-            const offsets = stepRefs.map(ref => ref.current ? Math.abs(ref.current.getBoundingClientRect().top - 100) : Infinity);
-            const idx = offsets.indexOf(Math.min(...offsets));
-            setActiveIdx(idx);
+            // 각 스텝의 top값을 구함
+            const tops = stepRefs.map(ref => ref.current ? ref.current.getBoundingClientRect().top : Infinity);
+            // 화면 상단에서 150px 위에 닿은(150 이하) 것 중 가장 큰 top값(즉, 가장 최근에 지난 스텝)
+            const visibleIdx = tops.reduce((acc, top, idx) => (top <= 150 && (acc === -1 || top > tops[acc]) ? idx : acc), -1);
+            setActiveIdx(visibleIdx === -1 ? 0 : visibleIdx);
         };
         window.addEventListener("scroll", handleScroll);
         handleScroll();
