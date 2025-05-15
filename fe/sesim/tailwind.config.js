@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        darkitembg: "#242C4D",
+        darkitembg: "#242B3A",
       },
       backgroundImage: {
         "cyber-security": "url('/src/assets/images/cyber-security-bg.webp')",

@@ -55,11 +55,11 @@ export const FirstStep = ({ setFirstStepDone, roleArns, currentStep }: FirstStep
             <FormStepHeader
                 step="01"
                 title="IAM Role 연결" 
-                description="SaaS 포털이 고객 AWS에 접근하려면 IAM Role 연결이 필요합니다."
-                must={true}
+                description1="사용자의 클라우드 자원에 AI 모델을 배포하기 위해, IAM Role 정보를 등록해주세요."
+                description2="발급받은 IAM Role ARN을 입력하면 SESIM이 보안 모델을 안전하게 배포할 수 있습니다."
                 currentStep={currentStep}
             />
-            <div className="mt-[15px]">
+            <div className="mt-[30px]">
                 <BigCard>
                     <div>
                         <p className="text-[16px] font-normal text-[#979797]">* CloudFormation 템플릿을 통해 손쉽게 Role을 생성할 수 있습니다.</p>

@@ -77,7 +77,7 @@ export const NavbarMenu: React.FC = () => {
                     to="/model-inference-service"
                     className={linkClass}
                 >
-                    모델추론 서비스
+                    서비스 이용
                 </Link>
                 <div className={indicatorClass}></div>
             </div>

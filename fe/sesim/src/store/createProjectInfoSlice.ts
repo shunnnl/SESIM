@@ -13,6 +13,7 @@ interface CreateProjectInfoState {
     projectDescription: string;
     selectedModels: any[];
     modelConfigs: ModelConfig[];
+    allowedIpAddresses: string[];
 }
 
 const initialState: CreateProjectInfoState = {
@@ -22,6 +23,7 @@ const initialState: CreateProjectInfoState = {
     projectDescription: "",
     selectedModels: [],
     modelConfigs: [],
+    allowedIpAddresses: [],
 };
 
 export const createProjectInfoSlice = createSlice({
@@ -59,8 +61,14 @@ export const createProjectInfoSlice = createSlice({
         clearModelConfig: (state) => {
             state.modelConfigs = [];
         },
+        setAllowedIpAddresses: (state, action: PayloadAction<string[]>) => {
+            state.allowedIpAddresses = action.payload;
+        },
+        clearAllowedIpAddresses: (state) => {
+            state.allowedIpAddresses = [];
+        },
     },
 });
 
-export const { setAwsSession, clearAwsSession, setProjectInfo, clearProjectInfo, setSelectedModels, clearSelectedModels, setModelConfigs, setModelConfig, clearModelConfig } = createProjectInfoSlice.actions;
+export const { setAwsSession, clearAwsSession, setProjectInfo, clearProjectInfo, setSelectedModels, clearSelectedModels, setModelConfigs, setModelConfig, clearModelConfig, setAllowedIpAddresses, clearAllowedIpAddresses } = createProjectInfoSlice.actions;
 export default createProjectInfoSlice.reducer;
