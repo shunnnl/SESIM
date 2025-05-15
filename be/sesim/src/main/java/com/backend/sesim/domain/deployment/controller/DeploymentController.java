@@ -73,4 +73,38 @@ public class DeploymentController {
         ApiUsageIntervalResponse response = apiUsageService.getIntervalApiUsage(request);
         return CommonResponseDto.ok(response);
     }
+
+    @Operation(summary = "특정 프로젝트 + 특정 월 사용량 요약", description = "특정 프로젝트의 지정된 월에 대한 API 호출 수, 비용, 사용 시간 등 요약 정보를 제공합니다.")
+    @GetMapping("/api-usage/interval/specific/specific")
+    public CommonResponseDto<ApiUsageIntervalSpecificSpecificResponse> getProjectMonthly(
+        @ModelAttribute ApiUsageIntervalRequest request) {
+        return CommonResponseDto.ok(apiUsageService.getIntervalSpecificSpecificApiUsage(request));
+    }
+
+    @Operation(summary = "전체 프로젝트 + 특정 월 사용량 요약", description = "현재 계정의 모든 프로젝트의 지정된 월에 대한 총 요청 수, 비용 등을 제공합니다.")
+    @GetMapping("/api-usage/interval/all/specific")
+    public CommonResponseDto<ApiUsageIntervalAllSpecificResponse> getAllProjectsMonthly(
+        @ModelAttribute ApiUsageIntervalRequest request) {
+        return CommonResponseDto.ok(apiUsageService.getIntervalAllSpecificApiUsage(request));
+    }
+
+    @Operation(summary = "특정 프로젝트 + 전체 기간 요약", description = "특정 프로젝트에 대한 전체 기간 사용량 및 최근 3개월간 모델별 비용, 요청 수, 사용시간 등의 상세 정보를 반환합니다.")
+    @GetMapping("/api-usage/interval/specific/all")
+    public CommonResponseDto<ApiUsageIntervalSpecificAllResponse> getProjectAllPeriod(
+        @ModelAttribute ApiUsageIntervalRequest request) {
+        return CommonResponseDto.ok(apiUsageService.getIntervalSpecificAllApiUsage(request));
+    }
+
+    @Operation(summary = "전체 프로젝트 + 전체 기간 요약", description = "계정 내 모든 프로젝트의 전체 기간 누적 사용량 및 최근 3개월 간 프로젝트별 요약, 일자별 상세 비용을 제공합니다.")
+    @GetMapping("/api-usage/interval/all/all")
+    public CommonResponseDto<ApiUsageIntervalAllAllResponse> getAllProjectsAllPeriod(
+        @ModelAttribute ApiUsageIntervalRequest request) {
+        return CommonResponseDto.ok(apiUsageService.getIntervalAllAllApiUsage(request));
+    }
+
+    @Operation(summary = "대시보드 초기데이터", description = "대시보드 공통적으로 필요한 초기데이터를 제공합니다.")
+    @GetMapping("/api-usage/init")
+    public CommonResponseDto<ApiUsageInitResponse> getDashboardInit() {
+        return CommonResponseDto.ok(apiUsageService.getInitApiUsage());
+    }
 }
