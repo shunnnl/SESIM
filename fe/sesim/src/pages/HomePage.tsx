@@ -4,8 +4,8 @@ import { AboutPage } from "./AboutPage";
 import downscrollImage from "../assets/images/down-scroll-icon.svg";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import mainBackgroundImage from "../assets/images/cyber-security-bg.webp";
-import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
 import { ScrollToTopButton } from "../components/common/ScrollToTopButton";
+import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
 
 const MainText = () => {
     return (

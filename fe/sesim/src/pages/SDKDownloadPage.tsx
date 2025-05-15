@@ -1,14 +1,13 @@
-import { useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import infoIcon from "../assets/images/info.webp";
+import { getSdkExampleCode } from "../services/aiModelService";
 import PageBackground from "../assets/images/sdk-download-bg.webp";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import BackgroundImage from "../assets/images/sdk-download-content-bg.webp";
 import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
 import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
-import { getSdkExampleCode } from "../services/aiModelService";
-import { useState } from "react";
 
 export const SdkDownloadPage = () => {
     const ref = useRef(null);

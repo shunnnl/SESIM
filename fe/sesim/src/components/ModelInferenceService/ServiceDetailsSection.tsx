@@ -1,6 +1,6 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { AiImage } from "./AiImage";
+import { motion } from "framer-motion";
 import { ServiceDescriptionList } from "./ServiceDescriptionList";
 
 interface ServiceDetailsSectionProps {

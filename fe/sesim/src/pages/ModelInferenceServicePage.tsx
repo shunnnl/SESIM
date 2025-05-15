@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from "react";
 import { useInView } from "framer-motion";
+import React, { useRef, useState, useEffect } from "react";
 import PageBackground from "../assets/images/model-inference-service-bg.webp";
 import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
 import { PageTitleImageWithText } from "../components/common/PageTitleImageWithText";
