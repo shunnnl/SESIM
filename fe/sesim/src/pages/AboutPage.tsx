@@ -15,36 +15,40 @@ export const AboutPage: React.FC = () => {
                 description2="자체적인 보안 AI 모델을 학습·운영할 수 있도록 지원하는 SaaS 플랫폼입니다."
                 backgroundImage={backgroundImage}
             />
-            <div className="container-padding">
-                <motion.div
+            
+
+            <div>
+                <div className="container-padding">
+                    <motion.div
                     className="text-white my-[88px] relative z-10"
                     initial={{ opacity: 0, y: 70 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                     viewport={{ once: true, amount: 0.2 }}
-                >
-                    <SesimFunctions />
-                </motion.div>
+                    >
+                        <SesimFunctions />
+                    </motion.div>
 
-                <motion.div
-                    className="text-white my-[88px] relative z-10"
-                    initial={{ opacity: 0, y: 70 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-                    viewport={{ once: true, amount: 0.2 }}
-                >
-                    <SesimFunctionsDescription />
-                </motion.div>
+                    <motion.div
+                        className="text-white my-[88px] relative z-10"
+                        initial={{ opacity: 0, y: 70 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                        viewport={{ once: true, amount: 0.2 }}
+                    >
+                        <SesimFunctionsDescription />
+                    </motion.div>
 
-                <motion.div
-                    className="text-white py-[100px] relative z-10"
-                    initial={{ opacity: 0, y: 70 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-                    viewport={{ once: true, amount: 0.2 }}
-                >
-                    <SesimArchitecture />
-                </motion.div>
+                    <motion.div
+                        className="text-white py-[100px] relative z-10"
+                        initial={{ opacity: 0, y: 70 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                        viewport={{ once: true, amount: 0.2 }}
+                    >
+                        <SesimArchitecture />
+                    </motion.div>
+                </div>
             </div>
 
             <div

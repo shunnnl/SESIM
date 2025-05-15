@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
-import { AnimatedButton } from "../components/common/AnimatedButton";
+import React, { useState, useEffect } from "react";
 import { AboutPage } from "./AboutPage";
+import downscrollImage from "../assets/images/down-scroll-icon.svg";
+import { AnimatedButton } from "../components/common/AnimatedButton";
 import mainBackgroundImage from "../assets/images/cyber-security-bg.webp";
+import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
+import { ScrollToTopButton } from "../components/common/ScrollToTopButton";
 
 const MainText = () => {
     return (
@@ -53,22 +57,47 @@ const AnimatedDetailButton = () => {
 
 
 export const HomePage: React.FC = () => {
+    const [isAtTop, setIsAtTop] = useState(true);
+    const [isShowScrollToTop, setIsShowScrollToTop] = useState(false);
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsAtTop(window.scrollY === 0);
+            setIsShowScrollToTop(window.scrollY > 200);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <div>
-            <div
-                className="bg-cover bg-center bg-no-repeat h-screen flex flex-col justify-center gap-8 md:gap-12 lg:gap-[72px] text-white container-padding"
-                style={{ backgroundImage: `url(${mainBackgroundImage})` }}
-            >
-                <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[100px]">
-                    <MainText />
-                    <SubText />
+        <>
+            <SnapScrollContainer>
+                <div
+                    className="bg-cover bg-center bg-no-repeat h-screen flex flex-col justify-center gap-8 md:gap-12 lg:gap-[72px] text-white container-padding snap-start relative"
+                    style={{ backgroundImage: `url(${mainBackgroundImage})` }}
+                >
+                    <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[100px]">
+                        <MainText />
+                        <SubText />
+                    </div>
+                    <div>
+                        <AnimatedDetailButton />
+                    </div>
+                    {isAtTop && (
+                        <motion.img
+                            src={downscrollImage}
+                            alt="downscroll"
+                            className="w-[40px] h-[40px] absolute bottom-[5%] left-1/2 -translate-x-1/2"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                        />
+                    )}
                 </div>
-                <div>
-                    <AnimatedDetailButton />
-                </div>
-            </div>
+            </SnapScrollContainer>
 
             <AboutPage />
-        </div>
+            <ScrollToTopButton show={isShowScrollToTop} />
+        </>
     );
 };
