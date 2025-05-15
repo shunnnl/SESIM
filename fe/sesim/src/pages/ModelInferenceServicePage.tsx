@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useInView } from "framer-motion";
 import PageBackground from "../assets/images/model-inference-service-bg.webp";
 import { SnapScrollContainer } from "../components/common/SnapScrollContainer";
@@ -10,6 +10,25 @@ import { ServiceDetailsSection } from "../components/ModelInferenceService/Servi
 export const ModelInferenceServicePage: React.FC = () => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.3 });
+
+    // 사용자 가이드 영역 스크롤탑 버튼
+    const guideRef = useRef<HTMLDivElement>(null);
+    const [showGuideScrollTop, setShowGuideScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!guideRef.current) return;
+            const rect = guideRef.current.getBoundingClientRect();
+            // guide 영역이 화면 상단에서 200px 이상 스크롤되면 버튼 표시
+            setShowGuideScrollTop(rect.top < -200);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const handleGuideScrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     return (
         <SnapScrollContainer>
@@ -29,6 +48,7 @@ export const ModelInferenceServicePage: React.FC = () => {
             </div>
 
             <div
+                ref={guideRef}
                 className="text-white container-padding"
                 style={{
                     background: "linear-gradient(to bottom, #000000 0px, #04101D 1000px, #04101D 100%)"
@@ -36,6 +56,28 @@ export const ModelInferenceServicePage: React.FC = () => {
             >
                 <h1 className="text-5xl font-bold text-center">사용자 가이드</h1>
                 <UserGuideSection />
+                {/* 사용자 가이드 ScrollToTopButton */}
+                {showGuideScrollTop && (
+                    <button
+                        onClick={handleGuideScrollToTop}
+                        className="fixed right-8 bottom-8 z-[999] bg-[#15305F] text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:bg-[#1e418a] transition-colors"
+                        aria-label="가이드 맨 위로"
+                    >
+                        <svg
+                            className="w-8 h-8"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 15l7-7 7 7"
+                            />
+                        </svg>
+                    </button>
+                )}
             </div>
         </SnapScrollContainer>
     );
