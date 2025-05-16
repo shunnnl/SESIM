@@ -2,29 +2,11 @@ import { useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import pythonIcon from "../../assets/images/python-icon.svg";
 
-const codeString = `
-from sesiem_hub import InferenceClient
+interface ExampleCodeBoxProps {
+    codeString: string;
+}   
 
-client = InferenceClient(
-    provider="novita",
-    api_key="ss_xxxxxxxxxxxxxxxxxx",
-)
-
-completion = client.chat.completions.create(
-    model="ss-ai/WebSentinal",
-    messages=[
-        {
-            "role": "user",
-            "content": "What is th capital of France?"
-        }
-    ],
-    max_tokens=512,
-)
-
-print(completion.choices[0].message)
-`.trim();
-
-export const ExampleCodeBox = () => {
+export const ExampleCodeBox = ({ codeString }: ExampleCodeBoxProps) => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -34,7 +16,7 @@ export const ExampleCodeBox = () => {
     };
 
     return (
-        <div className="p-[2px] rounded-[20px] bg-gradient-to-tr from-[#45BDD3] via-[#475691] to-[#B888DF] min-w-[520px] min-h-[320px] inline-block">
+        <div className="p-[2px] rounded-[20px] bg-gradient-to-tr from-[#45BDD3] via-[#475691] to-[#B888DF] min-w-[620px] min-h-[320px] inline-block">
             <div className="bg-gradient-to-tr from-[#2C426B] to-[#0B234F] rounded-[18px] w-full h-full min-w-[516px] min-h-[316px] p-[18px] text-white">
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-1 bg-[#1E1E1E] rounded-[10px] px-3 py-2 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
