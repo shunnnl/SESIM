@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { ProjectCost } from "../../../store/APIUsageSlice";
 
-const gradientColors = ["#033486", "#EC4899", "#8B5CF6", "#F59E0B", "#3A7880", "#10B981"];
+const gradientColors = ["#4F46E5", "#3A7880", "#EC4899", "#033486", "#F59E0B", "#10B981"];
 
 interface TooltipPayloadItem {
   name: string;
