@@ -90,7 +90,6 @@ export const AllProjectsMonthlyView: React.FC<AllProjectsMonthlyViewProps> = ({ 
           </motion.div>
         </div>
 
-        {/* <div className="flex flex-row gap-4"> */}
         {/* 일별 비용 추이 그래프 */}
         <motion.div
           className="flex flex-col gap-4 bg-[#1D2433] rounded-[16px] w-full px-[16px] py-[16px]"
@@ -127,7 +126,6 @@ export const AllProjectsMonthlyView: React.FC<AllProjectsMonthlyViewProps> = ({ 
             <p className="text-md font-semibold text-left text-[#DEDEDE]">{`${month} 일별 요청 수 추이`}</p>
           </div>
         </motion.div>
-        {/* </div> */}
 
         {/* 모델별 비교표 */}
         <motion.div
