@@ -94,7 +94,7 @@ export const ProjectPage = () => {
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.6, delay: 0.2 }}
                             >
-                                생성한 프로젝트의 상세 정보를 확인하세요.
+                                서비스 연동 및 보안관리를 위한 정보를 제공합니다.<br/>승인 IP, ALB 주소, AI 모델별 대시보드, API Key를 확인할 수 있습니다.
                             </motion.p>
                         </div>
                     </div>
@@ -139,7 +139,7 @@ export const ProjectPage = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
                                     >
-                                        <KeyinfoItemList project={project} />
+                                        <KeyinfoItemList project={project} index={index}/>
                                     </motion.div>
                                 );
                             })

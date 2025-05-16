@@ -10,10 +10,10 @@ import { Project } from "../../types/ProjectTypes";
 import DeploymentProgressBar from "./DeploymentProgressBar";
 
 interface Props {
-    project: Project;
+  project: Project;
+  index: number;
 }
-
-const ProjectItemList: React.FC<Props> = ({ project }) => {
+const ProjectItemList: React.FC<Props> = ({ project, index }) => {
     const [isIpListModalOpen, setIsIpListModalOpen] = useState(false);
 
     const handleCopy = () => {
@@ -120,7 +120,7 @@ const ProjectItemList: React.FC<Props> = ({ project }) => {
                 )}
             </div>
 
-            <DeploymentProgressBar steps={project.steps} />
+            <DeploymentProgressBar steps={project.steps}  isFirstProject={index === 0}/>
 
             <div className="flex items-center ml-3 mt-7 mb-4">
                 <div className="w-1 h-5 bg-blue-400 mr-3 rounded-sm" />

@@ -14,6 +14,11 @@ const stepDescriptions: Record<number, { main: string; sub: string[], time: stri
     4: { main: "배포 완료", sub: [], time: "예상 소요 시간: 최대 2분" },
 };
 
+interface Props {
+    steps: Step[];
+    isFirstProject?: boolean;
+}
+
 const stateConfig = {
     DEPLOYED: {
         icon: (
@@ -34,20 +39,17 @@ const stateConfig = {
     },
 };
 
-interface Props {
-    steps: Step[];
-}
-
-const DeploymentProgressBar: React.FC<Props> = ({ steps }) => {
+const DeploymentProgressBar: React.FC<Props> = ({ steps, isFirstProject }) => {
     const deployingStep = steps.find((step) => step.stepStatus === "DEPLOYING");
     const failedStep = steps.find((step) => step.stepStatus === "FAILED");
     const allDeployed = steps.every((step) => step.stepStatus === "DEPLOYED");
 
-    const [isOpen, setIsOpen] = useState(() => {
-        if (deployingStep) return true;
-        if (failedStep || allDeployed) return false;
-        return true;
-    });
+const [isOpen, setIsOpen] = useState(() => {
+    if (isFirstProject) return true;
+    if (deployingStep) return true;
+    if (failedStep || allDeployed) return false;
+    return true;
+});
 
     let statusText = "";
     let statusColor = "";
