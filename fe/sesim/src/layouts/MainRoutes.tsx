@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import { HomePage } from "../pages/HomePage";
-import { AboutPage } from "../pages/AboutPage";
 import { AiModelPage } from "../pages/AiModelPage";
 import { SdkDownloadPage } from "../pages/SDKDownloadPage";
 import { AiModelDetailPage } from "../pages/AiModelDetailPage";
