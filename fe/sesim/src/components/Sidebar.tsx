@@ -55,7 +55,7 @@ export const Sidebar: React.FC = () => {
                 <SidebarNavItem
                     to="/apiusage"
                     icon={LuChartColumnIncreasing}
-                    label="API 사용 대시보드"
+                    label="API 사용량 / 금액"
                 >
                 </SidebarNavItem>
                 <SidebarNavItem
