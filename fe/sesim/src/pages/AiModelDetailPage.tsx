@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { BsCircleFill } from "react-icons/bs";
 import infoIcon from "../assets/images/info.webp";
-import { getAiModelDetail, getSdkExampleCode } from "../services/aiModelService";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import model1DetailImg1 from "../assets/images/model1-detail-img1.svg";
 import model1DetailImg2 from "../assets/images/model1-detail-img2.svg";
 import model1DetailImg3 from "../assets/images/model1-detail-img3.svg";
 import { ExampleCodeBox } from "../components/AiModelDetail/ExampleCodeBox";
+import { getAiModelDetail, getSdkExampleCode } from "../services/aiModelService";
 import { ImageTitleBannerWithNav } from "../components/AiModelDetail/ImageTitleBannerWithNav";
 
 const model1DetailImgList = [

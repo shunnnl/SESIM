@@ -6,11 +6,8 @@ import AboutCompImage5 from "../../assets/images/about-comp5.svg";
 
 export const SesimFunctions: React.FC = () => {
     return (
-        <>
-            <div className="flex flex-col items-center justify-center mt-[200px] -space-y-[20px]">
-                <h1 className="text-[60px] font-bold">AI 보안 서비스 플랫폼을 위한</h1>
-                <h1 className="text-[60px] font-bold">모든 기능을 담았습니다</h1>
-            </div>
+        <div className="py-[100px]">
+            <h1 className="text-4xl font-bold text-center">AI 보안 서비스 플랫폼을 위한 모든 기능을 담았습니다</h1>
 
             <div className="grid grid-cols-8 gap-x-[80px] gap-y-[30px] place-items-center mt-[60px] text-[#E8E8E8]">
                 <div className="col-span-2 col-start-2 flex flex-col items-center justify-center gap-[10px]">
@@ -19,7 +16,7 @@ export const SesimFunctions: React.FC = () => {
                         alt="AboutCompImage1" 
                         className="w-[200px] h-[200px]"
                     />
-                    <p className="text-[27px] font-bold">프라이빗 AI 배포</p>
+                    <p className="text-2xl font-bold">프라이빗 AI 배포</p>
                 </div>
 
                 <div className="col-span-2 col-start-4 flex flex-col items-center justify-center gap-[10px]">
@@ -28,7 +25,7 @@ export const SesimFunctions: React.FC = () => {
                         alt="AboutCompImage2" 
                         className="w-[200px] h-[200px]"
                     />
-                    <p className="text-[27px] font-bold">맞춤형 학습 지원</p>
+                    <p className="text-2xl font-bold whitespace-nowrap">고객 맞춤형 AI 학습 지원</p>
                 </div>
 
                 <div className="col-span-2 col-start-6 flex flex-col items-center justify-center gap-[10px]">
@@ -37,7 +34,7 @@ export const SesimFunctions: React.FC = () => {
                         alt="AboutCompImage3" 
                         className="w-[200px] h-[200px]"
                     />
-                    <p className="text-[27px] font-bold">실시간 모니터링</p>
+                    <p className="text-2xl font-bold">실시간 모니터링</p>
                 </div>
 
                 <div className="col-span-2 col-start-3 flex flex-col items-center justify-center gap-[10px]">
@@ -46,7 +43,7 @@ export const SesimFunctions: React.FC = () => {
                         alt="AboutCompImage4" 
                         className="w-[200px] h-[200px]"
                     />
-                    <p className="text-[27px] font-bold">강력한 보안 정책</p>
+                    <p className="text-2xl font-bold">강력한 보안 정책</p>
                 </div>
 
                 <div className="col-span-2 col-start-5 flex flex-col items-center justify-center gap-[10px]">
@@ -55,9 +52,9 @@ export const SesimFunctions: React.FC = () => {
                         alt="AboutCompImage5" 
                         className="w-[200px] h-[200px]"
                     />
-                    <p className="text-[27px] font-bold">간편한 설치 및 관리</p>
+                    <p className="text-2xl font-bold">간편한 배포 및 관리</p>
                 </div>
             </div>
-        </>
+        </div>
     );
 };

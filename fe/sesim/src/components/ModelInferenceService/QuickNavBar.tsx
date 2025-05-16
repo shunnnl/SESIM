@@ -33,7 +33,7 @@ export const QuickNavBar = ({ stepRefs }: { stepRefs: React.RefObject<HTMLDivEle
     }, [stepRefs]);
 
     return (
-        <nav className="fixed top-1/4 left-2 z-50 flex flex-col gap-4 bg-[#04101D] bg-opacity-80 rounded-xl p-4 shadow-lg">
+        <nav className="fixed top-1/4 left-2 z-50 flex flex-col gap-4 bg-[#0e1f3d] bg-opacity-80 rounded-xl p-4 shadow-lg">
             {stepTitles.map((title, idx) => (
                 <button
                     key={title}

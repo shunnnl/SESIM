@@ -25,16 +25,7 @@ export const NavbarMenu: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="z-20 nav-menu flex flex-row flex-nowrap items-center justify-center text-center gap-3 md:gap-1 lg:gap-8 xl:gap-[60px] text-[15px] md:text-[17px] lg:text-[18px] text-white pl-6">
-            <div className={`${menuClass} whitespace-nowrap`}>
-                <Link
-                    to="/about"
-                    className={linkClass}
-                >
-                    소개
-                </Link>
-                <div className={indicatorClass}></div>
-            </div>
+        <div className="z-20 nav-menu flex flex-row flex-nowrap items-center justify-center text-center gap-3 md:gap-1 lg:gap-8 xl:gap-[60px] text-[15px] md:text-[17px] lg:text-[18px] text-white pl-12">
             <div
                 className={`${menuClass} whitespace-nowrap`}
                 onMouseEnter={() => setIsOpen(true)}
