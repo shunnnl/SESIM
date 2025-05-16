@@ -2,12 +2,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, LabelList } from "recharts";
 import { RootState } from "../../../store";
-import { MonthProjectRequest } from '../../../store/APIUsageSlice';
-
-interface ProjectRequest {
-  projectId: number;
-  requestCount: number;
-}
+import { MonthProjectCost } from '../../../store/APIUsageSlice';
 
 interface ChartDataItem {
   month: string;
@@ -33,38 +28,42 @@ interface LegendItemType {
   color: string;
 }
 
-const barColors = ["#4F46E5", "#3A7880", "#EC4899", "#033486", "#F59E0B", "#10B981"];
+const barColors = ["#4F46E5", "#3A7880", "#EC4899", "#8B5CF6", "#F59E0B", "#10B981"];
 
 const CustomTooltip = ({ active, payload, projectNames }: TooltipProps) => {
   if (active && payload && payload.length) {
     const month = payload[0].payload.month;
-    let totalRequests = 0;
+    let totalCost = 0;
     
     return (
       <div className="bg-gray-100/50 backdrop-blur-sm px-3 py-2 rounded shadow-sm text-sm">
         <p className="font-semibold text-gray-800">{month}</p>
         <div className="h-[1px] w-full bg-gray-600 my-[4px]"></div>
         {payload.map((entry, index) => {
-          totalRequests += entry.value;
+          totalCost += entry.value;
           const projectId = parseInt(entry.dataKey);
           const projectName = projectNames[projectId];
           
           return (
-            <p key={index} className="text-gray-800 flex justify-between gap-4">
+            <p 
+              key={index}
+              className="text-gray-800 flex justify-between gap-4"
+            >
               <span>{projectName}:</span>
-              <span>{entry.value.toLocaleString()}회</span>
+              <span>₩ {entry.value.toLocaleString()}</span>
             </p>
           );
         })}
         <div className="h-[1px] w-full bg-gray-600 my-[4px]"></div>
         <p className="text-gray-800 flex justify-between gap-4 font-medium">
-          <span>총 요청:</span>
-          <span>{totalRequests.toLocaleString()}회</span>
+          <span>총 액:</span>
+          <span>₩ {totalCost.toLocaleString()}</span>
         </p>
       </div>
     );
   }
 };
+
 
 const CustomLegend = ({ payload }: { payload?: LegendItemType[] }) => {
   if (!payload || payload.length === 0) return null;
@@ -89,18 +88,19 @@ const CustomLegend = ({ payload }: { payload?: LegendItemType[] }) => {
   );
 };
 
-const transformData = (data: MonthProjectRequest[] | null) => {
+
+const transformData = (data: MonthProjectCost[] | null) => {
   if (!data || data.length === 0) return [];
   
   const sortedData = [...data].sort((a, b) => {
     return a.month.localeCompare(b.month);
   });
   
-  const recentMonths = sortedData.slice(-3);
-  
+  const recentMonths = sortedData.slice(-3);  
   const projectIds = new Set<number>();
+
   recentMonths.forEach(month => {
-    month.projectRequests.forEach((project: ProjectRequest) => {
+    month.projectCosts.forEach(project => {
       projectIds.add(project.projectId);
     });
   });
@@ -108,8 +108,8 @@ const transformData = (data: MonthProjectRequest[] | null) => {
   return recentMonths.map(month => {
     const result: Record<string, number | string> = { month: month.month };
     
-    month.projectRequests.forEach((project: ProjectRequest) => {
-      result[project.projectId.toString()] = project.requestCount;
+    month.projectCosts.forEach(project => {
+      result[project.projectId.toString()] = Math.round(project.cost * 100) / 100;
     });
     
     projectIds.forEach(id => {
@@ -125,47 +125,61 @@ const transformData = (data: MonthProjectRequest[] | null) => {
 const getMaxValue = (data: Record<string, number | string>[] | null) => {
   if (!data || data.length === 0) return 0;
   
-  const totalRequests = data.map(monthData => {
+  const totalCosts = data.map(monthData => {
     let total = 0;
     Object.keys(monthData).forEach(key => {
       if (key !== "month" && typeof monthData[key] === "number") {
         total += monthData[key] as number;
       }
     });
+
     return total;
   });
   
-  return Math.max(...totalRequests);
+  return Math.max(...totalCosts);
 };
 
-export default function MonthlyTotalAPIChart({ data }: { data: MonthProjectRequest[] | null }) {
+export default function MonthlyTotalCostChart({ data }: { data: MonthProjectCost[] | null }) {
   const projectInfo = useSelector((state: RootState) => state.apiUsage.projectInfo);
   
   const projectNames = useMemo(() => {
-    const names: Record<string, string> = {}; 
+    const names: Record<number, string> = {};
     if (projectInfo) {
       projectInfo.forEach(project => {
-        names[project.projectId.toString()] = project.name;
+        names[project.projectId] = project.name;
       });
     }
+
     return names;
   }, [projectInfo]);
   
+
   const chartData = useMemo(() => {
     const transformedData = transformData(data);
+
     return transformedData;
   }, [data]);
   
+
   const projectKeys = useMemo(() => {
-    if (chartData.length === 0) return [];
-    
-    const keys = Object.keys(chartData[0]).filter(key => key !== "month");
-    console.log('Project keys:', keys);
-    return keys;
+    if (chartData.length === 0) {
+      return [];
+    }
+
+    return Object.keys(chartData[0]).filter(key => key !== "month");
   }, [chartData]);
   
+
   const maxValue = useMemo(() => getMaxValue(chartData), [chartData]);
   
+  if (!data || chartData.length === 0 || projectKeys.length === 0) {
+    return (
+      <div className="w-full h-80 p-4 flex justify-center items-center">
+        <p className="text-gray-400">데이터가 없습니다</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-80 p-4">
       <ResponsiveContainer 
@@ -190,7 +204,7 @@ export default function MonthlyTotalAPIChart({ data }: { data: MonthProjectReque
           <YAxis
             axisLine={{ stroke: "#6B7280" }}
             tickLine={{ stroke: "#6B7280" }}
-            tickFormatter={(v) => `${v.toLocaleString()}`}
+            tickFormatter={(v: number) => `₩${v.toLocaleString()}`}
             style={{ 
               fontSize: 12, 
               fontWeight: 600, 
@@ -216,12 +230,11 @@ export default function MonthlyTotalAPIChart({ data }: { data: MonthProjectReque
           />
           
           {projectKeys.map((key, index) => {
-            console.log(`Rendering bar for project key: ${key}`);
             return (
               <Bar
                 key={key}
                 dataKey={key}
-                name={projectNames[key] || `프로젝트 ${key}`}
+                name={projectNames[parseInt(key)]}
                 stackId="stack"
                 barSize={30}
                 fill={`${barColors[index % barColors.length]}80`}
@@ -232,7 +245,7 @@ export default function MonthlyTotalAPIChart({ data }: { data: MonthProjectReque
                   <LabelList
                     position="top"
                     offset={10}
-                    formatter={(value: number) => `${value.toLocaleString()}`}
+                    formatter={(value: number) => `₩${value.toLocaleString()}`}
                     style={{ 
                       fill: '#EEEEEE', 
                       fontSize: 12, 

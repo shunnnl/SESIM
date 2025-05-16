@@ -59,13 +59,17 @@ const CustomTooltip = ({ active, payload, projectNames }: CustomTooltipProps) =>
         <p className="font-semibold text-gray-800">{projectName}</p>
         <div className="h-[1px] w-full bg-gray-600 my-[4px]"></div>
         {payload.map((item, index) => (
-          <p key={index} className="text-gray-800 flex justify-between gap-4">
-            <span>₩{item.value.toLocaleString()}</span>
+          <p 
+            key={index} 
+            className="text-gray-800 flex justify-between gap-4"
+          >
+            <span>₩ ${item.value.toLocaleString()}</span>
           </p>
         ))}
       </div>
     );
   }
+
   return null;
 };
 
@@ -73,7 +77,9 @@ const CustomTooltip = ({ active, payload, projectNames }: CustomTooltipProps) =>
 const CustomLegend = (props: { payload?: Array<{ value: number, payload: ProjectCost }>, projectNames: Record<number, string> }) => {
   const { payload, projectNames } = props;
   
-  if (!payload || payload.length === 0) return null;
+  if (!payload || payload.length === 0) {
+    return null;
+  }
 
   return (
     <ul className="flex flex-row flex-wrap gap-x-8 gap-y-2 justify-center items-center">
@@ -111,6 +117,14 @@ export default function AllCostDonutChartPerProjects({ data }: { data: ProjectCo
   }
 
   const projectNames = storeProjectNames;
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full h-80 p-4 flex justify-center items-center">
+        <p className="text-gray-400">데이터가 없습니다</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-[300px] px-4 pb-4 backdrop-blur-md shadow-inner z-10">

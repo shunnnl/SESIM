@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
-import { LuActivity, LuCircleDollarSign, LuWallet, LuClock, LuCloudCog, LuGlobe, LuListFilter } from "react-icons/lu";
+import { LuActivity, LuCircleDollarSign, LuWallet, LuClock, LuCloudCog, LuGlobe, LuListFilter, LuFileChartColumnIncreasing } from "react-icons/lu";
 import { RootState } from "../../store";
-// import DailyCostChart from "./graph/DailyCostChart";
-import MonthlyTotalAPIChart from "./graph/MonthlyTotalAPIChart";
-import MonthlyTotalCostChart from "./graph/MonthlyTotalCostChart";
-import DailyCostChartByProjects from "./graph/DailyCostChartByProjects";
-import AllCostDonutChartPerProjects from "./graph/AllCostDonutChartPerProjects";
+import MonthlyTotalAPIChart from "./AllPjtAllprd/MonthlyTotalAPIChart";
+import MonthlyTotalCostChart from "./AllPjtAllprd/MonthlyTotalCostChart";
+import DailyProjectCostChart from "./AllPjtAllprd/DailyProjectCostChart";
+import DailyAllProjectCostChart from "./AllPjtAllprd/DailyAllProjectCostChart";
+import AllCostDonutChartPerProjects from "./AllPjtAllprd/AllCostDonutChartPerProjects";
 
 export const AllProjectsAllPeriodsView: React.FC = () => {
   const allProjectsAllPeriodsData = useSelector((state: RootState) => state.apiUsage.allProjectsAllPeriodsData);
@@ -149,7 +149,7 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
         </div>
 
         {/* 최근 3개월 동안 비용 일일 그래프 */}
-        {/* <motion.div
+        <motion.div
           className="flex flex-col gap-4 bg-[#1D2433] rounded-[16px] w-full px-[16px] py-[16px]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -162,12 +162,12 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
                 color="#DEDEDE"
               />
             </div>
-            <p className="text-md font-semibold text-left text-[#DEDEDE]">최근 3개월 동안의 총 비용 일일 그래프</p>
+            <p className="text-md font-semibold text-left text-[#DEDEDE]">모든 프로젝트의 일일 비용 추이 그래프</p>
           </div>
-          <DailyCostChart data={allProjectsAllPeriodsData?.dailyProjectCosts ?? []} />
-        </motion.div> */}
+          <DailyAllProjectCostChart data={allProjectsAllPeriodsData?.dailyProjectCosts ?? []} />
+        </motion.div>
 
-        {/* 프로젝트별 일일 비용 그래프 (새로 추가) */}
+        {/* 프로젝트별 일일 비용 그래프 */}
         <motion.div
           className="flex flex-col gap-4 bg-[#1D2433] rounded-[16px] w-full px-[16px] py-[16px]"
           initial={{ opacity: 0, y: 20 }}
@@ -183,7 +183,7 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
             </div>
             <p className="text-md font-semibold text-left text-[#DEDEDE]">프로젝트별 일일 비용 추이 그래프</p>
           </div>
-          <DailyCostChartByProjects data={allProjectsAllPeriodsData?.dailyProjectCosts ?? []} />
+          <DailyProjectCostChart data={allProjectsAllPeriodsData?.dailyProjectCosts ?? []} />
         </motion.div>
       </div>
     </div>
