@@ -97,16 +97,16 @@ export const PageTitleImageWithText: React.FC<PageTitleImageWithTextProps> = ({ 
                         {description1 && <p className="text-white text-[16px] md:text-[20px] lg:text-2xl font-normal">{description1}</p>}
                         {description2 && <p className="text-white text-[16px] md:text-[20px] lg:text-2xl font-normal">{description2}</p>}
                     </motion.div>
-                    { buttonText === "프로젝트 생성하기" && (
+                    { buttonText === "서비스 이용하기" && (
                         <motion.div
                             initial={{ opacity: 0, y: 70 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, delay: subtitle ? 1.2 : 0.7, ease: "easeOut" }}
                         >
                             <AnimatedButton
-                                text="프로젝트 생성하기"
+                                text="서비스 이용하기"
                                 link={isLoggedIn ? "/model-inference-service/create-project" : undefined}
-                                width="250px"
+                                width="230px"
                                 onClick={handleButtonClick}
                             />
                         </motion.div>

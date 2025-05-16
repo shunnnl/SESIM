@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { toast } from "react-toastify";
 import { FaRegCopy } from "react-icons/fa6";
 import { RiArrowRightWideLine } from "react-icons/ri";
@@ -20,7 +19,6 @@ interface AIModelListProps {
 
 const AIModelListItem: React.FC<AIModelListProps> = ({ items, projectId, isDeployed }) => {
     const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4, bgImage5, bgImage6];
-    const [apiKeys, setApiKeys] = useState<{ [key: number]: string }>({});
 
     const handleGenerateKey = async (projectId: number, modelId: number) => {
         try {
@@ -29,10 +27,7 @@ const AIModelListItem: React.FC<AIModelListProps> = ({ items, projectId, isDeplo
                 console.warn("API 키가 비어있습니다.");
                 return;
             }
-
             await navigator.clipboard.writeText(apiKey);
-            setApiKeys((prev) => ({ ...prev, [modelId]: apiKey }));
-
             toast.success(
                 <div className="flex items-center justify-center gap-2">
                     <IoIosCheckmarkCircleOutline className="text-xl text-white" />

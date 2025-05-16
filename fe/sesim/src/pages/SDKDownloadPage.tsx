@@ -1,6 +1,7 @@
-import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import infoIcon from "../assets/images/info.webp";
+import { getSdkExampleCode } from "../services/aiModelService";
 import PageBackground from "../assets/images/sdk-download-bg.webp";
 import { AnimatedButton } from "../components/common/AnimatedButton";
 import BackgroundImage from "../assets/images/sdk-download-content-bg.webp";
@@ -11,6 +12,15 @@ import { PageTitleImageWithText } from "../components/common/PageTitleImageWithT
 export const SdkDownloadPage = () => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, amount: 0.3 });
+    const [sdkExampleCode, setSdkExampleCode] = useState<string>("");
+
+    useEffect(() => {
+        const fetchSdkExampleCode = async () => {
+            const response = await getSdkExampleCode();
+            setSdkExampleCode(response.data.codeExample);
+        };
+        fetchSdkExampleCode();
+    }, []);
 
     return (
         <SnapScrollContainer>
@@ -23,11 +33,11 @@ export const SdkDownloadPage = () => {
             />
             <div 
                 ref={ref}
-                className="bg-cover bg-center bg-no-repeat h-screen" 
+                className="bg-cover bg-center bg-no-repeat h-screen flex items-center justify-center" 
                 style={{ backgroundImage: `url(${BackgroundImage})` }}
             >
                 <motion.div
-                    className="flex justify-between gap-[50px] pt-[140px] container-padding text-white relative z-10"
+                    className="flex justify-between gap-[50px] container-padding text-white relative z-10"
                     initial={{ opacity: 0, y: 70 }}
                     animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 70 }}
                     transition={{ duration: 1, delay: 0, ease: "easeOut" }}
@@ -80,11 +90,11 @@ export const SdkDownloadPage = () => {
                         animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
                         transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
                     >
-                        <ExampleCodeBox />
+                        <ExampleCodeBox codeString={sdkExampleCode} />
                     </motion.div>
                 </motion.div>
                 <motion.div
-                    className="absolute top-[73%] left-[66%] -translate-y-1/2 w-[100px] h-[100px] rounded-full"
+                    className="absolute top-[73%] left-[62%] -translate-y-1/2 w-[200px] h-[100px] rounded-full"
                     style={{
                         background: "#063584",
                         boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",

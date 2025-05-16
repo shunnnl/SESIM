@@ -11,3 +11,8 @@ export const getAiModelDetail = async (modelId: number) => {
 
     return response.data;
 };
+
+export const getSdkExampleCode = async () => {
+    const response = await api.get("/model/sdk-download-code");
+    return response.data;
+};
