@@ -17,7 +17,7 @@ const ProjectItemList: React.FC<Props> = ({ project }) => {
     const [isIpListModalOpen, setIsIpListModalOpen] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(project.albAddress!!).then(() => {
+        navigator.clipboard.writeText(project.albAddress!).then(() => {
             toast.success(
                 <div className="flex items-center justify-center gap-2">
                     <IoIosCheckmarkCircleOutline className="text-xl text-white" />
@@ -57,18 +57,42 @@ const ProjectItemList: React.FC<Props> = ({ project }) => {
 
     return (
         <div className="bg-[#1D2433] rounded-xl p-4 py-6">
-            <div className="ml-3">
-                <h2 className="text-xl font-bold text-white">
-                    {project.projectName}
-                </h2>
-                <p className="text-sm text-gray-400 font-normal mb-4">
-                    {project.description}
-                </p>
+            <div className="flex flex-row items-center justify-between px-4">
+                <div className="flex flex-col">
+                    <h2 className="text-xl font-bold text-white">
+                        {project.projectName}
+                    </h2>
+                    <p className="text-sm text-gray-400 font-normal mb-2">
+                        {project.description}
+                    </p>
+                </div>
+
+                <div className="flex items-center">
+                    <button
+                        className="flex items-center gap-1 text-white text-base font-normal px-4 py-1 hover:bg-gradient-to-r hover:from-[#5A316C] hover:via-[#513176] hover:to-[#2C3273]"
+                        style={{
+                            position: "relative",
+                            border: "1px solid transparent",
+                            borderRadius: "9999px",
+                            backgroundImage: "linear-gradient(#242B3A, #242B3A), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
+                            backgroundOrigin: "border-box",
+                            backgroundClip: "padding-box, border-box",
+                            color: "white",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundImage = "linear-gradient(to right, #5A316C, #513176, #2C3273), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundImage = "linear-gradient(#242B3A, #242B3A), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
+                        }}
+                        onClick={handleIpListModalOpen}
+                    >
+                        허용 IP 확인
+                    </button>
+                </div>
             </div>
 
-            <div className="h-[1px] w-full bg-gray-700 mt-4 mb-4">
-
-            </div>
+            <div className="h-[1px] w-full bg-gray-700 px-4 my-2"></div>
 
             <div className="flex items-center ml-3 mt-3 mb-2">
                 <div className="w-1 h-5 bg-blue-400 mr-3 rounded-sm" />
@@ -94,30 +118,6 @@ const ProjectItemList: React.FC<Props> = ({ project }) => {
                         </span>
                     </div>
                 )}
-            </div>
-
-            <div className="flex items-center ml-7 mt-2 mb-7">
-                <button
-                    className="flex items-center gap-1 text-white text-base font-normal px-4 py-1 hover:bg-gradient-to-r hover:from-[#5A316C] hover:via-[#513176] hover:to-[#2C3273]"
-                    style={{
-                        position: "relative",
-                        border: "1px solid transparent",
-                        borderRadius: "9999px",
-                        backgroundImage: "linear-gradient(#242B3A, #242B3A), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)",
-                        backgroundOrigin: "border-box",
-                        backgroundClip: "padding-box, border-box",
-                        color: "white",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundImage = "linear-gradient(to right, #5A316C, #513176, #2C3273), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundImage = "linear-gradient(#242B3A, #242B3A), linear-gradient(to right, #DF3DAF, #B93FDA, #243FC7)";
-                    }}
-                    onClick={handleIpListModalOpen}
-                >
-                    허용 IP 확인
-                </button>
             </div>
 
             <DeploymentProgressBar steps={project.steps} />
