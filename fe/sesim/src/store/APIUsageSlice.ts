@@ -1,143 +1,175 @@
 import { APIUsageProject } from "../types/APIUsageTypes";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface MonthOption {
-    value: string;
-    label: string;
-};
-
-export interface CostPerMonth {
-    month: string;
+// 프로젝트별 비용 타입
+export interface ProjectCost {
+    projectId: number;
     cost: number;
-};
+}
 
-export interface RequestCountPerMonth {
+// 월별 프로젝트 비용 타입
+export interface MonthProjectCost {
     month: string;
-    requestCount: number;
-};
+    projectCosts: ProjectCost[];
+}
 
-export interface SecondsPerMonth {
+// 월별 프로젝트 요청 수 타입
+export interface MonthProjectRequest {
     month: string;
-    seconds: number;
-};
+    projectRequests: {
+        projectId: number;
+        requestCount: number;
+    }[];
+}
 
-export interface CostPerDay {
-    day: string;
-    cost: number;
-};
+// 월별 프로젝트 시간 타입
+export interface MonthProjectSecond {
+    month: string;
+    projectSeconds: {
+        projectId: number;
+        second: number;
+    }[];
+}
 
+// 일별 프로젝트 비용 타입
+export interface DailyProjectCost {
+    date: string;
+    totalCost: number;
+    projectCosts: ProjectCost[];
+}
+
+// API 사용량 데이터 타입
 export interface AllProjectsAllPeriodsData {
-    allCost: number;
-    allRequestCount: number;
-    allSeconds: number;
-    projectCount: number;
-    allCostForThreeMonths: CostPerMonth[];
-    allRequestCountForThreeMonths: RequestCountPerMonth[];
-    allSecondsForThreeMonths: SecondsPerMonth[];
-    allCostForThreeMonthsCumulative: CostPerDay[];
+    totalCost: number;
+    totalRequests: number;
+    totalSeconds: number;
+    totalProjectCount: number;
+    projectCosts: ProjectCost[];
+    monthProjectCosts: MonthProjectCost[];
+    monthProjectRequests: MonthProjectRequest[];
+    monthProjectSeconds: MonthProjectSecond[];
+    dailyProjectCosts: DailyProjectCost[];
+}
+
+// 프로젝트 정보 타입
+export interface APIUsageProjectInfo {
+    projectId: number;
+    name: string;
+    description: string;
 };
 
-export interface ProjectAllPeriodsData {
-    allCost: number;
-    allRequestCount: number;
-    allSeconds: number;
-    allCostForThreeMonths: CostPerMonth[];
-    allRequestCountForThreeMonths: RequestCountPerMonth[];
-    allSecondsForThreeMonths: SecondsPerMonth[];
-    allCostForThreeMonthsVerDaily: CostPerDay[];
+// 모델 정보 타입
+export interface APIUsageModelInfo {
+    modelId: number;
+    name: string;
+    modelPricePerHour: number;
 };
 
+interface APIUsageState {
+    projects: APIUsageProject[];
+    createdAt: string | null;
+    currentMonthCost: number;
+    currentMonthRequests: number;
+    currentMonthSeconds: number;
+    previousMonthCost: number;
+    previousMonthRequests: number;
+    previousMonthSeconds: number;
+    projectInfo: APIUsageProjectInfo[] | null;
+    modelInfo: APIUsageModelInfo[] | null;
+    allProjectsAllPeriodsData: AllProjectsAllPeriodsData | null;
+    isDataLoaded: boolean;
+    selectedProjectId: string;
+    selectedMonth: string;
+}
 
-// 날짜 필터 옵션 생성
-export const getMonthOptionsByCreatedAtFunc = ( userCreatedAt: string ): MonthOption[] => {
-    const createdDate = new Date(userCreatedAt);
-    const currentDate = new Date();
-    const options: MonthOption[] = [];
-
-    const iterateDate = new Date(createdDate);
-    iterateDate.setDate(1);
-
-    while (iterateDate <= currentDate) {
-        const year = iterateDate.getFullYear();
-        const month = iterateDate.getMonth() + 1;
-        const monthStr = month.toString().padStart(2, "0");
-
-        options.push({
-            value: `${year}-${monthStr}`,
-            label: `${year}년 ${month}월`,
-        });
-    
-        iterateDate.setMonth(iterateDate.getMonth() + 1);
-    }
-
-    options.push({
-        value: "all",
-        label: "전체 기간",
-    });
-
-    return options.reverse();
+const initialState: APIUsageState = {
+    projects: [],
+    createdAt: null,
+    currentMonthCost: 0,
+    currentMonthRequests: 0,
+    currentMonthSeconds: 0,
+    previousMonthCost: 0,
+    previousMonthRequests: 0,
+    previousMonthSeconds: 0,
+    projectInfo: null,
+    modelInfo: null,
+    allProjectsAllPeriodsData: null,
+    isDataLoaded: false,
+    selectedProjectId: "all",
+    selectedMonth: "all",
 };
 
+const apiUsageSlice = createSlice({
+    name: "apiUsage",
+    initialState,
+    reducers: {
+        updateAPIUsageProjects: (state, action: PayloadAction<APIUsageProject[]>) => {
+            state.projects = action.payload;
+        },
+        setAPIUsageInitData: (state, action) => {
+            state.createdAt = action.payload.createdAt;
+            state.currentMonthCost = Math.round(action.payload.totalCost * 100) / 100;
+            state.currentMonthRequests = action.payload.totalRequests;
+            state.currentMonthSeconds = Math.round(action.payload.totalSeconds / 3600 * 100) / 100;
+            state.previousMonthCost = Math.round(action.payload.lastTotalCost * 100) / 100;
+            state.previousMonthRequests = action.payload.lastTotalRequests;
+            state.previousMonthSeconds = Math.round(action.payload.lastTotalSeconds / 3600 * 100) / 100;
+            state.projectInfo = action.payload.projects;
+            state.modelInfo = action.payload.models;
+        },
+        setAPIUsageData: (state, action: PayloadAction<AllProjectsAllPeriodsData>) => {
+            const data = action.payload;
+            
+            state.allProjectsAllPeriodsData = {
+                ...data,
+                totalCost: Math.round(data.totalCost * 100) / 100,
+                totalSeconds: Math.round(data.totalSeconds / 3600 * 100) / 100,
+                projectCosts: data.projectCosts.map(pc => ({
+                    ...pc,
+                    cost: Math.round(pc.cost * 100) / 100,
+                })),
+                monthProjectCosts: data.monthProjectCosts.map(mpc => ({
+                    ...mpc,
+                    projectCosts: mpc.projectCosts.map(pc => ({
+                        ...pc,
+                        cost: Math.round(pc.cost * 100) / 100,
+                    })),
+                })),
+                dailyProjectCosts: data.dailyProjectCosts.map(dpc => ({
+                    ...dpc,
+                    totalCost: Math.round(dpc.totalCost * 100) / 100,
+                    projectCosts: dpc.projectCosts.map(pc => ({
+                        ...pc,
+                        cost: Math.round(pc.cost * 100) / 100,
+                    })),
+                })),
+            };
+            
+            state.isDataLoaded = true;
+        },
+        setSelectedProjectId: (state, action: PayloadAction<string>) => {
+            state.selectedProjectId = action.payload;
+        },
+        setSelectedMonth: (state, action: PayloadAction<string>) => {
+            state.selectedMonth = action.payload;
+        },
+        clearAPIUsageData: (state) => {
+            state.allProjectsAllPeriodsData = null;
+            state.isDataLoaded = false;
+        },
+        setDataLoaded: (state, action: PayloadAction<boolean>) => {
+            state.isDataLoaded = action.payload;
+        },
+    },
+});
 
-// 모든 프로젝트의 모든 기간 데이터 집계
-export const getAllProjectsAllPeriodsData = (projects: APIUsageProject[]): AllProjectsAllPeriodsData => {
-    const allIntervalMonthProjects = projects.flatMap(project => project.intervalMonthProjects);
-    const allIntervalDayProjects = projects.flatMap(project => project.intervalDayProjects);
-
-    const monthlyCosts: { [date: string]: number } = {};
-    const monthlyRequestCounts: { [date: string]: number } = {};
-    const monthlySeconds: { [date: string]: number } = {};
-    const dailyCosts: { [date: string]: number } = {};
-
-    for (const imp of allIntervalMonthProjects) {
-        monthlyCosts[imp.date] = (monthlyCosts[imp.date] || 0) + (Math.round(imp.projectIntervalCost * 100) / 100);  // 월별 비용 집계
-        monthlyRequestCounts[imp.date] = (monthlyRequestCounts[imp.date] || 0) + imp.projectIntervalRequestCount;  // 월별 요청 수 집계
-        monthlySeconds[imp.date] = (monthlySeconds[imp.date] || 0) + (Math.round(imp.projectIntervalSeconds / 3600 * 100) / 100);  // 사용 시간(초) 집계
-    }
-
-    for (const imp of allIntervalDayProjects) {
-        dailyCosts[imp.date] = (dailyCosts[imp.date] || 0) + (Math.round(imp.projectIntervalCost * 100) / 100);  // 일별 비용 집계
-    }
-
-    return {
-        allCost: Math.round(projects.reduce((acc, project) => acc + project.projectTotalCost, 0) * 100) / 100,
-        allRequestCount: Math.round(projects.reduce((acc, project) => acc + project.projectTotalRequestCount, 0)),
-        allSeconds: Math.round(projects.reduce((acc, project) => acc + project.projectTotalSeconds, 0) / 3600 * 100) / 100,
-        projectCount: projects.length,
-        allCostForThreeMonths: Object.entries(monthlyCosts).map(([month, cost]) => ({ month, cost })),
-        allRequestCountForThreeMonths: Object.entries(monthlyRequestCounts).map(([month, requestCount]) => ({ month, requestCount })),
-        allSecondsForThreeMonths:  Object.entries(monthlySeconds).map(([month, seconds]) => ({ month, seconds })),
-        allCostForThreeMonthsCumulative: Object.entries(dailyCosts).map(([day, cost]) => ({ day, cost })),
-    }
-};
-
-
-// 프로젝트별 모든 기간 데이터 집계
-export const getProjectAllPeriodsData = (projects: APIUsageProject[], projectId: number): ProjectAllPeriodsData => {
-    const allIntervalMonthProjects = projects.filter(project => project.projectId === projectId).flatMap(project => project.intervalMonthProjects);
-    const allIntervalDayProjects = projects.filter(project => project.projectId === projectId).flatMap(project => project.intervalDayProjects);
-
-    const monthlyCosts: { [date: string]: number } = {};
-    const monthlyRequestCounts: { [date: string]: number } = {};
-    const monthlySeconds: { [date: string]: number } = {};
-    const dailyCosts: { [date: string]: number } = {};
-
-    for (const imp of allIntervalMonthProjects) {
-        monthlyCosts[imp.date] = (monthlyCosts[imp.date] || 0) + (Math.round(imp.projectIntervalCost * 100) / 100);  // 월별 비용 집계
-        monthlyRequestCounts[imp.date] = (monthlyRequestCounts[imp.date] || 0) + imp.projectIntervalRequestCount;  // 월별 요청 수 집계
-        monthlySeconds[imp.date] = (monthlySeconds[imp.date] || 0) + (Math.round(imp.projectIntervalSeconds / 3600 * 100) / 100);  // 사용 시간(초) 집계
-    }
-
-    for (const imp of allIntervalDayProjects) {
-        dailyCosts[imp.date] = (dailyCosts[imp.date] || 0) + (Math.round(imp.projectIntervalCost * 100) / 100);  // 일별 비용 집계
-    }
-
-    return {
-        allCost: Math.round(projects.reduce((acc, project) => acc + project.projectTotalCost, 0) * 100) / 100,
-        allRequestCount: Math.round(projects.reduce((acc, project) => acc + project.projectTotalRequestCount, 0)),
-        allSeconds: Math.round(projects.reduce((acc, project) => acc + project.projectTotalSeconds, 0) / 3600 * 100) / 100,
-        allCostForThreeMonths: Object.entries(monthlyCosts).map(([month, cost]) => ({ month, cost })),
-        allRequestCountForThreeMonths: Object.entries(monthlyRequestCounts).map(([month, requestCount]) => ({ month, requestCount })),
-        allSecondsForThreeMonths:  Object.entries(monthlySeconds).map(([month, seconds]) => ({ month, seconds })),
-        allCostForThreeMonthsVerDaily: Object.entries(dailyCosts).map(([day, cost]) => ({ day, cost })),
-    }
-};
+export const { 
+    updateAPIUsageProjects,
+    setAPIUsageInitData,
+    setAPIUsageData,
+    setSelectedProjectId,
+    setSelectedMonth,
+    clearAPIUsageData,
+    setDataLoaded
+} = apiUsageSlice.actions;
+export default apiUsageSlice.reducer;
