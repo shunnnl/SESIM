@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import Lottie from "react-lottie-player";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 import { IoCheckmarkSharp, IoCloseSharp } from "react-icons/io5";
 import { RiArrowUpSFill, RiArrowDownSFill } from "react-icons/ri";
 import { Step } from "../../types/ProjectTypes";
 import loading from "../../assets/lotties/pendingLottie.json";
 import deployed from "../../assets/lotties/deployedLottie.json";
 
-const stepDescriptions: Record<number, { main: string; sub: string[] }> = {
-    1: { main: "인프라 생성", sub: ["EC2 생성", "VPC 구성", "방화벽 생성"] },
-    2: { main: "환경 구축", sub: ["K3s 설치", "Nginx 설치"] },
-    3: { main: "서버 배포", sub: ["프론트 서버", "AI 서버", "DB"] },
-    4: { main: "배포 완료", sub: [] },
+const stepDescriptions: Record<number, { main: string; sub: string[], time: string }> = {
+    1: { main: "인프라 생성", sub: ["EC2 생성", "VPC 구성", "방화벽 생성"], time: "예상 소요 시간: 최대 3분" },
+    2: { main: "환경 구축", sub: ["K3s 설치", "Nginx 설치"], time: "예상 소요 시간: 최대 5분" },
+    3: { main: "서버 배포", sub: ["프론트 서버", "AI 서버", "DB"], time: "예상 소요 시간: 최대 5분" },
+    4: { main: "배포 완료", sub: [], time: "예상 소요 시간: 최대 2분" },
 };
 
 const stateConfig = {
@@ -135,46 +136,60 @@ const DeploymentProgressBar: React.FC<Props> = ({ steps }) => {
                     </span>
                 )}
                 <span className="text-2xl">{isOpen ? <RiArrowUpSFill /> : <RiArrowDownSFill />}</span>
+                {deployingStep && (
+                    <div className="flex items-center text-xs text-gray-300 ml-4 space-x-1">
+                        <IoIosInformationCircleOutline />
+                        <p>배포완료까지 10-15분이 소요됩니다.</p>
+                    </div>
+                )}
             </div>
 
             {isOpen && (
-                <div className="flex justify-between mx-6 my-8 relative">
-                    {steps.map((step, idx) => {
-                        const isLast = idx === steps.length - 1;
+                <>
+                    <div className="flex justify-between mx-6 my-8 relative">
+                        {steps.map((step, idx) => {
+                            const isLast = idx === steps.length - 1;
 
-                        return (
-                            <div key={step.stepId} className="flex flex-col items-center relative w-1/3">
-                                {renderStateIcon(step)}
+                            return (
+                                <div key={step.stepId} className="flex flex-col items-center relative w-1/3">
+                                    {renderStateIcon(step)}
 
-                                <p className="text-center text-base font-semibold mt-3 text-white mb-2">
-                                    {step.stepOrder === 4 && step.stepStatus === "DEPLOYING"
-                                        ? "배포중"
-                                        : stepDescriptions[step.stepOrder]?.main}
-                                </p>
+                                    <p className="text-center text-base font-semibold mt-3 text-white mb-2">
+                                        {step.stepOrder === 4 && step.stepStatus === "DEPLOYING"
+                                            ? "배포중"
+                                            : stepDescriptions[step.stepOrder]?.main}
+                                    </p>
 
-                                <ul className="text-sm text-gray-300 list-disc list-inside">
-                                    {stepDescriptions[step.stepOrder]?.sub.map((desc, i) => (
-                                        <li key={i}>{desc}</li>
-                                    ))}
-                                </ul>
+                                    <ul className="text-sm text-gray-300 list-disc list-inside">
+                                        {stepDescriptions[step.stepOrder]?.sub.map((desc, i) => (
+                                            <li key={i}>{desc}</li>
+                                        ))}
 
-                                {!isLast && (
-                                    <div className="absolute top-6 left-1/2 w-full h-1 z-0">
-                                        <div
-                                            className={`h-1 w-full bg-gradient-to-r ${getGradientColor(idx)}`}
-                                            style={{
-                                                position: "absolute",
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                                height: "4px",
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
+                                    </ul>
+                                    {step.stepStatus === "DEPLOYING" && stepDescriptions[step.stepOrder]?.time && (
+                                        <p className="text-xs text-gray-400 mt-2">
+                                            ⏳{stepDescriptions[step.stepOrder].time}
+                                        </p>
+                                    )}
+
+                                    {!isLast && (
+                                        <div className="absolute top-6 left-1/2 w-full h-1 z-0">
+                                            <div
+                                                className={`h-1 w-full bg-gradient-to-r ${getGradientColor(idx)}`}
+                                                style={{
+                                                    position: "absolute",
+                                                    top: "50%",
+                                                    transform: "translateY(-50%)",
+                                                    height: "4px",
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </>
             )}
         </div>
     );
