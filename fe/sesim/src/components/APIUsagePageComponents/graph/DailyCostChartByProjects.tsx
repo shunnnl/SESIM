@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { DailyProjectCost, ProjectCost } from "../../../store/APIUsageSlice";
 
-// 수정된 TooltipContentProps 인터페이스
 interface TooltipContentProps {
   active?: boolean;
   payload?: Array<{
@@ -23,33 +22,30 @@ interface MonthlyDataItem {
 
 const barColors = ["#4F46E5", "#3A7880", "#EC4899", "#033486", "#F59E0B", "#10B981"];
 
-// 월별 비용 데이터로 변환하는 함수
 const processMonthlyData = (data: DailyProjectCost[] | null) => {
   if (!data || data.length === 0) return [];
-  
+
   const monthlyData: Record<string, MonthlyDataItem> = {};
-  
-  // 모든 일별 데이터를 월별로 집계
+
   data.forEach(dailyData => {
-    // 일별 데이터가 유효한지 확인
     if (!dailyData || !dailyData.date) return;
-    
+
     try {
       // 날짜에서 연월 추출 (YYYY-MM 형식)
       const date = new Date(dailyData.date);
       if (isNaN(date.getTime())) return; // 유효하지 않은 날짜는 건너뜀
-      
+
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = { month: monthKey };
       }
-      
+
       // 각 프로젝트별 비용을 월별로 합산
       if (dailyData.projectCosts && Array.isArray(dailyData.projectCosts)) {
         dailyData.projectCosts.forEach((projectCost: ProjectCost) => {
           const projectId = `project_${projectCost.projectId}`;
-          
+
           // 월별 비용 합산
           if (monthlyData[monthKey][projectId]) {
             monthlyData[monthKey][projectId] = (monthlyData[monthKey][projectId] as number) + projectCost.cost;
@@ -62,15 +58,15 @@ const processMonthlyData = (data: DailyProjectCost[] | null) => {
       console.error("날짜 처리 중 오류 발생:", dailyData.date, error);
     }
   });
-  
+
   // 데이터가 없는 경우 빈 배열 반환
   if (Object.keys(monthlyData).length === 0) return [];
-  
+
   // 날짜순으로 정렬
-  const sortedData = Object.values(monthlyData).sort((a, b) => 
+  const sortedData = Object.values(monthlyData).sort((a, b) =>
     a.month.localeCompare(b.month)
   );
-  
+
   // 최근 3개월 데이터만 추출 (데이터가 3개월 미만이면 전체 반환)
   return sortedData.slice(-3);
 };
@@ -99,13 +95,13 @@ const CustomLegend = ({ projects }: { projects: Array<{ projectId: number, name:
   return (
     <ul className="flex flex-row flex-wrap gap-x-8 gap-y-2 justify-center items-center">
       {projects.map((project, index) => (
-        <li 
-          key={project.projectId} 
+        <li
+          key={project.projectId}
           className="flex flex-row gap-2 items-center"
           style={{ width: "calc(50% - 16px)" }}
         >
-          <div 
-            className="w-2 h-2 rounded-full" 
+          <div
+            className="w-2 h-2 rounded-full"
             style={{ backgroundColor: barColors[index % barColors.length] }}
           />
           <p className="text-sm font-medium text-gray-400">{project.name}</p>
@@ -118,9 +114,9 @@ const CustomLegend = ({ projects }: { projects: Array<{ projectId: number, name:
 // 최대 비용값 계산 함수 (월별 데이터용)
 const getMaxMonthlyValue = (data: MonthlyDataItem[] | null | undefined) => {
   if (!data || data.length === 0) return 0;
-  
+
   let maxCost = 0;
-  
+
   data.forEach(monthData => {
     let monthTotal = 0;
     Object.keys(monthData).forEach(key => {
@@ -128,21 +124,21 @@ const getMaxMonthlyValue = (data: MonthlyDataItem[] | null | undefined) => {
         monthTotal += monthData[key] as number;
       }
     });
-    
+
     if (monthTotal > maxCost) {
       maxCost = monthTotal;
     }
   });
-  
+
   return maxCost;
 };
 
 // 데이터에서 고유 프로젝트 ID 추출
 const extractUniqueProjects = (data: DailyProjectCost[] | null) => {
   if (!data || data.length === 0) return [];
-  
+
   const projectsMap = new Map<number, boolean>();
-  
+
   data.forEach(dailyData => {
     if (dailyData.projectCosts && Array.isArray(dailyData.projectCosts)) {
       dailyData.projectCosts.forEach(projectCost => {
@@ -150,13 +146,13 @@ const extractUniqueProjects = (data: DailyProjectCost[] | null) => {
       });
     }
   });
-  
+
   return Array.from(projectsMap.keys());
 };
 
 export default function DailyCostChartByProjects({ data }: { data: DailyProjectCost[] | null }) {
   const projectInfo = useSelector((state: RootState) => state.apiUsage.projectInfo);
-  
+
   const projectNames = useMemo(() => {
     const names: Record<number, string> = {};
     if (projectInfo) {
@@ -166,11 +162,11 @@ export default function DailyCostChartByProjects({ data }: { data: DailyProjectC
     }
     return names;
   }, [projectInfo]);
-  
+
   const monthlyData = useMemo(() => processMonthlyData(data), [data]);
   const maxMonthValue = useMemo(() => getMaxMonthlyValue(monthlyData), [monthlyData]);
   const uniqueProjectIds = useMemo(() => extractUniqueProjects(data), [data]);
-  
+
   // 프로젝트 정보 배열 생성
   const projectsInfo = useMemo(() => {
     return uniqueProjectIds.map(id => ({
@@ -178,7 +174,7 @@ export default function DailyCostChartByProjects({ data }: { data: DailyProjectC
       name: projectNames[id] || `프로젝트 ${id}`
     }));
   }, [uniqueProjectIds, projectNames]);
-  
+
   if (!data || data.length === 0 || monthlyData.length === 0) {
     return (
       <div className="w-full h-80 p-4 flex justify-center items-center">
@@ -219,14 +215,14 @@ export default function DailyCostChartByProjects({ data }: { data: DailyProjectC
           <XAxis
             dataKey="month"
             axisLine={{ stroke: "#6B7280" }}
-            tickLine={{ stroke: "#6B7280" }}s
-            style={{ fontSize: 12, fontWeight: 600, fill: "#9CA3AF" }}
+            tickLine={{ stroke: "#6B7280" }}
+            tick={{ style: { fontSize: 12, fontWeight: 600, fill: "#9CA3AF" } }}
           />
           <YAxis
             axisLine={{ stroke: "#6B7280" }}
             tickLine={{ stroke: "#6B7280" }}
-            tickFormatter={(v) => `₩${v.toLocaleString()}`}
-            style={{ fontSize: 12, fontWeight: 600, fill: "#9CA3AF" }}
+            tickFormatter={(v: number) => `₩${v.toLocaleString()}`}
+            tick={{ style: { fontSize: 12, fontWeight: 600, fill: "#9CA3AF" } }}
             domain={[0, Math.ceil(maxMonthValue * 1.2)]}
           />
           <Tooltip
@@ -234,13 +230,13 @@ export default function DailyCostChartByProjects({ data }: { data: DailyProjectC
             cursor={{ fill: 'rgba(4, 16, 29, 0.3)' }}
           />
           <Legend content={<CustomLegend projects={projectsInfo} />} />
-          
+
           {/* 각 프로젝트별로 Area 컴포넌트 추가 */}
           {uniqueProjectIds.map((projectId, index) => {
             const key = `project_${projectId}`;
             const color = barColors[index % barColors.length];
             const name = projectNames[projectId] || `프로젝트 ${projectId}`;
-            
+
             return (
               <Area
                 key={key}
