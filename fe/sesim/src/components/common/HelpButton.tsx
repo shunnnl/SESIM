@@ -3,6 +3,10 @@ import { useState } from "react";
 export const HelpButton = ({ up, extraBottom = 32 }: { up?: boolean; extraBottom?: number }) => {
     const [open, setOpen] = useState(false);
 
+    const handleStepClick = (step: number) => {
+        window.open(`/model-inference-service?step=${step}`, "_blank");
+    };
+
     return (
         <div
             className="fixed right-8 z-[999]"
@@ -41,41 +45,31 @@ export const HelpButton = ({ up, extraBottom = 32 }: { up?: boolean; extraBottom
                         <ol className="text-base font-medium space-y-4 w-full">
                             <li
                                 className="text-left hover:text-[#3893FF] hover:underline cursor-pointer"
-                                onClick={() => {
-                                    alert("STEP 01. 사용자 가이드 준비중입니다.");
-                                }}
+                                onClick={() => handleStepClick(1)}
                             >
                                 01. IAM Role 연결
                             </li>
                             <li
                                 className="text-left hover:text-[#3893FF] hover:underline cursor-pointer"
-                                onClick={() => {
-                                    alert("STEP 02. 사용자 가이드 준비중입니다.");
-                                }}
+                                onClick={() => handleStepClick(2)}
                             >
                                 02. 프로젝트 기본 정보
                             </li>
                             <li
                                 className="text-left hover:text-[#3893FF] hover:underline cursor-pointer"
-                                onClick={() => {
-                                    alert("STEP 03. 사용자 가이드 준비중입니다.");
-                                }}
+                                onClick={() => handleStepClick(3)}
                             >
                                 03. 보안 AI 모델 선택
                             </li>
                             <li
                                 className="text-left hover:text-[#3893FF] hover:underline cursor-pointer"
-                                onClick={() => {
-                                    alert("STEP 04. 사용자 가이드 준비중입니다.");
-                                }}
+                                onClick={() => handleStepClick(4)}
                             >
                                 04. 서버 사양 선택
                             </li>
                             <li
                                 className="text-left hover:text-[#3893FF] hover:underline cursor-pointer"
-                                onClick={() => {
-                                    alert("STEP 05. 사용자 가이드 준비중입니다.");
-                                }}
+                                onClick={() => handleStepClick(5)}
                             >
                                 05. 접근 허용 IP 등록
                             </li>

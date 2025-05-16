@@ -41,8 +41,9 @@ const AnimatedDetailButton = () => {
             transition={{ duration: 1, delay: 1, ease: "easeOut" }}
         >
             <AnimatedButton 
-                text="자세히보기" 
-                link="/ai-model" 
+                text="서비스 이용하러 가기" 
+                link="/model-inference-service"
+                width="280px"
             />
         </motion.div>
     )
