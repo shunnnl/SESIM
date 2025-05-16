@@ -3,11 +3,9 @@ import { LuActivity, LuCircleDollarSign, LuWallet, LuClock, LuGlobe, LuFileChart
 import DailyCostChart from "./graph/DailyCostChart";
 import MonthlyTotalAPIChart from "./graph/MonthlyTotalAPIChart";
 import MonthlyTotalCostChart from "./graph/MonthlyTotalCostChart";
-import { ProjectAllPeriodsData } from "../../store/APIUsageSlice";
 
 interface ProjectAllPeriodsViewProps {
   projectName: string;
-  data: ProjectAllPeriodsData;
 }
 
 export const ProjectAllPeriodsView: React.FC<ProjectAllPeriodsViewProps> = ({ projectName, data }) => {
@@ -24,8 +22,7 @@ export const ProjectAllPeriodsView: React.FC<ProjectAllPeriodsViewProps> = ({ pr
           >
             <div className="flex flex-col gap-1">
               <div>
-                <p className="text-sm font-medium text-gray-300">{`${projectName}의`}</p>
-                <p className="text-sm font-medium text-gray-300">{`총 비용`}</p>
+                <p className="text-sm font-medium text-gray-300">{`${projectName}의 총 비용`}</p>
               </div>
               <p className="text-2xl font-bold text-white">$ {data.allCost}</p>
             </div>
@@ -47,8 +44,7 @@ export const ProjectAllPeriodsView: React.FC<ProjectAllPeriodsViewProps> = ({ pr
           >
             <div className="flex flex-col gap-1">
               <div>
-                <p className="text-sm font-medium text-gray-300">{`${projectName}의`}</p>
-                <p className="text-sm font-medium text-gray-300">{`총 API 요청 수`}</p>
+                <p className="text-sm font-medium text-gray-300">{`${projectName}의 총 API 요청 수`}</p>
               </div>
               <p className="text-2xl font-bold text-white">{data.allRequestCount} <span className="text-sm text-medium text-gray-400">건</span></p>
             </div>
@@ -67,8 +63,7 @@ export const ProjectAllPeriodsView: React.FC<ProjectAllPeriodsViewProps> = ({ pr
           >
             <div className="flex flex-col gap-1">
               <div>
-                <p className="text-sm font-medium text-gray-300">{`${projectName}의`}</p>
-                <p className="text-sm font-medium text-gray-300">{`사용 시간`}</p>
+                <p className="text-sm font-medium text-gray-300">{`${projectName}의 사용 시간`}</p>
               </div>
               <p className="text-2xl font-bold text-white">{data.allSeconds} <span className="text-sm text-medium text-gray-400">h</span></p>
             </div>

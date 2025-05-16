@@ -1,7 +1,18 @@
+import { DailyProjectCost } from "../../../store/APIUsageSlice";
 import { AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area } from 'recharts';
-import { CostPerDay } from "../../../store/APIUsageSlice";
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    name: string;
+    color: string;
+  }>;
+  label?: string;
+}
+
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-gray-100/50 backdrop-blur-sm px-1 py-2 order rounded shadow-sm text-sm">
@@ -20,7 +31,7 @@ const CustomLegend = () => {
   return (
     <ul className="flex flex-row gap-2 justify-center items-center">
       <li className="flex flex-row gap-2 items-center">
-        <div className="w-2 h-2 bg-[#033486] rounded-full"></div> 
+        <div className="w-2 h-2 bg-[#033486] rounded-full"></div>
         <p className="text-sm font-medium text-gray-400">비용</p>
       </li>
     </ul>
@@ -28,13 +39,13 @@ const CustomLegend = () => {
 };
 
 
-const getMaxValue = (data: CostPerDay[] | null) => {
+const getMaxValue = (data: DailyProjectCost[] | null) => {
   if (!data) return 0;
-  return Math.max(...data.map(item => item.cost));
+  return Math.max(...data.map(item => item.totalCost));
 };
 
 
-export default function DailyCostChart({ data }: { data: CostPerDay[] | null }) {
+export default function DailyCumulativeCostChart({ data }: { data: DailyProjectCost[] | null }) {
   return (
     <div className="w-full h-80 p-4">
       <ResponsiveContainer width="100%" height="100%">
@@ -52,20 +63,23 @@ export default function DailyCostChart({ data }: { data: CostPerDay[] | null }) 
             strokeDasharray="3 3"
             stroke="#04101D"
           />
-          <XAxis 
+          <XAxis
             dataKey="day"
             axisLine={{ stroke: '#6B7280' }}
             tickLine={{ stroke: '#6B7280' }}
             style={{ fontSize: 12, fontWeight: 600, fill: '#9CA3AF' }}
           />
-          <YAxis 
+          <YAxis
             axisLine={{ stroke: '#6B7280' }}
             tickLine={{ stroke: '#6B7280' }}
             tickFormatter={(v) => `$${v.toLocaleString()}`}
             style={{ fontSize: 12, fontWeight: 600, fill: '#9CA3AF' }}
             domain={[0, Math.trunc(getMaxValue(data) * 1.2 * 100) / 100]}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(4, 16, 29, 0.3)'}}/>
+          <Tooltip
+            content={<CustomTooltip />}
+            cursor={{ fill: 'rgba(4, 16, 29, 0.3)' }}
+          />
           <Legend content={<CustomLegend />} />
           <Area
             type="monotone"
