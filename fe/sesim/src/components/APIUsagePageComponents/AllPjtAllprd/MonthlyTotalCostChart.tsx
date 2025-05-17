@@ -1,93 +1,8 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, LabelList } from "recharts";
-import { RootState } from "../../../store";
-import { MonthProjectCost } from '../../../store/APIUsageSlice';
-
-interface ChartDataItem {
-  month: string;
-  [projectId: string]: number | string;
-}
-
-interface TooltipPayloadItem {
-  value: number;
-  name: string;
-  color: string;
-  dataKey: string;
-  payload: ChartDataItem;
-};
-
-interface TooltipProps {
-  active?: boolean;
-  payload?: TooltipPayloadItem[];
-  projectNames: Record<number, string>;
-};
-
-interface LegendItemType {
-  value: string;
-  color: string;
-}
-
-const barColors = ["#4F46E5", "#3A7880", "#EC4899", "#8B5CF6", "#F59E0B", "#10B981"];
-
-const CustomTooltip = ({ active, payload, projectNames }: TooltipProps) => {
-  if (active && payload && payload.length) {
-    const month = payload[0].payload.month;
-    let totalCost = 0;
-    
-    return (
-      <div className="bg-gray-100/50 backdrop-blur-sm px-3 py-2 rounded shadow-sm text-sm">
-        <p className="font-semibold text-gray-800">{month}</p>
-        <div className="h-[1px] w-full bg-gray-600 my-[4px]"></div>
-        {payload.map((entry, index) => {
-          totalCost += entry.value;
-          const projectId = parseInt(entry.dataKey);
-          const projectName = projectNames[projectId];
-          
-          return (
-            <p 
-              key={index}
-              className="text-gray-800 flex justify-between gap-4"
-            >
-              <span>{projectName}:</span>
-              <span>₩ {entry.value.toLocaleString()}</span>
-            </p>
-          );
-        })}
-        <div className="h-[1px] w-full bg-gray-600 my-[4px]"></div>
-        <p className="text-gray-800 flex justify-between gap-4 font-medium">
-          <span>총 액:</span>
-          <span>₩ {totalCost.toLocaleString()}</span>
-        </p>
-      </div>
-    );
-  }
-};
-
-
-const CustomLegend = ({ payload }: { payload?: LegendItemType[] }) => {
-  if (!payload || payload.length === 0) return null;
-  
-  return (
-    <ul className="flex flex-row flex-wrap gap-x-8 gap-y-2 justify-center items-center">
-      {payload.map((entry, index) => {
-        return (
-          <li 
-            key={`item-${index}`} 
-            className="flex flex-row gap-2 items-center"
-          >
-            <div 
-              className="w-2 h-2 rounded-full" 
-              style={{ backgroundColor: entry.color }}
-            />
-            <p className="text-sm font-medium text-gray-400">{entry.value}</p>
-          </li>
-        );
-      })}
-    </ul>
-  );
-};
-
+import { MonthProjectCost } from "../../../types/APIUsageTypes";
+import { useProjectNames } from "../../../utils/projectModelUtils";
+import { CustomBarLineTooltip, CustomBarLegend, graphColors } from "../../common/ChartComponents";
 
 const transformData = (data: MonthProjectCost[] | null) => {
   if (!data || data.length === 0) return [];
@@ -140,27 +55,10 @@ const getMaxValue = (data: Record<string, number | string>[] | null) => {
 };
 
 export default function MonthlyTotalCostChart({ data }: { data: MonthProjectCost[] | null }) {
-  const projectInfo = useSelector((state: RootState) => state.apiUsage.projectInfo);
+  const projectNames = useProjectNames();
   
-  const projectNames = useMemo(() => {
-    const names: Record<number, string> = {};
-    if (projectInfo) {
-      projectInfo.forEach(project => {
-        names[project.projectId] = project.name;
-      });
-    }
-
-    return names;
-  }, [projectInfo]);
+  const chartData = useMemo(() => transformData(data), [data]);
   
-
-  const chartData = useMemo(() => {
-    const transformedData = transformData(data);
-
-    return transformedData;
-  }, [data]);
-  
-
   const projectKeys = useMemo(() => {
     if (chartData.length === 0) {
       return [];
@@ -169,8 +67,14 @@ export default function MonthlyTotalCostChart({ data }: { data: MonthProjectCost
     return Object.keys(chartData[0]).filter(key => key !== "month");
   }, [chartData]);
   
-
   const maxValue = useMemo(() => getMaxValue(chartData), [chartData]);
+
+  const legendPayload = useMemo(() => {
+    return projectKeys.map((key, index) => ({
+      value: projectNames[parseInt(key)] || `프로젝트 ${key}`,
+      color: graphColors[index % graphColors.length]
+    }));
+  }, [projectKeys, projectNames]);
   
   if (!data || chartData.length === 0 || projectKeys.length === 0) {
     return (
@@ -213,32 +117,22 @@ export default function MonthlyTotalCostChart({ data }: { data: MonthProjectCost
             domain={[0, Math.ceil(maxValue * 1.2)]}
           />
           <Tooltip 
-            content={<CustomTooltip projectNames={projectNames} />} 
+            content={<CustomBarLineTooltip nameMap={projectNames} prefix="₩" />} 
             cursor={{ fill: 'rgba(4, 16, 29, 0.3)' }}
           />
-          <Legend 
-            content={
-              <CustomLegend 
-                payload={
-                  projectKeys.map((key, index) => ({
-                    value: key,
-                    color: barColors[index % barColors.length]
-                  }))
-                }
-              />
-            }
-          />
+          <Legend content={<CustomBarLegend payload={legendPayload} />} />
           
           {projectKeys.map((key, index) => {
+            const color = graphColors[index % graphColors.length];
             return (
               <Bar
                 key={key}
                 dataKey={key}
-                name={projectNames[parseInt(key)]}
+                name={projectNames[parseInt(key)] || `프로젝트 ${key}`}
                 stackId="stack"
                 barSize={30}
-                fill={`${barColors[index % barColors.length]}80`}
-                stroke={barColors[index % barColors.length]}
+                fill={`${color}80`}
+                stroke={color}
                 radius={index === projectKeys.length - 1 ? [10, 10, 0, 0] : [0, 0, 0, 0]}
               >
                 {index === projectKeys.length - 1 && (
