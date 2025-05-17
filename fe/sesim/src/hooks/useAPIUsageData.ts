@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { useAppDispatch } from "../store/hooks";
 import { CostChangeInfo } from "../types/APIUsageTypes";
 import { APIUsageProjectInfo } from "../types/ProjectTypes";
 import {
+  setInitDataLoaded,
   fetchAPIUsageInitData,
   fetchAllProjectsAllPeriods,
   fetchAllProjectsMonthPeriod,
@@ -20,9 +21,9 @@ function calculateChangeInfo(current: number, previous: number): CostChangeInfo 
 
 export const useAPIUsageData = () => {
   const dispatch = useAppDispatch();
-  const initDataLoaded = useRef(false);
 
   const apiUsageState = useSelector((state: RootState) => state.apiUsage);
+  const initDataLoaded = apiUsageState.isInitDataLoaded;
   
   const createdAt = apiUsageState.apiUsageInitData?.createdAt || "2023-01-01";
   const currentMonthCost = apiUsageState.apiUsageInitData?.totalCost || 0;
@@ -103,11 +104,13 @@ export const useAPIUsageData = () => {
 
 
   useEffect(() => {
-    if (!initDataLoaded.current && !apiUsageState.apiUsageInitData) {
+    if (!initDataLoaded) {
       dispatch(fetchAPIUsageInitData());
-      initDataLoaded.current = true;
     }
-  }, [dispatch, apiUsageState.apiUsageInitData]);
+    
+    dispatch(setInitDataLoaded());
+
+  }, [dispatch, initDataLoaded]);
 
 
   useEffect(() => {
