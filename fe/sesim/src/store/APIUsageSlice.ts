@@ -132,7 +132,6 @@ export const fetchSpecificProjectAllPeriods = createAsyncThunk(
     "apiUsage/fetchSpecificProjectAllPeriods",
     async ({ projectId, createdAt }: { projectId: string; createdAt: string }) => {
         const raw = await apiUsageService.getAPIUsageSpecificProjectAllPeriodsData(projectId, createdAt);
-        console.log('222', raw.data);
         return {
             ...raw.data,
             totalCost: roundCost(raw.data.totalCost),
@@ -260,7 +259,6 @@ const apiUsageSlice = createSlice({
                 state.isSpecificProjectAllPeriodsLoading = true;
             })
             .addCase(fetchSpecificProjectAllPeriods.fulfilled, (state, action) => {
-                console.log("111", action.payload);
                 state.specificProjectAllPeriodsData = action.payload;
                 state.isSpecificProjectAllPeriodsLoading = false;
             })
