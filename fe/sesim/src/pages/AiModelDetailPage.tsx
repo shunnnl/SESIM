@@ -55,14 +55,14 @@ export const AiModelDetailPage = () => {
                 />
             </div>
             <div 
-                className="container-padding py-[44px] text-white relative z-10"
+                className=" py-[44px] text-white relative z-10"
                 style={{
                     background: "linear-gradient(to bottom, #000000 0px, #04101D 300px, #04101D 100%)"
                 }}
             >
                 { selectedTab === "description" && (
                     <motion.div 
-                        className="py-[44px]"
+                        className="py-[44px] container-padding"
                         initial={{ opacity: 0, y: 70 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
@@ -109,7 +109,7 @@ export const AiModelDetailPage = () => {
                     </motion.div>
                 )}
                 { selectedTab === "examplecode" && (
-                    <div className="relative">
+                    <div className="relative container-padding">
                         {/* 파란색 블러 원 */}
                         <motion.div
                             className="absolute top-[40%] left-[60%] -translate-y-1/2 w-[200px] h-[100px] rounded-full"
@@ -163,47 +163,6 @@ export const AiModelDetailPage = () => {
                     </div>
                 )}
             </div>
-
-            { selectedTab == "description" && (
-                <>
-                    <motion.div
-                        className="absolute top-[40%] right-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
-                        style={{
-                            background: "#063584", 
-                            boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
-                            opacity: 0.4,
-                            zIndex: 0
-                        }}
-                        initial={{ opacity: 0, y: 100 }}
-                        animate={{ opacity: 0.4, y: 0 }}
-                        transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-                    ></motion.div>
-                    <motion.div
-                        className="absolute top-[62%] left-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
-                        style={{
-                            background: "#063584", 
-                            boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
-                            opacity: 0.4,
-                            zIndex: 0
-                        }}
-                        initial={{ opacity: 0, y: 100 }}
-                        animate={{ opacity: 0.4, y: 0 }}
-                        transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-                    ></motion.div>
-                    <motion.div
-                        className="absolute top-[90%] right-0 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
-                        style={{
-                            background: "#063584", 
-                            boxShadow: "0 0 160px 120px #063584, 0 0 320px 240px #063584",
-                            opacity: 0.4,
-                            zIndex: 0
-                        }}
-                        initial={{ opacity: 0, y: 100 }}
-                        animate={{ opacity: 0.4, y: 0 }}
-                        transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
-                    ></motion.div>
-                </>
-            )}
         </div>
     );
 };
