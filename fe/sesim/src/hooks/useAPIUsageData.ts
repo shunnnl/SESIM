@@ -32,7 +32,7 @@ export const useAPIUsageData = () => {
   const previousMonthCost = apiUsageState.apiUsageInitData?.lastTotalCost || 0;
   const previousMonthRequests = apiUsageState.apiUsageInitData?.lastTotalRequests || 0;
   const previousMonthSeconds = apiUsageState.apiUsageInitData?.lastTotalSeconds || 0;
-  const projectInfo = apiUsageState.apiUsageInitData?.projects || null;
+  const projectInfo = useSelector((state: RootState) => state.apiUsage.apiUsageInitData?.projects);
 
   const isInitDataLoading = apiUsageState.isInitDataLoading;
   const isAllProjectsAllPeriodsLoading = apiUsageState.isAllProjectsAllPeriodsLoading;
@@ -56,8 +56,7 @@ export const useAPIUsageData = () => {
   const handleSelectProject = (value: string) => {
     setSelectedProject(value);
     const project = projectInfo?.find((p: APIUsageProjectInfo) => p.projectId.toString() === value);
-    setSelectedProjectName(project ? project.name : "모든 프로젝트");
-    loadDataBySelection();
+    setSelectedProjectName(project?.name ?? "모든 프로젝트");
   };
 
 
@@ -65,7 +64,6 @@ export const useAPIUsageData = () => {
     setSelectedMonth(value);
     const found = monthOptions.find((m) => m.value === value);
     setSelectedMonthName(found ? found.label : "전체 기간");
-    loadDataBySelection();
   };
 
 
@@ -119,11 +117,9 @@ export const useAPIUsageData = () => {
     }
   }, [createdAt, generateMonthOptions, isInitDataLoading, apiUsageState.apiUsageInitData]);
 
-
   useEffect(() => {
     loadDataBySelection();
-  }, [loadDataBySelection, isInitDataLoading, apiUsageState.apiUsageInitData]);
-
+  }, [dispatch, selectedProject, selectedMonth]);
 
   return {
     isInitLoading: isInitDataLoading,
