@@ -168,10 +168,10 @@ export interface SpecificProjectAllPeriodsData {
   totalRequests: number;
   totalSeconds: number;
   totalModelCount: number;
-  monthModelCost: MonthModelCost[];
-  monthModelRequest: MonthModelRequest[];
-  monthModelSecond: MonthModelSecond[];
-  dailyModelCost: DailyModelCost[];
+  monthModelCosts: MonthModelCost[];
+  monthModelRequests: MonthModelRequest[];
+  monthModelSeconds: MonthModelSecond[];
+  dailyModelCosts: DailyModelCost[];
 };
 
 export interface AllProjectsMonthPeriodData {
