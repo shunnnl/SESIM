@@ -1,17 +1,7 @@
 import { useMemo } from "react";
 import { AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area } from "recharts";
-import { DailyProjectCost } from "../../../store/APIUsageSlice";
-
-interface TooltipContentProps {
-  active?: boolean;
-  payload?: Array<{
-    value: number;
-    name: string;
-    color: string;
-    payload?: Record<string, unknown>;
-  }>;
-  label?: string;
-};
+import { DailyProjectCost } from "../../../types/APIUsageTypes";
+import { CustomSingleTooltip, CustomSingleLegend, graphColors } from "../../common/ChartComponents";
 
 interface DailyDataItem {
   date: string;
@@ -19,7 +9,7 @@ interface DailyDataItem {
   [key: string]: string | number;
 };
 
-const lineColor = "#EC4899";
+const lineColor = graphColors[2];
 
 const processDailyData = (data: DailyProjectCost[] | null) => {
   if (!data || data.length === 0) return [];
@@ -51,47 +41,6 @@ const processDailyData = (data: DailyProjectCost[] | null) => {
   });
 
   return sortedData.slice(-90);
-};
-
-
-const CustomTooltip = ({ active, payload, label }: TooltipContentProps) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-gray-100/50 backdrop-blur-sm px-3 py-2 rounded shadow-sm text-sm">
-        <p className="font-semibold text-gray-800 px-1 mb-1">{label}</p>
-        <div className="h-[1px] w-full bg-gray-600 mb-2"></div>
-        {payload.map((entry, index) => (
-          <p 
-            key={index}
-            className="flex justify-between items-center gap-4 px-1 py-[2px]"
-          >
-            <span 
-              style={{ color: entry.color }}
-              className="font-medium"
-            >{entry.name}:</span>
-            <span className="font-medium text-gray-800">₩ {entry.value.toLocaleString()}</span>
-          </p>
-        ))}
-      </div>
-    );
-  }
-
-  return null;
-};
-
-
-const CustomLegend = () => {
-  return (
-    <div className="flex flex-row flex-wrap justify-center items-center">
-        <div className="flex flex-row gap-2 items-center">
-          <div
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: lineColor }}
-          />
-          <p className="text-sm font-medium text-gray-400">총 합 비용</p>
-        </div>
-    </div>
-  );
 };
 
 
@@ -171,10 +120,10 @@ export default function DailyAllProjectCostChart({ data }: { data: DailyProjectC
             domain={[0, Math.ceil(maxDailyValue * 1.1 * 100) / 100]}
           />
           <Tooltip
-            content={<CustomTooltip />}
+            content={<CustomSingleTooltip prefix="₩" nameMap={"totalCost"} />}
             cursor={{ stroke: 'rgba(4, 16, 29, 0.3)', strokeWidth: 1 }}
           />
-          <Legend content={<CustomLegend />} />
+          <Legend content={<CustomSingleLegend label="총 합 비용" color={lineColor} />} />
           <Area
             type="monotone"
             dataKey="totalCost"
