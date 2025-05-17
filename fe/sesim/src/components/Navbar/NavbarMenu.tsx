@@ -10,11 +10,11 @@ interface Model {
 
 const models: Model[] = [
     { id: 1, name: "Finect", path: "/ai-model/1" },
-    { id: 2, name: "SentimentX", path: "/ai-model/2" },
-    { id: 3, name: "ImageDetector", path: "/ai-model/3" },
-    { id: 4, name: "FraudGuard", path: "/ai-model/4" },
-    { id: 5, name: "TimeSeriesPredictor", path: "/ai-model/5" },
-    { id: 6, name: "RecommendX", path: "/ai-model/6" }
+    { id: 2, name: "Vaulture", path: "/ai-model/2" },
+    { id: 3, name: "Webloom", path: "/ai-model/3" },
+    { id: 4, name: "DriftNet", path: "/ai-model/4" },
+    { id: 5, name: "Logma", path: "/ai-model/5" },
+    { id: 6, name: "Insphex", path: "/ai-model/6" }
 ];
 
 const menuClass = "relative group px-2 flex flex-col items-center justify-center min-w-[65px]";
