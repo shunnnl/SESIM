@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import { LuActivity, LuCircleDollarSign, LuWallet, LuClock, LuGlobe, LuFileChartColumnIncreasing } from "react-icons/lu";
 import { RootState } from "../../store";
-import { useAPIUsageData } from "../../hooks/useAPIUsageData";
 import { useProjectNames } from "../../utils/projectModelUtils";
 import MonthProjectAPIChart from "./AllPjtMonthPrd/MonthProjectAPIChart";
 import MonthProjectCostChart from "./AllPjtMonthPrd/MonthProjectCostChart";
@@ -10,16 +9,16 @@ import DailyAllProjectCostChart from "./AllPjtMonthPrd/DailyAllProjectCostChart"
 import DailyAllProjectSecondChart from "./AllPjtMonthPrd/DailyAllProjectSecondChart";
 import { ChartContainer, StatCardIndicator, ProjectCostCard } from "./APIUsageChartComponents";
 
-export const AllProjectMonthPeriodView: React.FC = () => {
+export const AllProjectMonthPeriodView: React.FC<{ month: string }> = ({ month }) => {
   const isLoading = useSelector((state: RootState) => state.apiUsage.isAllProjectsMonthPeriodLoading);
   const allProjectsMonthPeriodData = useSelector((state: RootState) => state.apiUsage.allProjectsMonthPeriodData);
 
-  const { selectedMonthName } = useAPIUsageData();
+  const monthName = month.slice(2,4) + "년 " + month.slice(6, 7) + "월 ";
   const projectNames = useProjectNames();
 
   const statCards = [
     {
-      title: `${selectedMonthName} 총 비용`,
+      title: `${monthName} 총 비용`,
       value: `$ ${allProjectsMonthPeriodData?.curMonthTotalCost ?? 0}`,
       icon: <LuWallet size={18} color="#242B3A" />,
       bgColor: "#5F9FED",
@@ -29,7 +28,7 @@ export const AllProjectMonthPeriodView: React.FC = () => {
       previousCost: allProjectsMonthPeriodData?.lastMonthTotalCost ?? 0,
     },
     {
-      title: `${selectedMonthName} 총 API 요청 수`,
+      title: `${monthName} 총 API 요청 수`,
       value: allProjectsMonthPeriodData?.curMonthTotalRequests ?? 0,
       suffix: "건",
       icon: <LuActivity size={18} color="#242B3A" />,
@@ -40,7 +39,7 @@ export const AllProjectMonthPeriodView: React.FC = () => {
       previousCost: allProjectsMonthPeriodData?.lastMonthTotalRequests ?? 0,
     },
     {
-      title: `${selectedMonthName} 총 사용 시간`,
+      title: `${monthName} 총 사용 시간`,
       value: allProjectsMonthPeriodData?.curMonthTotalSeconds ?? 0,
       suffix: "h",
       icon: <LuClock size={18} color="#242B3A" />,
@@ -75,7 +74,7 @@ export const AllProjectMonthPeriodView: React.FC = () => {
         <div className="gap-4 grid grid-cols-1 lg:grid-cols-4">
           {/* 프로젝트 별 전체 비용 추이 그래프 */}
           <ChartContainer
-            title={`${selectedMonthName}의 프로젝트별 비용 비교`}
+            title={`${monthName}의 프로젝트별 비용 비교`}
             icon={<LuCircleDollarSign size={16} color="#DEDEDE" />}
             colSpan="flex flex-col lg:col-span-1"
             isLoading={isLoading}
@@ -85,7 +84,7 @@ export const AllProjectMonthPeriodView: React.FC = () => {
 
           {/* 비용 일일 그래프 */}
           <ChartContainer
-            title={`${selectedMonthName}의 일일 비용 추이 그래프`}
+            title={`${monthName}의 일일 비용 추이 그래프`}
             icon={<LuCircleDollarSign size={16} color="#DEDEDE" />}
             colSpan="flex flex-col lg:col-span-3"
             isLoading={isLoading}
@@ -97,7 +96,7 @@ export const AllProjectMonthPeriodView: React.FC = () => {
         <div className="gap-4 grid grid-cols-1 lg:grid-cols-4">
           {/* 프로젝트 별 전체 API 요청 수 추이 그래프 */}
           <ChartContainer
-            title={`${selectedMonthName}의 프로젝트별 API 요청 수 비교`}
+            title={`${monthName}의 프로젝트별 API 요청 수 비교`}
             icon={<LuGlobe size={16} color="#DEDEDE" />}
             colSpan="flex flex-col lg:col-span-1"
             isLoading={isLoading}
@@ -107,7 +106,7 @@ export const AllProjectMonthPeriodView: React.FC = () => {
 
           {/* 비용 일일 그래프 */}
           <ChartContainer
-            title={`${selectedMonthName}의 일일 API 요청 수 추이 그래프`}
+            title={`${monthName}의 일일 API 요청 수 추이 그래프`}
             icon={<LuFileChartColumnIncreasing size={16} color="#DEDEDE" />}
             colSpan="flex flex-col lg:col-span-3"
             isLoading={isLoading}
@@ -147,7 +146,7 @@ export const AllProjectMonthPeriodView: React.FC = () => {
 
           {/* 비용 일일 그래프 */}
           <ChartContainer
-            title={`${selectedMonthName}의 일일 사용 시간 추이 그래프`}
+            title={`${monthName}의 일일 사용 시간 추이 그래프`}
             icon={<LuFileChartColumnIncreasing size={16} color="#DEDEDE" />}
             colSpan="lg:col-span-3 flex flex-col"
             isLoading={isLoading}
