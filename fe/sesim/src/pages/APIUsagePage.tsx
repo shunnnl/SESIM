@@ -105,7 +105,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <SpecificProjectAllPeriodsView />
+                    <SpecificProjectAllPeriodsView projectId={selectedProject} />
                 </motion.div>
             );
         } else if (selectedMonth !== "all" && selectedProject === "all") {
@@ -115,7 +115,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <AllProjectMonthPeriodView />
+                    <AllProjectMonthPeriodView month={selectedMonth}/>
                 </motion.div>
             );
         } else if (selectedMonth !== "all" && selectedProject !== "all") {
@@ -125,7 +125,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <SpecificProjectMonthPeriodView />
+                    <SpecificProjectMonthPeriodView projectId={selectedProject} month={selectedMonth}/>
                 </motion.div>
             );
         }
