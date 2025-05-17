@@ -21,7 +21,7 @@ const TabbarNavItem: React.FC<TabbarNavItemProps> = ({ to, icon: Icon, label }) 
             >
                 {({ isActive }) => (
                     <>
-                        <div className="flex-1 flex items-center gap-3">
+                        <div className="flex-1 flex items-center gap-3 whitespace-nowrap truncate">
                             <Icon className={`text-xl ${isActive ? "text-white" : "text-gray-400"}`} />
                             {label}
                         </div>
