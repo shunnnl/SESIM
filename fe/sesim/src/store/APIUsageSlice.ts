@@ -33,6 +33,7 @@ interface APIUsageInitData {
 }
 
 interface APIUsageState {
+    isInitDataLoaded: boolean;
     apiUsageInitData: APIUsageInitData | null;
     allProjectsAllPeriodsData: AllProjectsAllPeriodsData | null;
     specificProjectAllPeriodsData: SpecificProjectAllPeriodsData | null;
@@ -59,6 +60,7 @@ const apiUsageInitData: APIUsageInitData = {
 };
 
 const initialState: APIUsageState = {
+    isInitDataLoaded: false,
     apiUsageInitData: apiUsageInitData,
     allProjectsAllPeriodsData: null,
     specificProjectAllPeriodsData: null,
@@ -71,6 +73,12 @@ const initialState: APIUsageState = {
     isSpecificProjectMonthPeriodLoading: false,
     error: null
 };
+
+
+export const setInitDataLoaded = createAsyncThunk("apiUsage/setInitDataLoaded", async () => {
+    return true;
+});
+
 
 export const fetchAPIUsageInitData = createAsyncThunk(
     "apiUsage/fetchAPIUsageInitData",
@@ -279,6 +287,9 @@ const apiUsageSlice = createSlice({
             .addCase(fetchSpecificProjectMonthPeriod.rejected, (state, action) => {
                 state.isSpecificProjectMonthPeriodLoading = false;
                 state.error = action.error.message || "error";
+            })
+            .addCase(setInitDataLoaded.fulfilled, (state, action) => {
+                state.isInitDataLoaded = true;
             });
     }
 });
