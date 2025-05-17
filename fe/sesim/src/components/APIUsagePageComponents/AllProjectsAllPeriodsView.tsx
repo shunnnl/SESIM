@@ -19,7 +19,8 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
       value: `$ ${allProjectsAllPeriodsData?.totalCost ?? 0}`,
       icon: <LuWallet size={18} color="#242B3A" />,
       bgColor: "#5F9FED",
-      delay: 0
+      delay: 0,
+      isLoading: isLoading
     },
     {
       title: "총 API 요청 수",
@@ -27,7 +28,8 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
       suffix: "건",
       icon: <LuActivity size={18} color="#242B3A" />,
       bgColor: "#88D6BE",
-      delay: 0.1
+      delay: 0.1,
+      isLoading: isLoading
     },
     {
       title: "총 사용 시간",
@@ -35,7 +37,8 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
       suffix: "h",
       icon: <LuClock size={18} color="#242B3A" />,
       bgColor: "#837CF7",
-      delay: 0.2
+      delay: 0.2,
+      isLoading: isLoading
     },
     {
       title: "총 프로젝트 수",
@@ -43,7 +46,8 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
       suffix: "개",
       icon: <LuCloudCog size={18} color="#242B3A" />,
       bgColor: "#EC5A69",
-      delay: 0.3
+      delay: 0.3,
+      isLoading: isLoading
     }
   ];
 
