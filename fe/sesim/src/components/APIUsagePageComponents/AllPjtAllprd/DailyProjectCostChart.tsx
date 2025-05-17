@@ -1,26 +1,13 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 import { LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Line } from "recharts";
-import { RootState } from "../../../store";
-import { DailyProjectCost, ProjectCost } from "../../../store/APIUsageSlice";
-
-interface TooltipContentProps {
-  active?: boolean;
-  payload?: Array<{
-    value: number;
-    name: string;
-    color: string;
-    payload?: Record<string, unknown>;
-  }>;
-  label?: string;
-}
+import { getProjectNameById, useProjectNames } from "../../../utils/projectModelUtils";
+import { DailyProjectCost, ProjectCost } from "../../../types/APIUsageTypes";
+import { CustomBarLineTooltip, CustomBarLegend, graphColors } from "../../common/ChartComponents";
 
 interface DailyDataItem {
   date: string;
   [projectKey: string]: string | number;
 }
-
-const lineColors = ["#4F46E5", "#3A7880", "#EC4899", "#033486", "#F59E0B", "#10B981"];
 
 const processDailyData = (data: DailyProjectCost[] | null) => {
   if (!data || data.length === 0) {
@@ -70,46 +57,6 @@ const processDailyData = (data: DailyProjectCost[] | null) => {
   return sortedData.slice(-90);
 };
 
-
-const CustomTooltip = ({ active, payload, label }: TooltipContentProps) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-gray-100/50 backdrop-blur-sm px-3 py-2 rounded shadow-sm text-sm">
-        <p className="font-semibold text-gray-800 px-1 mb-1">{label}</p>
-        <div className="h-[1px] w-full bg-gray-600 mb-2"></div>
-        {payload.map((entry, index) => (
-          <p key={index} className="flex justify-between items-center gap-4 px-1 py-[2px]">
-            <span style={{ color: entry.color }} className="font-medium">{entry.name}:</span>
-            <span className="font-medium text-gray-800">₩ {entry.value.toLocaleString()}</span>
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
-
-
-const CustomLegend = ({ projects }: { projects: Array<{ projectId: number, name: string }> }) => {
-  return (
-    <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 justify-center items-center">
-      {projects.map((project, index) => (
-        <div
-          key={project.projectId}
-          className="flex flex-row gap-2 items-center"
-        >
-          <div
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: lineColors[index % lineColors.length] }}
-          />
-          <p className="text-sm font-medium text-gray-400">{project.name}</p>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-
 const getMaxDailyValue = (data: DailyDataItem[] | null | undefined) => {
   if (!data || data.length === 0) {
     return 0;
@@ -131,7 +78,6 @@ const getMaxDailyValue = (data: DailyDataItem[] | null | undefined) => {
   return projectMaxValues;
 };
 
-
 const extractUniqueProjects = (data: DailyProjectCost[] | null) => {
   if (!data || data.length === 0) {
     return [];
@@ -151,28 +97,16 @@ const extractUniqueProjects = (data: DailyProjectCost[] | null) => {
 };
 
 export default function DailyProjectCostChart({ data }: { data: DailyProjectCost[] | null }) {
-  const projectInfo = useSelector((state: RootState) => state.apiUsage.projectInfo);
-
-  const projectNames = useMemo(() => {
-    const names: Record<number, string> = {};
-
-    if (projectInfo) {
-      projectInfo.forEach(project => {
-        names[project.projectId] = project.name;
-      });
-    }
-
-    return names;
-  }, [projectInfo]);
+  const projectNames = useProjectNames();
 
   const dailyData = useMemo(() => processDailyData(data), [data]);
   const maxDailyValue = useMemo(() => getMaxDailyValue(dailyData), [dailyData]);
   const uniqueProjectIds = useMemo(() => extractUniqueProjects(data), [data]);
 
-  const projectsInfo = useMemo(() => {
-    return uniqueProjectIds.map(id => ({
-      projectId: id,
-      name: projectNames[id]
+  const legendPayload = useMemo(() => {
+    return uniqueProjectIds.map((id, index) => ({
+      value: getProjectNameById(id, projectNames),
+      color: graphColors[index % graphColors.length]
     }));
   }, [uniqueProjectIds, projectNames]);
 
@@ -212,13 +146,13 @@ export default function DailyProjectCostChart({ data }: { data: DailyProjectCost
             domain={[0, Math.ceil(maxDailyValue * 1.1 * 100) / 100]}
           />
           <Tooltip
-            content={<CustomTooltip />}
+            content={<CustomBarLineTooltip nameMap={projectNames} prefix="₩" />}
             cursor={{ stroke: 'rgba(4, 16, 29, 0.3)', strokeWidth: 1 }}
           />
-          <Legend content={<CustomLegend projects={projectsInfo} />} />
+          <Legend content={<CustomBarLegend payload={legendPayload} />} />
           {uniqueProjectIds.map((projectId, index) => {
             const key = `${projectId}`;
-            const color = lineColors[index % lineColors.length];
+            const color = graphColors[index % graphColors.length];
             const name = projectNames[projectId];
 
             return (
