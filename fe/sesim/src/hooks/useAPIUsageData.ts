@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { useAppDispatch } from "../store/hooks";
@@ -14,12 +14,13 @@ import {
 
 function calculateChangeInfo(current: number, previous: number): CostChangeInfo {
   const percentage = ((current - previous) / previous) * 100;
-  const status = percentage > 0 ? "UP" : (percentage < 0 ? "DOWN" : "EQUAL");
+  const status = percentage > 0 ? "UP" : percentage < 0 ? "DOWN" : "EQUAL";
   return { percentage, status };
 }
 
 export const useAPIUsageData = () => {
   const dispatch = useAppDispatch();
+  const initDataLoaded = useRef(false);
 
   const apiUsageState = useSelector((state: RootState) => state.apiUsage);
   
@@ -55,6 +56,7 @@ export const useAPIUsageData = () => {
     setSelectedProject(value);
     const project = projectInfo?.find((p: APIUsageProjectInfo) => p.projectId.toString() === value);
     setSelectedProjectName(project ? project.name : "모든 프로젝트");
+    loadDataBySelection();
   };
 
 
@@ -62,10 +64,11 @@ export const useAPIUsageData = () => {
     setSelectedMonth(value);
     const found = monthOptions.find((m) => m.value === value);
     setSelectedMonthName(found ? found.label : "전체 기간");
+    loadDataBySelection();
   };
 
 
-  const generateMonthOptions = (userCreatedAt: string) => {
+  const generateMonthOptions = useCallback((userCreatedAt: string) => {
     const options: { value: string; label: string }[] = [];
     const iterateDate = new Date(userCreatedAt);
     iterateDate.setDate(1);
@@ -79,10 +82,10 @@ export const useAPIUsageData = () => {
     }
 
     return [{ value: "all", label: "전체 기간" }, ...options.reverse()];
-  };
+  }, []);
 
 
-  const loadDataBySelection = () => {
+  const loadDataBySelection = useCallback(() => {
     if (!createdAt) {
       return;
     }
@@ -96,20 +99,28 @@ export const useAPIUsageData = () => {
     } else {
       dispatch(fetchSpecificProjectMonthPeriod({ projectId: selectedProject, month: selectedMonth }));
     }
-  };
+  }, [createdAt, selectedProject, selectedMonth, dispatch]);
 
 
   useEffect(() => {
-    dispatch(fetchAPIUsageInitData());
-  }, [dispatch]);
-
-
-  useEffect(() => {
-    if (createdAt) {
-      setMonthOptions(generateMonthOptions(createdAt));
-      loadDataBySelection();
+    if (!initDataLoaded.current && !apiUsageState.apiUsageInitData) {
+      dispatch(fetchAPIUsageInitData());
+      initDataLoaded.current = true;
     }
-  }, [createdAt, selectedProject, selectedMonth]);
+  }, [dispatch, apiUsageState.apiUsageInitData]);
+
+
+  useEffect(() => {
+    if (createdAt && !isInitDataLoading && apiUsageState.apiUsageInitData) {
+      setMonthOptions(generateMonthOptions(createdAt));
+    }
+  }, [createdAt, generateMonthOptions, isInitDataLoading, apiUsageState.apiUsageInitData]);
+
+
+  useEffect(() => {
+    loadDataBySelection();
+  }, [loadDataBySelection, isInitDataLoading, apiUsageState.apiUsageInitData]);
+
 
   return {
     isInitLoading: isInitDataLoading,
