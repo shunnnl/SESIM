@@ -72,27 +72,29 @@ export const HomePage: React.FC = () => {
         <>
             <SnapScrollContainer>
                 <div
-                    className="bg-cover bg-center bg-no-repeat h-screen flex flex-col justify-center gap-8 md:gap-12 lg:gap-[72px] text-white container-padding snap-start relative"
+                    className="bg-cover bg-center bg-no-repeat h-screen gap-8 md:gap-12 lg:gap-[72px] text-white snap-start relative"
                     style={{ backgroundImage: `url(${mainBackgroundImage})` }}
                 >
-                    <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white mt-[100px]">
-                        <MainText />
-                        <SubText />
+                    <div className="container-padding flex flex-col justify-center h-full">
+                        <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white ">
+                            <MainText />
+                            <SubText />
+                        </div>
+                        <div>
+                            <AnimatedDetailButton />
+                        </div>
+                        {isAtTop && (
+                            <motion.img
+                                src={downscrollImage}
+                                alt="downscroll"
+                                className="w-[40px] h-[40px] absolute bottom-[5%] left-1/2 -translate-x-1/2"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                            />
+                        )}
                     </div>
-                    <div>
-                        <AnimatedDetailButton />
-                    </div>
-                    {isAtTop && (
-                        <motion.img
-                            src={downscrollImage}
-                            alt="downscroll"
-                            className="w-[40px] h-[40px] absolute bottom-[5%] left-1/2 -translate-x-1/2"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                        />
-                    )}
                 </div>
             </SnapScrollContainer>
 
