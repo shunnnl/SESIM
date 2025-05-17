@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import Lottie from "react-lottie-player";
 import { useState, useRef, useEffect } from "react";
 import { LuFilter, LuClock, LuChevronDown } from "react-icons/lu";
 import { FiTrendingUp, FiTrendingDown, FiMinus } from "react-icons/fi";
@@ -9,6 +10,7 @@ import { AllProjectsAllPeriodsView } from "../components/APIUsagePageComponents/
 import { AllProjectMonthPeriodView } from "../components/APIUsagePageComponents/AllProjectMonthPeriodView";
 import { SpecificProjectAllPeriodsView } from "../components/APIUsagePageComponents/SpecificProjectAllPeriodView";
 import { SpecificProjectMonthPeriodView } from "../components/APIUsagePageComponents/SpecificProjectMonthPeriodView";
+import pageLoading from "../assets/lotties/page-loading-gray.json";
 
 interface MonthOption {
     value: string;
@@ -152,10 +154,13 @@ export const APIUsagePage: React.FC = () => {
 
     if (isInitLoading) {
         return (
-            <div className="flex min-h-screen text-white container-padding">
-                <div>
-                    로딩중..
-                </div>
+            <div className="flex min-h-screen text-white container-padding justify-center items-center">
+                <Lottie 
+                    animationData={pageLoading} 
+                    play 
+                    loop 
+                    style={{ width: "150px", height: "150px" }} 
+                />
             </div>
         );
     }
