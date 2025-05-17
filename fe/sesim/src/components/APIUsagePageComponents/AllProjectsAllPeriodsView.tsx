@@ -3,13 +3,14 @@ import { MdDonutSmall } from "react-icons/md";
 import { LuActivity, LuWallet, LuClock, LuCloudCog, LuGlobe, LuCircleDollarSign, LuFileChartColumnIncreasing } from "react-icons/lu";
 import { RootState } from "../../store";
 import MonthlyTotalAPIChart from "./AllPjtAllPrd/MonthlyTotalAPIChart";
+import { StatCard, ChartContainer } from "./APIUsageChartComponents";
 import MonthlyTotalCostChart from "./AllPjtAllPrd/MonthlyTotalCostChart";
 import DailyProjectCostChart from "./AllPjtAllPrd/DailyProjectCostChart";
 import DailyAllProjectCostChart from "./AllPjtAllPrd/DailyAllProjectCostChart";
 import AllCostDonutChartPerProjects from "./AllPjtAllPrd/AllCostDonutChartPerProjects";
-import { StatCard, ChartContainer } from "./APIUsageChartComponents";
 
 export const AllProjectsAllPeriodsView: React.FC = () => {
+  const isLoading = useSelector((state: RootState) => state.apiUsage.isAllProjectsAllPeriodsLoading);
   const allProjectsAllPeriodsData = useSelector((state: RootState) => state.apiUsage.allProjectsAllPeriodsData);
 
   const statCards = [
@@ -58,8 +59,9 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
               value={card.value}
               suffix={card.suffix}
               icon={card.icon}
-              bgColor={card.bgColor}
-              delay={card.delay}
+                bgColor={card.bgColor}
+                delay={card.delay}
+                isLoading={isLoading}
             />
           ))}
         </div>
@@ -70,6 +72,7 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
             title="프로젝트 별 총 비용 추이"
             icon={<MdDonutSmall size={16} color="#DEDEDE" />}
             colSpan="col-span-1 md:col-span-2"
+            isLoading={isLoading}
           >
             <AllCostDonutChartPerProjects data={allProjectsAllPeriodsData?.projectCosts ?? []} />
           </ChartContainer>
@@ -80,6 +83,7 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
             icon={<LuCircleDollarSign size={16} color="#DEDEDE" />}
             colSpan="col-span-1 md:col-span-3"
             delay={0.4}
+            isLoading={isLoading}
           >
             <MonthlyTotalCostChart data={allProjectsAllPeriodsData?.monthProjectCosts ?? []} />
           </ChartContainer>
@@ -90,6 +94,7 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
             icon={<LuGlobe size={16} color="#DEDEDE" />}
             colSpan="col-span-1 md:col-span-3"
             delay={0.5}
+            isLoading={isLoading}
           >
             <MonthlyTotalAPIChart data={allProjectsAllPeriodsData?.monthProjectRequests ?? []} />
           </ChartContainer>
@@ -100,6 +105,7 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
           title="일일 비용 추이 그래프 (최근 3개월)"
           icon={<LuFileChartColumnIncreasing size={16} color="#DEDEDE" />}
           delay={0.6}
+          isLoading={isLoading}
         >
           <DailyAllProjectCostChart data={allProjectsAllPeriodsData?.dailyProjectCosts ?? []} />
         </ChartContainer>
@@ -109,6 +115,7 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
           title="프로젝트별 일일 비용 추이 그래프 (최근 3개월)"
           icon={<LuFileChartColumnIncreasing size={16} color="#DEDEDE" />}
           delay={0.7}
+          isLoading={isLoading}
         >
           <DailyProjectCostChart data={allProjectsAllPeriodsData?.dailyProjectCosts ?? []} />
         </ChartContainer>
