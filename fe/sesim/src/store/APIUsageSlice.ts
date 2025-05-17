@@ -127,30 +127,31 @@ export const fetchAllProjectsAllPeriods = createAsyncThunk(
     }
 );
 
+
 export const fetchSpecificProjectAllPeriods = createAsyncThunk(
     "apiUsage/fetchSpecificProjectAllPeriods",
     async ({ projectId, createdAt }: { projectId: string; createdAt: string }) => {
         const raw = await apiUsageService.getAPIUsageSpecificProjectAllPeriodsData(projectId, createdAt);
+        console.log('222', raw.data);
         return {
             ...raw.data,
             totalCost: roundCost(raw.data.totalCost),
             totalSeconds: roundSeconds(raw.data.totalSeconds),
-            monthModelCost: raw.data.monthModelCost.map((mmc: MonthModelCost) => ({
+            monthModelCosts: raw.data.monthModelCosts.map((mmc: MonthModelCost) => ({
                 ...mmc,
                 modelCosts: mmc.modelCosts.map((mc: ModelCost) => ({
                     ...mc,
                     cost: roundCost(mc.cost),
                 })),
             })),
-            monthModelRequest: raw.data.monthModelRequest,
-            monthModelSecond: raw.data.monthModelSecond.map((mms: MonthModelSecond) => ({
+            monthModelSeconds: raw.data.monthModelSeconds.map((mms: MonthModelSecond) => ({
                 ...mms,
                 modelSeconds: mms.modelSeconds.map((ms: ModelSecond) => ({
                     ...ms,
                     second: roundSeconds(ms.second),
                 })),
             })),
-            dailyModelCost: raw.data.dailyModelCost.map((dmc: DailyModelCost) => ({
+            dailyModelCosts: raw.data.dailyModelCosts.map((dmc: DailyModelCost) => ({
                 ...dmc,
                 totalCost: roundCost(dmc.totalCost),
                 modelCosts: dmc.modelCosts.map((mc: ModelCost) => ({
@@ -248,8 +249,8 @@ const apiUsageSlice = createSlice({
                 state.isAllProjectsAllPeriodsLoading = true;
             })
             .addCase(fetchAllProjectsAllPeriods.fulfilled, (state, action) => {
-                state.isAllProjectsAllPeriodsLoading = false;
                 state.allProjectsAllPeriodsData = action.payload;
+                state.isAllProjectsAllPeriodsLoading = false;
             })
             .addCase(fetchAllProjectsAllPeriods.rejected, (state, action) => {
                 state.isAllProjectsAllPeriodsLoading = false;
@@ -259,8 +260,9 @@ const apiUsageSlice = createSlice({
                 state.isSpecificProjectAllPeriodsLoading = true;
             })
             .addCase(fetchSpecificProjectAllPeriods.fulfilled, (state, action) => {
-                state.isSpecificProjectAllPeriodsLoading = false;
+                console.log("111", action.payload);
                 state.specificProjectAllPeriodsData = action.payload;
+                state.isSpecificProjectAllPeriodsLoading = false;
             })
             .addCase(fetchSpecificProjectAllPeriods.rejected, (state, action) => {
                 state.isSpecificProjectAllPeriodsLoading = false;
@@ -270,8 +272,8 @@ const apiUsageSlice = createSlice({
                 state.isAllProjectsMonthPeriodLoading = true;
             })
             .addCase(fetchAllProjectsMonthPeriod.fulfilled, (state, action) => {
-                state.isAllProjectsMonthPeriodLoading = false;
                 state.allProjectsMonthPeriodData = action.payload;
+                state.isAllProjectsMonthPeriodLoading = false;
             })
             .addCase(fetchAllProjectsMonthPeriod.rejected, (state, action) => {
                 state.isAllProjectsMonthPeriodLoading = false;
@@ -281,8 +283,8 @@ const apiUsageSlice = createSlice({
                 state.isSpecificProjectMonthPeriodLoading = true;
             })
             .addCase(fetchSpecificProjectMonthPeriod.fulfilled, (state, action) => {
-                state.isSpecificProjectMonthPeriodLoading = false;
                 state.specificProjectMonthPeriodData = action.payload;
+                state.isSpecificProjectMonthPeriodLoading = false;
             })
             .addCase(fetchSpecificProjectMonthPeriod.rejected, (state, action) => {
                 state.isSpecificProjectMonthPeriodLoading = false;
