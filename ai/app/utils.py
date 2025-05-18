@@ -1,81 +1,58 @@
-import re
-import json
-import pandas as pd
-import numpy as np
+from __future__ import annotations
+
+import html, re, warnings
 from urllib.parse import unquote
-from app.core.config import DATA_DIR
-from app.core.registry import get_available_model_versions
-import logging
+import pandas as pd
 
-logger = logging.getLogger(__name__)
-
-def preprocess_url(url: str) -> str:
-
-    if not url:
+# URL 전처리
+def preprocess_url(u: str) -> str:
+    """URL → decode → HTML unescape → 공백삭제 → lower"""
+    if not isinstance(u, str):
         return ""
-    url = unquote(str(url))
-    url = url.replace('+', ' ') 
-    return url
+    u = unquote(u)
+    u = html.unescape(u)
+    u = re.sub(r"\s+", "", u)
+    return u.lower()
 
-def extract_url_features(df: pd.DataFrame, url_column: str = "url") -> pd.DataFrame:
-
-    if url_column not in df.columns:
-        raise ValueError(f"URL 컬럼 '{url_column}'이 데이터프레임에 없습니다.")
+# 패턴 피처
+PATTERN_REGEX = {
+    # SQLi
+    "has_sql_union"    : r"(?i)\bunion\b.*\bselect\b",
+    "has_or_true"      : r"(?i)(\bor\b.+(?:=|like).*?\btrue\b|\b1[ =]1\b)",
     
-    df = df.copy()
-    df[url_column] = df[url_column].fillna("").astype(str)
+    # XSS
+    "has_script_tag"   : r"(?i)<script",
+    "has_svg_tag"      : r"(?i)<svg\s",
+    "has_onload"       : r"(?i)onload=",
+    
+    # Command / RCE - 확장
+    "has_cmd_sep"      : r"[;&|`$]",
+    "has_cmd_binary"   : r"(?i)(rm\s|cat\s|ls\s|wget\s|curl\s|bash\s|sh\s|nc\s)", 
+    "has_cmd_param"    : r"(?i)(cmd=|command=|exec=|shell=|system=)",
+    
+    # SSRF / RFI
+    "has_php_eval"     : r"(?i)<\?php.*?eval",
+    "has_php_exec"     : r"(?i)(<\?php.*?(system|exec|passthru|shell_exec)|\beval\s*\()",
+    "has_tls_probe"    : r"\\x16\\x03\\x01",
+    
+    # Directory Traversal - 확장
+    "has_dir_trav"     : r"\.\./",
+    "has_dir_trav_enc" : r"(?i)(%2e%2e[\/\\]|%252e%252e[\/\\])", 
+    "has_sensitive_file": r"(?i)(etc\/passwd|etc\/shadow|etc\/hosts|web\.config|wp-config\.php|\.env|config\.php)",
+    "has_null_byte"    : r"%00",
+    
+    # UA 토큰
+    "NiktoUA"          : r"(?i)nikto",
+}
+PATTERN_COLS = list(PATTERN_REGEX) + ["url_len"]
 
-    df['url_len'] = df[url_column].str.len()
-    df['has_select'] = df[url_column].str.contains(r'\bselect\b', case=False).fillna(False).astype(int)
-    df['has_alert'] = df[url_column].str.contains('alert', case=False).fillna(False).astype(int)
-    df['has_script'] = df[url_column].str.contains('script', case=False).fillna(False).astype(int)
-    df['has_div'] = df[url_column].str.contains(r'\bdiv\b', case=False).fillna(False).astype(int)
-    df['has_dotdot'] = df[url_column].str.contains(r'\.\./').fillna(False).astype(int)
-    df['has_percent'] = df[url_column].str.contains('%').fillna(False).astype(int)
-    df['has_or'] = df[url_column].str.contains(r'\bOR\b', case=False).fillna(False).astype(int)
-    df['has_and'] = df[url_column].str.contains(r'\bAND\b', case=False).fillna(False).astype(int)
-    df['has_eq'] = df[url_column].str.contains('=', case=False).fillna(False).astype(int)
-    df['has_quote'] = df[url_column].str.contains(r"['\"]").fillna(False).astype(int)
-    df['has_union'] = df[url_column].str.contains(r'\bUNION\b', case=False).fillna(False).astype(int)
-    df['has_dash'] = df[url_column].str.contains('--').fillna(False).astype(int)
-    df['has_admin'] = df[url_column].str.contains(r'\badmin\b', case=False).fillna(False).astype(int)
-
-    return df
-
-def track_model_performance(model, eval_data, model_version):
-
-    from app.services.trainer import ModelPerformanceTracker
-    tracker = ModelPerformanceTracker()
-    return tracker.track_model_performance(model, eval_data, model_version)
-
-def evaluate_model(model, eval_data):
-
-    from app.services.trainer import ModelPerformanceTracker
-    tracker = ModelPerformanceTracker()
-    return tracker._evaluate_model(model, eval_data)
-
-def save_json(data, file_path):
-
-    try:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        return True
-    except Exception as e:
-        logger.error(f"JSON 저장 오류: {str(e)}")
-        return False
-
-def load_json(file_path):
-
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception as e:
-        logger.error(f"JSON 로드 오류: {str(e)}")
-        return None
-
-def chunk_dataframe(df, chunk_size=10000):
-
-    chunks = []
-    for i in range(0, len(df), chunk_size):
-        chunks.append(df.iloc[i:i+chunk_size].copy())
-    return chunks
+def extract_url_features(df: pd.DataFrame) -> pd.DataFrame:
+    """PATTERN_COLS 만큼 0/1 + url_len 반환"""
+    urls = df["url"].fillna("")
+    feats = pd.DataFrame(index=df.index)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        for name, rx in PATTERN_REGEX.items():
+            feats[name] = urls.str.contains(rx, regex=True, na=False).astype("int8")
+    feats["url_len"] = urls.str.len().clip(0, 4096).astype("int16")
+    return feats
