@@ -43,7 +43,7 @@ export const SpecificProjectAllPeriodsView: React.FC<{ projectId: string }> = ({
       isLoading: isLoading
     },
     {
-      title: `${projectName}의 총 프로젝트 수`,
+      title: `${projectName}의 총 모델 수`,
       value: specificProjectAllPeriodsData?.totalModelCount ?? 0,
       suffix: "개",
       icon: <LuCloudCog size={18} color="#242B3A" />,

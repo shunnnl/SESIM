@@ -19,9 +19,9 @@ interface MonthOption {
 
 const ChangeIndicator = ({ status }: { status: CostChangeStatus }) => {
     if (status === "UP") {
-        return <FiTrendingUp className="text-green-500" size={12} />;
+        return <FiTrendingUp className="text-red-500" size={12} />;
     } else if (status === "DOWN") {
-        return <FiTrendingDown className="text-red-500" size={12} />;
+        return <FiTrendingDown className="text-green-500" size={12} />;
     } else {
         return <FiMinus className="text-gray-500" size={8} />;
     }
@@ -42,7 +42,7 @@ const StatItem = ({ label, value, suffix, changeInfo }: { label: string, value: 
         <div className="flex flex-1 flex-col gap-2">
             <p className="text-sm font-normal text-gray-400 whitespace-nowrap truncate">{label}</p>
             <div className="flex flex-row gap-2 items-center justify-start">
-                <p className="text-4xl font-medium text-white whitespace-nowrap truncate">
+                <p className="text-3xl lg:text-4xl font-medium text-white whitespace-nowrap truncate">
                     {value}{suffix}
                 </p>
                 <div className={`flex flex-row gap-2 rounded-full p-1 border ${getChangeBackgroundStyle(changeInfo.status)}`}>
@@ -178,7 +178,7 @@ export const APIUsagePage: React.FC = () => {
                 transition={{ duration: 0.6, ease: "easeOut" }}
             >
                 {/* 타이틀 영역 */}
-                <div className="flex flex-row content-center justify-between gap-[24px] py-4">
+                <div className="flex md:flex-row flex-col content-center justify-between gap-[24px] py-4">
                     {/* 제목 */}
                     <div className="flex flex-col content-end justify-end gap-2">
                         <motion.h1
@@ -191,7 +191,7 @@ export const APIUsagePage: React.FC = () => {
                         </motion.h1>
 
                         <motion.p
-                            className="text-sm font-medium text-gray-400 whitespace-nowrap truncate"
+                            className="text-sm font-medium text-gray-400"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.6, delay: 0.2 }}

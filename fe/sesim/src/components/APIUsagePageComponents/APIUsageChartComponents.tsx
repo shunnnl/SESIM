@@ -38,7 +38,7 @@ export const StatCard: React.FC<StatCardProps> = ({ title, value, suffix = "", i
     ) : (
       <>
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-gray-300 truncate whitespace-nowrap">{title}</p>
+          <p className="text-sm font-medium text-gray-300 truncate whitespace-nowrap overflow-hidden">{title}</p>
           <p className="text-2xl font-bold text-white">
             {value} {suffix && <span className="text-sm text-medium text-gray-400">{suffix}</span>}
           </p>
@@ -69,7 +69,7 @@ export const StatCardIndicator: React.FC<StatCardIndicatorProps> = ({ title, val
     ) : (
       <>
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium text-gray-300 truncate whitespace-nowrap">{title}</p>
+          <p className="lg:text-sm md:text-xs font-medium text-gray-300 truncate whitespace-nowrap overflow-hidden">{title}</p>
           <div className="flex flex-row gap-2 items-center">
             <p className="text-2xl font-bold text-white gap-2">
               {value} {suffix && <span className="text-sm text-medium text-gray-400">{suffix}</span>}

@@ -8,7 +8,7 @@ interface CostComparisonIndicatorProps {
   unit?: string;
   isLoading?: boolean;
   showPercentage?: boolean;
-}
+};
 
 export const CostComparisonIndicator: React.FC<CostComparisonIndicatorProps> = ({
   currentCost,
