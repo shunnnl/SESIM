@@ -4,8 +4,8 @@ import { LuActivity, LuWallet, LuClock, LuCloudCog, LuGlobe, LuCircleDollarSign,
 import { RootState } from "../../store";
 import { StatCard, ChartContainer } from "./APIUsageChartComponents";
 import MonthlyTotalAPIChart from "./AllPjtAllPrd/MonthlyTotalAPIChart";
-import MonthlyTotalCostChart from "./AllPjtAllPrd/MonthlyTotalCostChart";
 import DailyProjectCostChart from "./AllPjtAllPrd/DailyProjectCostChart";
+import MonthlyTotalCostChart from "./AllPjtAllPrd/MonthlyTotalCostChart";
 import DailyAllProjectCostChart from "./AllPjtAllPrd/DailyAllProjectCostChart";
 import AllCostDonutChartPerProjects from "./AllPjtAllPrd/AllCostDonutChartPerProjects";
 
