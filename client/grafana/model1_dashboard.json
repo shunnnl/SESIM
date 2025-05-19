@@ -20,7 +20,7 @@
   "graphTooltip": 0,
   "id": 9,
   "links": [],
-  "liveNow": true,
+  "liveNow": false,
   "panels": [
     {
       "gridPos": {
@@ -1664,7 +1664,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1832,7 +1833,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "green",
@@ -2041,11 +2043,12 @@
           }
         }
       ],
+      "timeFrom": "15m",
       "title": "실시간 이상 탐지",
       "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": "1s",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
@@ -2062,6 +2065,6 @@
   "timezone": "browser",
   "title": "finect_dashboard",
   "uid": "dek6a3kaic268a1",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }
