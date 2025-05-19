@@ -21,6 +21,10 @@ logger = logging.getLogger(__name__)
 # 내부 전처리
 def _prepare_xy(csv_path: Path) -> Tuple[sparse.csr_matrix, np.ndarray, TfidfVectorizer, Tuple[SafeEncoder, SafeEncoder]]:
     df = pd.read_csv(csv_path)
+    
+    # null 값 처리 추가
+    df["is_attack"] = df["is_attack"].fillna(False)  # null 값을 False로 처리
+    logger.info(f"is_attack null 값 {df['is_attack'].isnull().sum()}개 행을 False로 처리했습니다.")
 
     # 1) 텍스트 전처리
     df["url_prep"] = df["url"].apply(preprocess_url)

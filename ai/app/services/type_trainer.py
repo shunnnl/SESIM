@@ -31,6 +31,15 @@ class AttackTypeTrainer:
 
     def train(self, csv: str | Path) -> Dict[str, str]:
         df = pd.read_csv(csv)
+        
+        # is_attack이 null인 경우 필터링 추가
+        df["is_attack"] = df["is_attack"].fillna(False)
+        # 공격 데이터만 필터링 (True인 경우만)
+        df = df[df["is_attack"] == True]
+        
+        if df.empty:
+            logger.warning("공격 데이터가 없어 유형 학습을 건너뜁니다.")
+            return {"status": "skipped", "reason": "no attack data"}
 
         # ① 라벨 전처리
         df[TYPE_COL] = df[TYPE_COL].fillna("").str.strip().str.lower()
@@ -52,7 +61,8 @@ class AttackTypeTrainer:
         # 기존 로직 계속 진행
         df = df[df[TYPE_COL].ne("") & df[TYPE_COL].ne("normal")]
         if df.empty:
-            raise ValueError("공격 유형 라벨이 없습니다.")
+            logger.warning("공격 유형 라벨이 없어 유형 학습을 건너뜁니다.")
+            return {"status": "skipped", "reason": "no attack type labels"}
 
         # ② 피처
         X_txt  = self.vec.transform(df[URL].fillna(""))

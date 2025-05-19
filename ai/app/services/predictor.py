@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
-from app.core.registry import load_bundle, _latest_version
+from app.core.registry import load_bundle, _latest_version, clear_bundle_cache
 from app.core.config import MODEL_DIR, BIN_THRESH, TYPE_THRESHOLDS
 from app.utils import preprocess_url, extract_url_features
 from app.dto.request import RawLog
@@ -19,7 +19,7 @@ from app.dto.response import PredictResult
 
 logger = logging.getLogger(__name__)
 
-# 정규표현식 사전 컴파일 (속도 향상 및 일관성 확보)
+# 정규표현식 사전 컴파일
 
 # 디렉터리 탐색 및 민감한 파일 접근 시도 탐지
 DT_PATTERNS = [re.compile(p, re.I) for p in [
@@ -83,6 +83,16 @@ def _prep_df(logs: List[RawLog]) -> pd.DataFrame:
 
 def _load_meta(ver: str) -> dict:
     meta_path = Path(MODEL_DIR) / f"model_v{ver}" / "meta.json"
+    if not meta_path.exists():
+        logger.error(f"메타 파일을 찾을 수 없습니다: {meta_path}")
+        # 캐시 초기화 시도
+        clear_bundle_cache()
+        # 최신 버전 다시 확인
+        ver = _latest_version()
+        meta_path = Path(MODEL_DIR) / f"model_v{ver}" / "meta.json"
+        if not meta_path.exists():
+            raise FileNotFoundError(f"메타 파일을 찾을 수 없습니다: {meta_path}")
+    
     return json.loads(meta_path.read_text())
 
 
@@ -183,95 +193,112 @@ def predict_logs(logs: List[RawLog], version: str | None = None) -> List[Predict
     if not logs:
         return []
 
-    version = version or _latest_version()
-    bin_clf, vec, enc_m, enc_a = load_bundle(version)
-    pattern_cols = _load_meta(version)["pattern_cols"]
+    try:
+        version = version or _latest_version()
+        bin_clf, vec, enc_m, enc_a = load_bundle(version)
+        pattern_cols = _load_meta(version)["pattern_cols"]
 
-    df = _prep_df(logs)
+        df = _prep_df(logs)
 
-    # ---------- Stage‑1 (binary) ----------
-    X_txt = vec.transform(df["url"])
-    m = df["method"].apply(enc_m.transform).values
-    a = df["user_agent"].apply(enc_a.transform).values
-    s = df["status_code"].values
-    c = df["content_length"].values
+        # ---------- Stage‑1 (binary) ----------
+        X_txt = vec.transform(df["url"])
+        m = df["method"].apply(enc_m.transform).values
+        a = df["user_agent"].apply(enc_a.transform).values
+        s = df["status_code"].values
+        c = df["content_length"].values
 
-    X_meta = sparse.csr_matrix(np.stack([s, c, m, a], 1).astype("float32"))
-    X_ptrn = sparse.csr_matrix(extract_url_features(df)[pattern_cols].values.astype("float32"))
-    X_bin = sparse.hstack([X_txt, X_meta, X_ptrn]).tocsr()
+        X_meta = sparse.csr_matrix(np.stack([s, c, m, a], 1).astype("float32"))
+        X_ptrn = sparse.csr_matrix(extract_url_features(df)[pattern_cols].values.astype("float32"))
+        X_bin = sparse.hstack([X_txt, X_meta, X_ptrn]).tocsr()
 
-    p_attack = bin_clf.predict_proba(X_bin)[:, 1]
-    is_atk_bin = p_attack >= BIN_THRESH
+        p_attack = bin_clf.predict_proba(X_bin)[:, 1]
+        is_atk_bin = p_attack >= BIN_THRESH
 
-    # ---------- Stage‑2 (type) ----------
-    t_dir = Path(MODEL_DIR) / f"model_v{version}"
-    type_available = (t_dir / "xgb_type_clf.pkl").exists()
+        # ---------- Stage‑2 (type) ----------
+        t_dir = Path(MODEL_DIR) / f"model_v{version}"
+        type_available = (t_dir / "xgb_type_clf.pkl").exists()
 
-    if type_available:
-        t_clf = joblib.load(t_dir / "xgb_type_clf.pkl")
-        le = joblib.load(t_dir / "label_encoder.pkl")
-        X_meta_type = sparse.csr_matrix(np.stack([s, m, a], 1).astype("float32"))
-        X_t = sparse.hstack([X_txt, X_ptrn, X_meta_type])
+        if type_available:
+            try:
+                t_clf = joblib.load(t_dir / "xgb_type_clf.pkl")
+                le = joblib.load(t_dir / "label_encoder.pkl")
+                X_meta_type = sparse.csr_matrix(np.stack([s, m, a], 1).astype("float32"))
+                X_t = sparse.hstack([X_txt, X_ptrn, X_meta_type])
 
-        try:
-            p_all = t_clf.predict_proba(X_t)
-            idx = p_all.argmax(axis=1)
-            labels = le.inverse_transform(idx)
-            type_scores = p_all[np.arange(len(df)), idx]
-            labels = np.where(labels == "normal", None, labels)
-        except ValueError as e:
-            logger.error(f"Type clf failed: {e}")
+                p_all = t_clf.predict_proba(X_t)
+                idx = p_all.argmax(axis=1)
+                labels = le.inverse_transform(idx)
+                type_scores = p_all[np.arange(len(df)), idx]
+                labels = np.where(labels == "normal", None, labels)
+            except ValueError as e:
+                logger.error(f"Type clf failed: {e}")
+                labels = np.array([None] * len(df))
+                type_scores = np.zeros(len(df))
+            except Exception as e:
+                logger.error(f"Type clf 예측 중 오류: {e}")
+                labels = np.array([None] * len(df))
+                type_scores = np.zeros(len(df))
+        else:
             labels = np.array([None] * len(df))
             type_scores = np.zeros(len(df))
-    else:
-        labels = np.array([None] * len(df))
-        type_scores = np.zeros(len(df))
 
-    # ---------- Final merge ----------
-    results: List[PredictResult] = []
-    for i, row in df.iterrows():
-        is_attack = bool(is_atk_bin[i])
-        attack_score = float(p_attack[i])
-        attack_type = None
+        # ---------- Final merge ----------
+        results: List[PredictResult] = []
+        for i, row in df.iterrows():
+            is_attack = bool(is_atk_bin[i])
+            attack_score = float(p_attack[i])
+            attack_type = None
 
-        label = labels[i]
-        score = float(type_scores[i]) if is_attack else 0.0
+            label = labels[i]
+            score = float(type_scores[i]) if is_attack else 0.0
 
-        label, score, override = _rule_adjust(label, score, row)
-        if override:
-            # 규칙 기반 오버라이드가 항상 우선
-            is_attack = label is not None
-            attack_type = label
-            attack_score = score
-        elif is_attack and label:
-            # 오버라이드가 없을 때만 기존 로직
-            if score < TYPE_THRESHOLDS.get(label, 0.5):
-                is_attack = False
-                attack_score = score
-            else:
+            label, score, override = _rule_adjust(label, score, row)
+            if override:
+                # 규칙 기반 오버라이드가 항상 우선
+                is_attack = label is not None
                 attack_type = label
                 attack_score = score
+            elif is_attack and label:
+                # 오버라이드가 없을 때만 기존 로직
+                if score < TYPE_THRESHOLDS.get(label, 0.5):
+                    is_attack = False
+                    attack_score = score
+                else:
+                    attack_type = label
+                    attack_score = score
 
-        # 유형이 여전히 없는 경우 휴리스틱 기반 추론
-        if is_attack and attack_type is None:
-            u = row.url.lower()
-            if _any_match(u, DT_PATTERNS):
-                attack_type = "directory_traversal"
-            elif any(s in u for s in [";", "|", "cmd="]):
-                attack_type = "command_injection"
-            elif _any_match(u, XSS_PATTERNS):
-                attack_type = "xss"
-            elif _any_match(u, SQLI_LOW):
-                attack_type = "sql_injection"
-            else:
-                attack_type = "ssrf_rfi"
+            # 유형이 여전히 없는 경우 휴리스틱 기반 추론
+            if is_attack and attack_type is None:
+                u = row.url.lower()
+                if _any_match(u, DT_PATTERNS):
+                    attack_type = "directory_traversal"
+                elif any(s in u for s in [";", "|", "cmd="]):
+                    attack_type = "command_injection"
+                elif _any_match(u, XSS_PATTERNS):
+                    attack_type = "xss"
+                elif _any_match(u, SQLI_LOW):
+                    attack_type = "sql_injection"
+                else:
+                    attack_type = "ssrf_rfi"
 
-        # 결과
-        results.append(PredictResult(
-            is_attack=is_attack,
-            attack_score=attack_score,
-            attack_type=attack_type
-        ))
+            # 결과
+            results.append(PredictResult(
+                is_attack=is_attack,
+                attack_score=attack_score,
+                attack_type=attack_type
+            ))
 
-    logger.info(f"[PREDICT] {len(results)} logs → v{version}")
-    return results
+        logger.info(f"[PREDICT] {len(results)} logs → v{version}")
+        return results
+        
+    except FileNotFoundError as e:
+        logger.error(f"모델 파일을 찾을 수 없습니다: {e}")
+        # 캐시 초기화 시도
+        clear_bundle_cache()
+        # 기본 안전 응답 (모든 로그를 비공격으로 처리)
+        return [PredictResult(is_attack=False, attack_score=0.0, attack_type=None) for _ in logs]
+    
+    except Exception as e:
+        logger.error(f"예측 중 오류 발생: {e}")
+        # 오류 발생 시 안전한 기본값 반환
+        return [PredictResult(is_attack=False, attack_score=0.0, attack_type=None) for _ in logs]
