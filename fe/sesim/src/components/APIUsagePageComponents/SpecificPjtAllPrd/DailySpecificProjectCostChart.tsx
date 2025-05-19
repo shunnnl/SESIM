@@ -7,7 +7,7 @@ import { GenericLineChart, LineChartDataItem } from "../../../components/common/
 
 interface DailyModelDataItem extends LineChartDataItem {
   [modelId: string]: string | number;
-}
+};
 
 const processModelDailyData = (data: DailyModelCost[] | null): DailyModelDataItem[] => {
   if (!data || data.length === 0) {
@@ -56,6 +56,7 @@ const processModelDailyData = (data: DailyModelCost[] | null): DailyModelDataIte
 
   return sortedData.slice(-90);
 };
+
 
 export default function DailySpecificProjectCostChart({ data }: { data: DailyModelCost[] | null }) {
   const modelInfo = useSelector((state: RootState) => state.apiUsage.apiUsageInitData?.models);

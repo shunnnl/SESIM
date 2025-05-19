@@ -6,7 +6,7 @@ import {
   CustomLabel, 
   CustomModelLegend, 
   graphColors 
-} from '../../common/ChartComponents';
+} from "../../common/ChartComponents";
 
 export default function MonthlyTotalSecondsChartPerModels({ data }: { data: ModelSecond[] }) {
   const modelNames = useModelNames();

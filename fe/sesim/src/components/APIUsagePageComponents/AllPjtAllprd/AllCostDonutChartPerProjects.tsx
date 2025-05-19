@@ -1,12 +1,12 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { ProjectCost } from "../../../types/APIUsageTypes";
-import { useProjectNames } from '../../../utils/projectModelUtils';
+import { useProjectNames } from "../../../utils/projectModelUtils";
 import { 
   CustomTooltip, 
   CustomLabel, 
   CustomProjectLegend, 
   graphColors 
-} from '../../common/ChartComponents';
+} from "../../common/ChartComponents";
 
 export default function AllCostDonutChartPerProjects({ data }: { data: ProjectCost[] }) {
   const projectNames = useProjectNames();

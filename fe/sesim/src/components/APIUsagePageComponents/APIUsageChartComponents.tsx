@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
 import { ReactNode } from "react";
-import { ChartContainerSkeleton, StatCardSkeleton } from "../common/SkeletonLoader";
+import { motion } from "framer-motion";
 import { CostComparisonIndicator } from "./CostComparisonIndicator";
+import { ChartContainerSkeleton, StatCardSkeleton } from "../common/SkeletonLoader";
 
 interface StatCardProps {
   title: string;
@@ -25,6 +25,23 @@ interface StatCardIndicatorProps {
   previousCost: number;
 };
 
+interface ChartContainerProps {
+  title: string;
+  icon: ReactNode;
+  children: ReactNode;
+  delay?: number;
+  colSpan?: string;
+  isLoading?: boolean;
+};
+
+interface ProjectCardProps {
+  projectId: number;
+  projectName: string;
+  cost: number;
+  requestCount: number;
+  seconds: number;
+  index: number;
+};
 
 export const StatCard: React.FC<StatCardProps> = ({ title, value, suffix = "", icon, bgColor, delay = 0, isLoading}) => (
   <motion.div
@@ -97,15 +114,6 @@ export const StatCardIndicator: React.FC<StatCardIndicatorProps> = ({ title, val
 );
 
 
-interface ChartContainerProps {
-  title: string;
-  icon: ReactNode;
-  children: ReactNode;
-  delay?: number;
-  colSpan?: string;
-  isLoading?: boolean;
-}
-
 export const ChartContainer: React.FC<ChartContainerProps> = ({ title, icon, children, delay = 0, colSpan = "w-full", isLoading = false }) => (
   <motion.div
     className={`flex flex-col gap-4 bg-[#1D2433] rounded-[16px] ${colSpan} px-[16px] py-[16px]`}
@@ -128,16 +136,6 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({ title, icon, chi
     )}
   </motion.div>
 );
-
-
-interface ProjectCardProps {
-  projectId: number;
-  projectName: string;
-  cost: number;
-  requestCount: number;
-  seconds: number;
-  index: number;
-}
 
 
 export const ProjectCostCard: React.FC<ProjectCardProps> = ({

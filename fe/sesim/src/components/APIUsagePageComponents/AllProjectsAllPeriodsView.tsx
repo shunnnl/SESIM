@@ -2,8 +2,8 @@ import { useSelector } from "react-redux";
 import { MdDonutSmall } from "react-icons/md";
 import { LuActivity, LuWallet, LuClock, LuCloudCog, LuGlobe, LuCircleDollarSign, LuFileChartColumnIncreasing } from "react-icons/lu";
 import { RootState } from "../../store";
-import MonthlyTotalAPIChart from "./AllPjtAllPrd/MonthlyTotalAPIChart";
 import { StatCard, ChartContainer } from "./APIUsageChartComponents";
+import MonthlyTotalAPIChart from "./AllPjtAllPrd/MonthlyTotalAPIChart";
 import MonthlyTotalCostChart from "./AllPjtAllPrd/MonthlyTotalCostChart";
 import DailyProjectCostChart from "./AllPjtAllPrd/DailyProjectCostChart";
 import DailyAllProjectCostChart from "./AllPjtAllPrd/DailyAllProjectCostChart";
@@ -63,9 +63,9 @@ export const AllProjectsAllPeriodsView: React.FC = () => {
               value={card.value}
               suffix={card.suffix}
               icon={card.icon}
-                bgColor={card.bgColor}
-                delay={card.delay}
-                isLoading={isLoading}
+              bgColor={card.bgColor}
+              delay={card.delay}
+              isLoading={isLoading}
             />
           ))}
         </div>

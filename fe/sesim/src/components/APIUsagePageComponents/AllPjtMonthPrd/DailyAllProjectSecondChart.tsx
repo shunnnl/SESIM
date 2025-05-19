@@ -151,7 +151,7 @@ export default function DailyAllProjectSecondChart({ data }: { data: DailyProjec
       </div>
     );
   }
-  
+
   return (
     <div className="w-full h-80 p-4">
       <ResponsiveContainer
@@ -237,4 +237,4 @@ export default function DailyAllProjectSecondChart({ data }: { data: DailyProjec
       </ResponsiveContainer>
     </div>
   );
-}
+};

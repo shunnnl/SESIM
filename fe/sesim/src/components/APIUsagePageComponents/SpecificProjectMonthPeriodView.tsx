@@ -10,7 +10,6 @@ import MonthlyTotalCostChartPerModels from "./SpecificPjtMonthPrd/MonthlyTotalCo
 import MonthlyTotalRequestsChartPerModels from "./SpecificPjtMonthPrd/MonthlyTotalRequestsChartPerModels";
 import MonthlyTotalSecondsChartPerModels from "./SpecificPjtMonthPrd/MonthlyTotalSecondsChartPerModels";
 
-
 export const SpecificProjectMonthPeriodView: React.FC<{ projectId: string, month: string}> = ({ projectId, month }) => {
   const isLoading = useSelector((state: RootState) => state.apiUsage.isSpecificProjectMonthPeriodLoading);
   const specificProjectMonthPeriodData = useSelector((state: RootState) => state.apiUsage.specificProjectMonthPeriodData);

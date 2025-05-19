@@ -6,7 +6,7 @@ import {
   CustomLabel, 
   CustomModelLegend, 
   graphColors 
-} from '../../common/ChartComponents';
+} from "../../common/ChartComponents";
 
 export default function MonthlyTotalCostChartPerModels({ data }: { data: ModelCost[] }) {
   const modelNames = useModelNames();

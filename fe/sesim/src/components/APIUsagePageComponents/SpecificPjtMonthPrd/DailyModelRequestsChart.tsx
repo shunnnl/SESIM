@@ -7,7 +7,7 @@ import { GenericLineChart, LineChartDataItem } from "../../../components/common/
 
 interface DailyModelDataItem extends LineChartDataItem {
   [modelId: string]: string | number;
-}
+};
 
 const processModelDailyData = (data: DailyModelRequest[] | null): DailyModelDataItem[] => {
   if (!data || data.length === 0) {
@@ -56,6 +56,7 @@ const processModelDailyData = (data: DailyModelRequest[] | null): DailyModelData
 
   return sortedData;
 };
+
 
 export default function DailyModelRequestsChart({ data }: { data: DailyModelRequest[] | null }) {
   const modelInfo = useSelector((state: RootState) => state.apiUsage.apiUsageInitData?.models);

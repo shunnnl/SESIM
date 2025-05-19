@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, LabelList } from "recharts";
-import { MonthProjectRequest } from '../../../types/APIUsageTypes';
+import { MonthProjectRequest } from "../../../types/APIUsageTypes";
 import { useProjectNames } from "../../../utils/projectModelUtils";
 import { CustomBarLineTooltip, CustomBarLegend, graphColors } from "../../common/ChartComponents";
 
 interface ProjectRequest {
   projectId: number;
   requestCount: number;
-}
+};
 
 const transformData = (data: MonthProjectRequest[] | null) => {
   if (!data || data.length === 0) {
@@ -43,6 +43,7 @@ const transformData = (data: MonthProjectRequest[] | null) => {
     return result;
   });
 };
+
 
 const getMaxValue = (data: Record<string, number | string>[] | null) => {
   if (!data || data.length === 0) {

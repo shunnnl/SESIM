@@ -7,7 +7,7 @@ import { CustomBarLineTooltip, CustomBarLegend, graphColors } from "../../common
 interface DailyDataItem {
   date: string;
   [projectKey: string]: string | number;
-}
+};
 
 const processDailyData = (data: DailyProjectCost[] | null) => {
   if (!data || data.length === 0) {
@@ -77,6 +77,7 @@ const getMaxDailyValue = (data: DailyDataItem[] | null | undefined) => {
 
   return projectMaxValues;
 };
+
 
 const extractUniqueProjects = (data: DailyProjectCost[] | null) => {
   if (!data || data.length === 0) {

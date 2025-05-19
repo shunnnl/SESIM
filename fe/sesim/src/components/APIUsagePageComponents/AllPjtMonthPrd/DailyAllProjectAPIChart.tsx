@@ -114,6 +114,7 @@ const getMaxDailyValue = (data: DailyDataItem[] | null | undefined) => {
   return projectMaxValues;
 };
 
+
 const extractUniqueProjects = (data: DailyProjectRequest[] | null) => {
   if (!data || data.length === 0) {
     return [];

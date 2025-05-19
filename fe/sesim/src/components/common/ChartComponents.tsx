@@ -1,6 +1,6 @@
 import { LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Line, PieChart, Pie, Cell } from "recharts";
 import { ProjectCost, DailyProjectCost } from "../../types/APIUsageTypes";
-import { getProjectNameById, getModelNameById } from '../../utils/projectModelUtils';
+import { getProjectNameById, getModelNameById } from "../../utils/projectModelUtils";
 
 export const graphColors = ["#4F46E5", "#3A7880", "#EC4899", "#033486", "#F59E0B", "#10B981"];
 

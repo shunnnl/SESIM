@@ -37,6 +37,7 @@ const transformData = (data: MonthProjectCost[] | null) => {
   });
 };
 
+
 const getMaxValue = (data: Record<string, number | string>[] | null) => {
   if (!data || data.length === 0) return 0;
   
@@ -53,6 +54,7 @@ const getMaxValue = (data: Record<string, number | string>[] | null) => {
   
   return Math.max(...totalCosts);
 };
+
 
 export default function MonthlyTotalCostChart({ data }: { data: MonthProjectCost[] | null }) {
   const projectNames = useProjectNames();

@@ -6,7 +6,7 @@ import { CustomSingleTooltip, CustomSingleLegend } from "../../common/ChartCompo
 interface DailyDataItem {
   date: string;
   totalCost: number;
-}
+};
 
 const processDailyData = (data: DailyModelCost[] | null): DailyDataItem[] => {
   if (!data || data.length === 0) {
