@@ -30,7 +30,7 @@ interface APIUsageInitData {
     lastTotalSeconds: number;
     projects: APIUsageProjectInfo[];
     models: APIUsageModelInfo[];
-}
+};
 
 interface APIUsageState {
     isInitDataLoaded: boolean;
@@ -288,7 +288,7 @@ const apiUsageSlice = createSlice({
                 state.isSpecificProjectMonthPeriodLoading = false;
                 state.error = action.error.message || "error";
             })
-            .addCase(setInitDataLoaded.fulfilled, (state, action) => {
+            .addCase(setInitDataLoaded.fulfilled, (state) => {
                 state.isInitDataLoaded = true;
             });
     }

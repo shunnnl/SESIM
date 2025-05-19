@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
 import { EventSourcePolyfill } from "event-source-polyfill";
-import { updateAPIUsageProjects } from "../store/APIUsageSlice";
 
 export const useAPIUsageSSE = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -38,10 +37,8 @@ export const useAPIUsageSSE = () => {
                     console.log("📦 파싱된 일반 데이터:", data);
 
                     if (data.eventType === "INIT" && Array.isArray(data.projects)) {
-                        dispatch(updateAPIUsageProjects(data.projects));
                         console.log("✅ INIT: 프로젝트 사용량 초기화 완료");
                     } else if (data.eventType === "USAGE_UPDATE" && Array.isArray(data.projects)) {
-                        dispatch(updateAPIUsageProjects(data.projects));
                         console.log("✅ USAGE_UPDATE: 프로젝트 사용량 업데이트 완료");
                     }
                 } catch (e) {
@@ -55,7 +52,6 @@ export const useAPIUsageSSE = () => {
                 try {
                     const parsed = JSON.parse(event.data);
                     if (Array.isArray(parsed.projects)) {
-                        dispatch(updateAPIUsageProjects(parsed.projects));
                         console.log("✅ INIT 이벤트: 사용량 데이터 초기화 완료");
                     }
                 } catch (e) {
@@ -69,7 +65,6 @@ export const useAPIUsageSSE = () => {
                 try {
                     const parsed = JSON.parse(event.data);
                     if (Array.isArray(parsed.projects)) {
-                        dispatch(updateAPIUsageProjects(parsed.projects));
                         console.log("✅ USAGE_UPDATE 이벤트: 사용량 업데이트 완료");
                     }
                 } catch (e) {
