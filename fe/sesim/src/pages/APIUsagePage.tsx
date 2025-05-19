@@ -1,29 +1,27 @@
 import { motion } from "framer-motion";
-import { IconType } from "react-icons/lib";
-import { NavLink } from "react-router-dom";
+import Lottie from "react-lottie-player";
 import { useState, useRef, useEffect } from "react";
+import { LuFilter, LuClock, LuChevronDown } from "react-icons/lu";
 import { FiTrendingUp, FiTrendingDown, FiMinus } from "react-icons/fi";
-import { LuFilter, LuClock, LuChevronDown, LuChartColumnIncreasing, LuFolder } from "react-icons/lu";
+import { Tabbar } from "../components/common/Tabbar";
 import { useAPIUsageData } from "../hooks/useAPIUsageData";
 import { CostChangeInfo, CostChangeStatus } from "../types/APIUsageTypes";
 import { AllProjectsAllPeriodsView } from "../components/APIUsagePageComponents/AllProjectsAllPeriodsView";
+import { AllProjectMonthPeriodView } from "../components/APIUsagePageComponents/AllProjectMonthPeriodView";
+import { SpecificProjectAllPeriodsView } from "../components/APIUsagePageComponents/SpecificProjectAllPeriodView";
+import { SpecificProjectMonthPeriodView } from "../components/APIUsagePageComponents/SpecificProjectMonthPeriodView";
+import pageLoading from "../assets/lotties/page-loading-gray.json";
 
 interface MonthOption {
     value: string;
     label: string;
 }
 
-interface SidebarNavItemProps {
-    to: string;
-    icon: IconType;
-    label: string;
-}
-
 const ChangeIndicator = ({ status }: { status: CostChangeStatus }) => {
     if (status === "UP") {
-        return <FiTrendingUp className="text-green-500" size={12} />;
+        return <FiTrendingUp className="text-red-500" size={12} />;
     } else if (status === "DOWN") {
-        return <FiTrendingDown className="text-red-500" size={12} />;
+        return <FiTrendingDown className="text-green-500" size={12} />;
     } else {
         return <FiMinus className="text-gray-500" size={8} />;
     }
@@ -44,7 +42,7 @@ const StatItem = ({ label, value, suffix, changeInfo }: { label: string, value: 
         <div className="flex flex-1 flex-col gap-2">
             <p className="text-sm font-normal text-gray-400 whitespace-nowrap truncate">{label}</p>
             <div className="flex flex-row gap-2 items-center justify-start">
-                <p className="text-4xl font-medium text-white whitespace-nowrap truncate">
+                <p className="text-3xl lg:text-4xl font-medium text-white whitespace-nowrap truncate">
                     {value}{suffix}
                 </p>
                 <div className={`flex flex-row gap-2 rounded-full p-1 border ${getChangeBackgroundStyle(changeInfo.status)}`}>
@@ -52,30 +50,6 @@ const StatItem = ({ label, value, suffix, changeInfo }: { label: string, value: 
                 </div>
             </div>
         </div >
-    );
-};
-
-
-const SidebarNavItem: React.FC<SidebarNavItemProps> = ({ to, icon: Icon, label }) => {
-    return (
-        <div>
-            <NavLink
-                to={to}
-                className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-t-2xl transition duration-200 text-sm
-                    ${isActive ? "bg-[#04101D] font-semibold text-white" : "font-medium text-gray-400 hover:bg-[#04101D]"}`
-                }
-            >
-                {({ isActive }) => (
-                    <>
-                        <div className="flex-1 flex items-center gap-3">
-                            <Icon className={`text-xl ${isActive ? "text-white" : "text-gray-400"}`} />
-                            {label}
-                        </div>
-                    </>
-                )}
-            </NavLink>
-        </div>
     );
 };
 
@@ -131,7 +105,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    {/* <ProjectAllPeriodsView projectName={getSelectedProjectName()} data={projectAllPeriodsData ?? null} /> */}
+                    <SpecificProjectAllPeriodsView projectId={selectedProject} />
                 </motion.div>
             );
         } else if (selectedMonth !== "all" && selectedProject === "all") {
@@ -141,7 +115,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    {/* <AllProjectsMonthlyView month={getSelectedMonthLabel()} /> */}
+                    <AllProjectMonthPeriodView month={selectedMonth}/>
                 </motion.div>
             );
         } else if (selectedMonth !== "all" && selectedProject !== "all") {
@@ -151,7 +125,7 @@ export const APIUsagePage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    {/* <AllProjectsMonthlyView month={getSelectedMonthLabel()} /> */}
+                    <SpecificProjectMonthPeriodView projectId={selectedProject} month={selectedMonth}/>
                 </motion.div>
             );
         }
@@ -177,45 +151,23 @@ export const APIUsagePage: React.FC = () => {
         };
     }, []);
 
+
     if (isInitLoading) {
         return (
-            <div className="flex min-h-screen text-white container-padding">
-                <div>
-                    {/* TODO: 로딩 애니메이션 적용하기 */}
-                    로딩중..
-                </div>
+            <div className="flex min-h-screen text-white container-padding justify-center items-center">
+                <Lottie 
+                    animationData={pageLoading} 
+                    play 
+                    loop 
+                    style={{ width: "150px", height: "150px" }} 
+                />
             </div>
-        )
+        );
     }
 
     return (
         <div className="flex flex-col min-h-screen text-white">
-            {/* 탭바 */}
-            <div className="w-full bg-[#1D2433]">
-                <div className="flex flex-row container-padding content-end justify-between pt-2 pd-1">
-                    {/* 네비게이션 메뉴 */}
-                    <div className="flex flex-row items-center gap-5">
-                        <SidebarNavItem
-                            to="/apiusage"
-                            icon={LuChartColumnIncreasing}
-                            label="API 사용 대시보드"
-                        >
-                        </SidebarNavItem>
-                        <SidebarNavItem
-                            to="/project"
-                            icon={LuFolder}
-                            label="프로젝트"
-                        />
-                    </div>
-
-                    {/* 사용자 정보 */}
-                    <div className="flex flex-row items-center gap-3">
-                        <div className="text-sm font-medium text-gray-400">
-                            {localStorage.getItem("email")}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Tabbar />
 
             {/* 컨텐츠 영역 */}
             <motion.div
@@ -226,7 +178,7 @@ export const APIUsagePage: React.FC = () => {
                 transition={{ duration: 0.6, ease: "easeOut" }}
             >
                 {/* 타이틀 영역 */}
-                <div className="flex flex-row content-center justify-between gap-[24px] py-4">
+                <div className="flex md:flex-row flex-col content-center justify-between gap-[24px] py-4">
                     {/* 제목 */}
                     <div className="flex flex-col content-end justify-end gap-2">
                         <motion.h1
@@ -239,7 +191,7 @@ export const APIUsagePage: React.FC = () => {
                         </motion.h1>
 
                         <motion.p
-                            className="text-sm font-medium text-gray-400 whitespace-nowrap truncate"
+                            className="text-sm font-medium text-gray-400"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
@@ -263,7 +215,7 @@ export const APIUsagePage: React.FC = () => {
                         {/* API 요청 수 */}
                         <StatItem
                             label="이번달 API 요청 수"
-                            value={currentMonthRequests.toString()}
+                            value={`${currentMonthRequests.toString()}회`}
                             suffix=""
                             changeInfo={requestChangeInfo}
                         />
@@ -271,8 +223,8 @@ export const APIUsagePage: React.FC = () => {
                         {/* 사용 시간 */}
                         <StatItem
                             label="이번달 사용 시간"
-                            value={currentMonthSeconds.toString()}
-                            suffix="h"
+                            value={`${currentMonthSeconds.toString()}h`}
+                            suffix=""
                             changeInfo={secondsChangeInfo}
                         />
                     </div>
@@ -317,7 +269,7 @@ export const APIUsagePage: React.FC = () => {
                                             {projectInfo && projectInfo.map((project) => (
                                                 <div
                                                     key={project.projectId}
-                                                    className={`px-4 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer whitespace-nowrap truncate
+                                                    className={`px-4 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer whitespace-nowrap
                                                                 ${selectedProject === project.projectId.toString() ? "bg-[rgba(255,255,255,0.1)] font-medium" : "text-[#DEDEDE]"}`}
                                                     onClick={() => onSelectProject(project.projectId.toString())}
                                                 >
@@ -352,12 +304,12 @@ export const APIUsagePage: React.FC = () => {
                                 </button>
 
                                 {isMonthOpen && (
-                                    <div className="absolute top-full mt-2 w-full min-w-[120px] bg-[#242B3A] rounded-[10px] border border-[rgba(62,72,101,0.4)] shadow-lg z-50 overflow-hidden">
+                                    <div className="absolute top-full mt-2 w-full min-w-[120px] bg-[#242B3A] rounded-[10px] border border-[rgba(62,72,101,0.4)] shadow-lg z-50">
                                         <div className="max-h-[240px] overflow-y-auto scrollbar-custom">
                                             {monthOptions.map((month: MonthOption) => (
                                                 <div
                                                     key={month.value}
-                                                    className={`px-4 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer whitespace-nowrap truncate
+                                                    className={`px-4 py-2 hover:bg-[rgba(255,255,255,0.05)] cursor-pointer whitespace-nowrap
                                                                 ${selectedMonth === month.value ? "bg-[rgba(255,255,255,0.1)] font-medium" : "text-[#DEDEDE]"}`}
                                                     onClick={() => onSelectMonth(month.value)}
                                                 >
