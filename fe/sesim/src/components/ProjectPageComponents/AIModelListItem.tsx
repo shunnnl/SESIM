@@ -111,6 +111,8 @@ const AIModelListItem: React.FC<AIModelListProps> = ({ items, projectId, isDeplo
                                 <a
                                     href={item.grafanaUrl}
                                     className="text-white text-xs cursor-pointer"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                 >
                                     <div className="flex items-center">
                                         대시보드 바로가기
