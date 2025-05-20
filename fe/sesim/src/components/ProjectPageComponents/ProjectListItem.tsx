@@ -21,7 +21,61 @@ const ProjectItemList: React.FC<Props> = ({ project, index }) => {
     const handleCopy = () => {
         if (!project.albAddress) return;
 
-        navigator.clipboard.writeText(project.albAddress).then(() => {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            navigator.clipboard.writeText(project.albAddress).then(() => {
+                toast.success(
+                    <div className="flex items-center justify-center gap-2">
+                        <IoIosCheckmarkCircleOutline className="text-xl text-white" />
+                        <span>ALB 주소가 복사되었습니다.</span>
+                    </div>,
+                    {
+                        position: "top-center",
+                        autoClose: 1000,
+                        hideProgressBar: true,
+                        closeButton: false,
+                        icon: false,
+                        style: {
+                            background: "#242C4D",
+                            color: "#fff",
+                            borderRadius: "10px",
+                            padding: "5px 20px",
+                            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        },
+                    }
+                );
+            }).catch((err) => {
+                console.warn("Clipboard API 실패, fallback 사용:", err);
+                fallbackCopyTextToClipboard(project.albAddress!!);
+                toast.success(
+                    <div className="flex items-center justify-center gap-2">
+                        <IoIosCheckmarkCircleOutline className="text-xl text-white" />
+                        <span>ALB 주소가 복사되었습니다.</span>
+                    </div>,
+                    {
+                        position: "top-center",
+                        autoClose: 1000,
+                        hideProgressBar: true,
+                        closeButton: false,
+                        icon: false,
+                        style: {
+                            background: "#242C4D",
+                            color: "#fff",
+                            borderRadius: "10px",
+                            padding: "5px 20px",
+                            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        },
+                    }
+                );
+            });
+        } else {
+            console.warn("Clipboard API 사용 불가, fallback 사용");
+            fallbackCopyTextToClipboard(project.albAddress);
             toast.success(
                 <div className="flex items-center justify-center gap-2">
                     <IoIosCheckmarkCircleOutline className="text-xl text-white" />
@@ -45,33 +99,7 @@ const ProjectItemList: React.FC<Props> = ({ project, index }) => {
                     },
                 }
             );
-        }).catch((err) => {
-            console.warn("Clipboard API 실패, fallback 사용:", err);
-            fallbackCopyTextToClipboard(project.albAddress!!);
-            toast.success(
-                <div className="flex items-center justify-center gap-2">
-                    <IoIosCheckmarkCircleOutline className="text-xl text-white" />
-                    <span>ALB 주소가 복사되었습니다.</span>
-                </div>,
-                {
-                    position: "top-center",
-                    autoClose: 1000,
-                    hideProgressBar: true,
-                    closeButton: false,
-                    icon: false,
-                    style: {
-                        background: "#242C4D",
-                        color: "#fff",
-                        borderRadius: "10px",
-                        padding: "5px 20px",
-                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    },
-                }
-            );
-        });
+        }
     };
 
 

@@ -18,4 +18,4 @@ export function fallbackCopyTextToClipboard(text: string) {
     }
 
     document.body.removeChild(textArea);
-}
+};

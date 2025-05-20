@@ -16,7 +16,7 @@ interface AIModelListProps {
     items: Model[];
     projectId: number;
     isDeployed: boolean;
-}
+};
 
 const AIModelListItem: React.FC<AIModelListProps> = ({ items, projectId, isDeployed }) => {
     const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4, bgImage5, bgImage6];
