@@ -9,6 +9,7 @@ import bgImage3 from "../../assets/images/model-bg-3.webp";
 import bgImage4 from "../../assets/images/model-bg-4.webp";
 import bgImage5 from "../../assets/images/model-bg-5.webp";
 import bgImage6 from "../../assets/images/model-bg-6.webp";
+import { fallbackCopyTextToClipboard }  from "../../utils/copy";
 import { createDeploymentApiKey } from "../../services/apiKeyService";
 
 interface AIModelListProps {
@@ -20,42 +21,54 @@ interface AIModelListProps {
 const AIModelListItem: React.FC<AIModelListProps> = ({ items, projectId, isDeployed }) => {
     const BG_IMAGES = [bgImage, bgImage2, bgImage3, bgImage4, bgImage5, bgImage6];
 
-    const handleGenerateKey = async (projectId: number, modelId: number) => {
-        try {
-            const apiKey = await createDeploymentApiKey({ projectId, modelId });
-            if (!apiKey) {
-                console.warn("API 키가 비어있습니다.");
-                return;
-            }
-            await navigator.clipboard.writeText(apiKey);
-            toast.success(
-                <div className="flex items-center justify-center gap-2">
-                    <IoIosCheckmarkCircleOutline className="text-xl text-white" />
-                    <span>API Key가 복사되었습니다.</span>
-                </div>,
-                {
-                    position: "top-center",
-                    autoClose: 1000,
-                    hideProgressBar: true,
-                    closeButton: false,
-                    icon: false,
-                    style: {
-                        background: "#242C4D",
-                        color: "#fff",
-                        borderRadius: "10px",
-                        padding: "5px 20px",
-                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }
-                }
-            );
-        } catch (error) {
-            console.error("API 키 생성 실패:", error);
-            alert("API 키 생성에 실패했습니다.");
+const handleGenerateKey = async (projectId: number, modelId: number) => {
+    try {
+        const apiKey = await createDeploymentApiKey({ projectId, modelId });
+        if (!apiKey) {
+            console.warn("API 키가 비어있습니다.");
+            return;
         }
-    };
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(apiKey);
+                console.log("Clipboard API 복사 성공");
+            } else {
+                fallbackCopyTextToClipboard(apiKey);
+            }
+        } catch (clipboardError) {
+            console.warn("Clipboard API 복사 실패, fallback 사용");
+            fallbackCopyTextToClipboard(apiKey);
+        }
+
+        toast.success(
+            <div className="flex items-center justify-center gap-2">
+                <IoIosCheckmarkCircleOutline className="text-xl text-white" />
+                <span>API Key가 복사되었습니다.</span>
+            </div>,
+            {
+                position: "top-center",
+                autoClose: 1000,
+                hideProgressBar: true,
+                closeButton: false,
+                icon: false,
+                style: {
+                    background: "#242C4D",
+                    color: "#fff",
+                    borderRadius: "10px",
+                    padding: "5px 20px",
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }
+            }
+        );
+    } catch (error) {
+        console.error("API 키 생성 실패:", error);
+        alert("API 키 생성에 실패했습니다.");
+    }
+};
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -111,6 +124,8 @@ const AIModelListItem: React.FC<AIModelListProps> = ({ items, projectId, isDeplo
                                 <a
                                     href={item.grafanaUrl}
                                     className="text-white text-xs cursor-pointer"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                 >
                                     <div className="flex items-center">
                                         대시보드 바로가기

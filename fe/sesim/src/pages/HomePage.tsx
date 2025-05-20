@@ -73,9 +73,9 @@ export const HomePage: React.FC = () => {
             <SnapScrollContainer>
                 <div
                     className="bg-cover bg-center bg-no-repeat h-screen gap-8 md:gap-12 lg:gap-[72px] text-white snap-start relative"
-                    style={{ backgroundImage: `url(${mainBackgroundImage})` }}
+                    style={{ backgroundImage: `url(${mainBackgroundImage})`}}
                 >
-                    <div className="container-padding flex flex-col justify-center h-full">
+                    <div className="container-padding flex flex-col justify-center h-full gap-[40px]">
                         <div className="flex flex-col gap-4 md:gap-6 lg:gap-[24px] text-white ">
                             <MainText />
                             <SubText />
