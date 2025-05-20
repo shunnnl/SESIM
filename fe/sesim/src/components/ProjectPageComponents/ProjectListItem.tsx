@@ -8,16 +8,20 @@ import { IpListModal } from "./IPListModal";
 import AIModelListItem from "./AIModelListItem";
 import { Project } from "../../types/ProjectTypes";
 import DeploymentProgressBar from "./DeploymentProgressBar";
+import { fallbackCopyTextToClipboard } from "../../utils/copy";
 
 interface Props {
-  project: Project;
-  index: number;
+    project: Project;
+    index: number;
 }
+
 const ProjectItemList: React.FC<Props> = ({ project, index }) => {
     const [isIpListModalOpen, setIsIpListModalOpen] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(project.albAddress!).then(() => {
+        if (!project.albAddress) return;
+
+        navigator.clipboard.writeText(project.albAddress).then(() => {
             toast.success(
                 <div className="flex items-center justify-center gap-2">
                     <IoIosCheckmarkCircleOutline className="text-xl text-white" />
@@ -42,7 +46,31 @@ const ProjectItemList: React.FC<Props> = ({ project, index }) => {
                 }
             );
         }).catch((err) => {
-            toast.error("복사 실패: " + err.message);
+            console.warn("Clipboard API 실패, fallback 사용:", err);
+            fallbackCopyTextToClipboard(project.albAddress!!);
+            toast.success(
+                <div className="flex items-center justify-center gap-2">
+                    <IoIosCheckmarkCircleOutline className="text-xl text-white" />
+                    <span>ALB 주소가 복사되었습니다.</span>
+                </div>,
+                {
+                    position: "top-center",
+                    autoClose: 1000,
+                    hideProgressBar: true,
+                    closeButton: false,
+                    icon: false,
+                    style: {
+                        background: "#242C4D",
+                        color: "#fff",
+                        borderRadius: "10px",
+                        padding: "5px 20px",
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    },
+                }
+            );
         });
     };
 
@@ -120,7 +148,7 @@ const ProjectItemList: React.FC<Props> = ({ project, index }) => {
                 )}
             </div>
 
-            <DeploymentProgressBar steps={project.steps}  isFirstProject={index === 0}/>
+            <DeploymentProgressBar steps={project.steps} isFirstProject={index === 0} />
 
             <div className="flex items-center ml-3 mt-7 mb-4">
                 <div className="w-1 h-5 bg-blue-400 mr-3 rounded-sm" />
