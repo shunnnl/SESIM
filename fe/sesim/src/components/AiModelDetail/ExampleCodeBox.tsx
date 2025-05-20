@@ -1,18 +1,36 @@
 import { useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import pythonIcon from "../../assets/images/python-icon.svg";
+import { fallbackCopyTextToClipboard } from "../../utils/copy";
 
 interface ExampleCodeBoxProps {
     codeString: string;
-}   
+}
 
 export const ExampleCodeBox = ({ codeString }: ExampleCodeBoxProps) => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(codeString);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1200);
+        if (!codeString) return;
+
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            navigator.clipboard.writeText(codeString)
+                .then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1200);
+                })
+                .catch((err) => {
+                    console.warn("Clipboard API 실패, fallback 사용:", err);
+                    fallbackCopyTextToClipboard(codeString);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1200);
+                });
+        } else {
+            console.warn("Clipboard API 사용 불가, fallback 사용");
+            fallbackCopyTextToClipboard(codeString);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1200);
+        }
     };
 
     return (
@@ -20,10 +38,10 @@ export const ExampleCodeBox = ({ codeString }: ExampleCodeBoxProps) => {
             <div className="bg-gradient-to-tr from-[#2C426B] to-[#0B234F] rounded-[18px] w-full h-full min-w-[516px] min-h-[316px] p-[18px] text-white">
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-1 bg-[#1E1E1E] rounded-[10px] px-3 py-2 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-                        <img 
-                            src={pythonIcon} 
-                            alt="python" 
-                            className="w-[24px] h-[24px]" 
+                        <img
+                            src={pythonIcon}
+                            alt="python"
+                            className="w-[24px] h-[24px]"
                         />
                         <p className="text-[16px] font-medium">Python</p>
                     </div>
