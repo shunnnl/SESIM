@@ -1222,7 +1222,8 @@
               {
                 "id": "color",
                 "value": {
-                  "mode": "thresholds"
+                  "fixedColor": "transparent",
+                  "mode": "fixed"
                 }
               }
             ]
@@ -2065,6 +2066,6 @@
   "timezone": "browser",
   "title": "finect_dashboard",
   "uid": "dek6a3kaic268a1",
-  "version": 8,
+  "version": 9,
   "weekStart": ""
 }
