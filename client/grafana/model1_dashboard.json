@@ -1463,7 +1463,7 @@
         ]
       },
       "gridPos": {
-        "h": 21,
+        "h": 40,
         "w": 24,
         "x": 0,
         "y": 24
@@ -1537,7 +1537,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 64
       },
       "id": 14,
       "options": {
@@ -1698,7 +1698,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 68
       },
       "id": 19,
       "options": {
@@ -1723,7 +1723,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n    DATE_TRUNC('minute', logged_at) AS log_minute,\r\n    COUNT(*) AS \"전체\"\r\nFROM ai_results_1\r\nGROUP BY log_minute\r\nORDER BY log_minute;\r\n",
+          "rawSql": "SELECT\r\n    DATE_TRUNC('second', logged_at) AS log_second,\r\n    COUNT(*) AS \"전체\"\r\nFROM ai_results_1\r\nGROUP BY log_second\r\nORDER BY log_second;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1882,7 +1882,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 58
+        "y": 77
       },
       "id": 16,
       "interval": "1s",
@@ -2065,6 +2065,6 @@
   "timezone": "browser",
   "title": "finect_dashboard",
   "uid": "dek6a3kaic268a1",
-  "version": 6,
+  "version": 8,
   "weekStart": ""
 }
