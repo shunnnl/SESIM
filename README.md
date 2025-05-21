@@ -51,8 +51,6 @@ GPT 같은 AI를 도입하고 싶지만,
 #### ✔️그라파나 대시보드로 결과 시각화
 - postgreSQL 연동
 - sankey 라이브러리를 활용
-- 
-<br>
 <br>
 
 ## 📐 아키텍쳐
@@ -79,8 +77,7 @@ GPT 같은 AI를 도입하고 싶지만,
 [![My Skills](https://skillicons.dev/icons?i=ts,react,tailwind,redux,grafana)](https://skillicons.dev)
 
 ### 백엔드
-[![My Skills](https://skillicons.dev/icons?i=java,mysql,postgresql,spring)](https://skillicons.dev)
-
+[![My Skills](https://skillicons.dev/icons?i=java,mysql,postgresql,spring,terraform)](https://skillicons.dev)
 
 얘들도 적나요..?원래?--------
 ### 인프라
