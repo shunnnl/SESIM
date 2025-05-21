@@ -3,6 +3,7 @@ import Lottie from "react-lottie-player";
 import { useState, useRef, useEffect } from "react";
 import { LuFilter, LuClock, LuChevronDown } from "react-icons/lu";
 import { FiTrendingUp, FiTrendingDown, FiMinus } from "react-icons/fi";
+import { addComma } from "../utils/numberUtils";
 import { Tabbar } from "../components/common/Tabbar";
 import { useAPIUsageData } from "../hooks/useAPIUsageData";
 import { CostChangeInfo, CostChangeStatus } from "../types/APIUsageTypes";
@@ -43,7 +44,7 @@ const StatItem = ({ label, value, suffix, changeInfo }: { label: string, value: 
             <p className="text-sm font-normal text-gray-400 whitespace-nowrap truncate">{label}</p>
             <div className="flex flex-row gap-2 items-center justify-start">
                 <p className="text-3xl lg:text-4xl font-medium text-white whitespace-nowrap truncate">
-                    {value}{suffix}
+                    {addComma(value)}{suffix}
                 </p>
                 <div className={`flex flex-row gap-2 rounded-full p-1 border ${getChangeBackgroundStyle(changeInfo.status)}`}>
                     <ChangeIndicator status={changeInfo.status} />
@@ -207,7 +208,7 @@ export const APIUsagePage: React.FC = () => {
                         {/* 이번달 비용 */}
                         <StatItem
                             label="이번달 비용"
-                            value={`$${currentMonthCost.toString()}`}
+                            value={`$${addComma(currentMonthCost.toString())}`}
                             suffix=""
                             changeInfo={costChangeInfo}
                         />
@@ -215,7 +216,7 @@ export const APIUsagePage: React.FC = () => {
                         {/* API 요청 수 */}
                         <StatItem
                             label="이번달 API 요청 수"
-                            value={`${currentMonthRequests.toString()}회`}
+                            value={`${addComma(currentMonthRequests.toString())}회`}
                             suffix=""
                             changeInfo={requestChangeInfo}
                         />
@@ -223,7 +224,7 @@ export const APIUsagePage: React.FC = () => {
                         {/* 사용 시간 */}
                         <StatItem
                             label="이번달 사용 시간"
-                            value={`${currentMonthSeconds.toString()}h`}
+                            value={`${addComma(currentMonthSeconds.toString())}h`}
                             suffix=""
                             changeInfo={secondsChangeInfo}
                         />

@@ -89,7 +89,7 @@ export const ProjectPage = () => {
                                 );
                             })
                         ) : (
-                            <p>생성된 프로잭트가 없습니다.</p>
+                            <p>생성된 프로젝트가 없습니다.</p>
                         )}
                     </motion.div>
                 </div>
