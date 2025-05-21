@@ -805,17 +805,6 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "url"
-            },
-            "properties": [
-              {
-                "id": "custom.width"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
               "options": "공격횟수"
             },
             "properties": [
@@ -840,6 +829,10 @@
               {
                 "id": "custom.width",
                 "value": 208
+              },
+              {
+                "id": "noValue",
+                "value": "3.37.45.147"
               }
             ]
           }
@@ -1325,6 +1318,10 @@
               {
                 "id": "custom.width",
                 "value": 176
+              },
+              {
+                "id": "noValue",
+                "value": "-"
               }
             ]
           },
@@ -1337,6 +1334,10 @@
               {
                 "id": "custom.width",
                 "value": 231
+              },
+              {
+                "id": "noValue",
+                "value": "3.37.45.147"
               }
             ]
           }
@@ -2043,12 +2044,11 @@
           }
         }
       ],
-      "timeFrom": "15m",
       "title": "실시간 이상 탐지",
       "type": "timeseries"
     }
   ],
-  "refresh": "1s",
+  "refresh": "",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
@@ -2056,7 +2056,7 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -2065,6 +2065,6 @@
   "timezone": "browser",
   "title": "finect_dashboard",
   "uid": "dek6a3kaic268a1",
-  "version": 4,
+  "version": 6,
   "weekStart": ""
 }
