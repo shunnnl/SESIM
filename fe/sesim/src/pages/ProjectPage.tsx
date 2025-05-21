@@ -10,6 +10,7 @@ export const ProjectPage = () => {
     useDeploymentStateSSE();
 
     const { loading, error, projects } = useSelector((state: RootState) => state.keyinfo);
+    const sortedProjects = [...projects].sort((a, b) => b.projectId - a.projectId);
 
     return (
         <div className="flex flex-col min-h-screen text-white">
@@ -38,7 +39,7 @@ export const ProjectPage = () => {
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.6, delay: 0.2 }}
                             >
-                                서비스 연동 및 보안관리를 위한 정보를 제공합니다.<br/>승인 IP, ALB 주소, AI 모델별 대시보드, API Key를 확인할 수 있습니다.
+                                서비스 연동 및 보안관리를 위한 정보를 제공합니다.<br />승인 IP, ALB 주소, AI 모델별 대시보드, API Key를 확인할 수 있습니다.
                             </motion.p>
                         </div>
                     </div>
@@ -74,7 +75,7 @@ export const ProjectPage = () => {
                         )}
 
                         {Array.isArray(projects) && projects.length > 0 ? (
-                            projects.slice().reverse().map((project: Project, index: number) => {
+                            sortedProjects.slice().map((project: Project, index: number) => {
                                 return (
                                     <motion.div
                                         key={index}
@@ -83,7 +84,7 @@ export const ProjectPage = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
                                     >
-                                        <KeyinfoItemList project={project} index={index}/>
+                                        <KeyinfoItemList project={project} index={index} />
                                     </motion.div>
                                 );
                             })
