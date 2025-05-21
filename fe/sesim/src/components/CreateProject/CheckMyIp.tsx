@@ -32,7 +32,7 @@ export const CheckMyIp = () => {
         Promise.resolve(copyAction)
             .then(() => {
                 setCopied(true);
-                setTimeout(() => setCopied(false), 1500); // 1.5초 후 복사 상태 초기화
+                setTimeout(() => setCopied(false), 1500); 
             })
             .catch((err) => {
                 console.warn("Clipboard 복사 실패:", err);
