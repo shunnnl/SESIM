@@ -22,35 +22,47 @@ GPT 같은 AI를 도입하고 싶지만,
 ## 🛠️주요기능 소개   
 
 #### ✔️고객 전용 인프라 자동배포
-- 클릭 몇 번으로 전용인프라 자동배포(예시.. )
+- 클릭 몇 번으로 전용인프라 자동배포
 - 배포과정 실시간 확인가능
 - 도움말 페이지 제공
 <br> 
 ![화면_녹화_중_2025-05-15_140756](/uploads/504374d2671fc77440ef8a87abaab981/화면_녹화_중_2025-05-15_140756.mp4)
 <br>
 
-#### ✔️자체 제작 보안 AI모델 및 대시보드 제공공
+#### ✔️자체 제작 보안 AI모델 및 대시보드 제공
 - 공격 판별, 공격 유형 분류 가능 자체제작 보안AI 모델 제공
-- 실시간 결과 그라파나 대시보드 제공 (예시.. ) 
+- 실시간 결과 그라파나 대시보드 제공
 <br>
 
 #### ✔️요금 시각화 대시보드 제공
-- 기간별 요금조회, 프로젝트별 요금 조회기능으로 간편한 요금 확인(예시.. ) 
+- 기간별 요금조회, 프로젝트별 요금 조회기능으로 간편한 요금 확인가능
 
 
 <br>
 
-## 👨‍🔧사용 기술 소개
-#### ✔️고객 전용 인프라 자동배포
+## 👨‍🔧기술 소개
 
-<br>
+#### ✔️아키텍처 구조
+- SESIM SaaS 인프라 ↔ 고객 인프라 분리 구조
+- 고객 인프라에 배포된 AI가 로컬 데이터 분석
 
-#### ✔️자체 제작 공격 탐지, 분류 AI모델
-<br>
 
-#### ✔️그라파나 대시보드로 결과 시각화
-- postgreSQL 연동
-- sankey 라이브러리를 활용
+#### ✔️자동배포
+- Terraform + Kubernetes 기반 자동화 배포 파이프라인
+- K3S 경량 클러스터 도입 → 빠른 설치 및 저사양 환경 대응
+
+
+#### ✔️보안 AI 모델
+- 머신러닝 기반 자체 제작 AI 모델
+- FastAPI 서비스 제공 → API 호출로 보안 분석 결과 제공
+- ZAP 도구 활용 실제 웹 공격 시뮬레이션 결과
+    - 총 92건 중 87건 탐지 (탐지율 91.6%)
+    - 공격 유형 분류 정확도 평균 85% 이상
+
+
+#### ✔️시각화 대시보드
+- Grafana 기반 실시간 모니터링 제공
+- 모델 탐지 결과 및 보안 현황 시각화
 <br>
 
 ## 📐 아키텍쳐
@@ -66,7 +78,7 @@ GPT 같은 AI를 도입하고 싶지만,
 | **손은주**| ![image.png](./image.png) | **팀장,AI**  <br><br> • AI모델링, 학습데이터 수집, 모델 설계 및 학습 등등등등등 <br>• 프로젝트 총괄|
 | **박진훈** | ![image-5.png](./image-5.png) | **Client BE** |
 | **배지해** | ![image-2.png](./image-2.png) | **DevOps** |
-| **심근원** | ![image-4.png](./image-4.png) | **Client FE** |
+| **심근원** | ![image-4.png](./image-4.png) | **SaaS FE** |
 | **안주현** | ![image-3.png](./image-3.png)| **Client FE** <br> |
 | **하시윤** | ![image-1.png](./image-1.png) | **SaaS BE** |
 > 사진은 뺄까요? 의견 부탁드립니다!
@@ -79,10 +91,10 @@ GPT 같은 AI를 도입하고 싶지만,
 ### 백엔드
 [![My Skills](https://skillicons.dev/icons?i=java,mysql,postgresql,spring,terraform)](https://skillicons.dev)
 
-얘들도 적나요..?원래?--------
 ### 인프라
-
+[![My Skills](https://skillicons.dev/icons?i=kubernetes,jenkins,docker)](https://skillicons.dev)
 ### AI
+[![My Skills](https://skillicons.dev/icons?i=py)](https://skillicons.dev)
 
 
 
