@@ -67,7 +67,6 @@ GPT 같은 AI를 도입하고 싶지만,
 
 ## 📐 아키텍쳐
 ![전체 아키텍처.png](./전체 아키텍처.png)
-둘중 택1
 <br>
 
 
@@ -80,7 +79,7 @@ GPT 같은 AI를 도입하고 싶지만,
 | **심근원** | ![image-4.png](./image-4.png) | **SaaS FE** |
 | **안주현** | ![image-3.png](./image-3.png)| **Client FE** <br> |
 | **하시윤** | ![image-1.png](./image-1.png) | **SaaS BE** |
-> 사진은 뺄까요? 의견 부탁드립니다!
+
 
 ## ✏️기술스택
 
