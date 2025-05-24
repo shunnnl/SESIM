@@ -89,9 +89,15 @@ export const HomePage: React.FC = () => {
                                 alt="downscroll"
                                 className="w-[40px] h-[40px] absolute bottom-[5%] left-1/2 -translate-x-1/2"
                                 initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                animate={{ 
+                                    opacity: 1, 
+                                    y: [0, -15, 0, -15, 0, -15, 0],
+                                }}
                                 exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                transition={{ 
+                                    duration: 2.5,
+                                    ease: "easeInOut"
+                                }}
                             />
                         )}
                     </div>
