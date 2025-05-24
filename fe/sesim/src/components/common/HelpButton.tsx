@@ -1,14 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export const HelpButton = ({ up, extraBottom = 32 }: { up?: boolean; extraBottom?: number }) => {
     const [open, setOpen] = useState(false);
+    const buttonRef = useRef<HTMLDivElement>(null);
 
     const handleStepClick = (step: number) => {
         window.open(`/model-inference-service?step=${step}`, "_blank");
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
+                setOpen(false);
+            }
+        };
+
+        if (open) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [open]);
+
     return (
         <div
+            ref={buttonRef}
             className="fixed right-8 z-[999]"
             style={{
                 bottom: up ? extraBottom + 80 : extraBottom,
