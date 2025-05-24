@@ -20,13 +20,19 @@ export const FirstStep = ({ setFirstStepDone, roleArns, currentStep }: FirstStep
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const headerElement = document.querySelector('.form-step-header');
-        if (headerElement) {
-            const top = headerElement.getBoundingClientRect().top + window.scrollY;
-            const offset = 100;
-            const scrollTo = Math.max(0, top - offset);
-            window.scrollTo({ top: scrollTo, behavior: "smooth" });
-        }
+        setTimeout(() => {
+            const headerElement = document.querySelector('.form-step-header');
+            if (headerElement) {
+                const top = headerElement.getBoundingClientRect().top + window.scrollY;
+                const offset = 100;
+                const scrollTo = Math.max(0, top - offset);
+                document.documentElement.style.scrollBehavior = 'smooth';
+                window.scrollTo({ 
+                    top: scrollTo, 
+                    behavior: "smooth"
+                });
+            }
+        }, 500);
     }, []);
 
     const handleValidation = async () => {
