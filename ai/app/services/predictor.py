@@ -1,74 +1,366 @@
 from __future__ import annotations
 
-import json
 import logging
 import re
-from pathlib import Path
-from typing import List
-
-import joblib
 import numpy as np
 import pandas as pd
 from scipy import sparse
+from typing import List
 
-from app.core.registry import load_bundle, _latest_version, clear_bundle_cache
-from app.core.config import MODEL_DIR, BIN_THRESH, TYPE_THRESHOLDS
+from app.core.registry import load_bundle, _latest_version, has_trained_model
+from app.core.config import BIN_THRESH, TYPE_THRESHOLDS
 from app.utils import preprocess_url, extract_url_features
 from app.dto.request import RawLog
 from app.dto.response import PredictResult
 
 logger = logging.getLogger(__name__)
 
-# 정규표현식 사전 컴파일
+# ========== 균형 개선된 패턴들 ==========
 
-# 디렉터리 탐색 및 민감한 파일 접근 시도 탐지
+# TLS 프로브 - 더 엄격한 패턴 (과탐지 방지)
+TLS_PROBE_PATTERNS = [re.compile(p, re.I) for p in [
+    r"\\x16\\x03\\x[0-3]",  # 실제 TLS 핸드셰이크 바이너리
+    r"%5cx16%5cx03",        # URL 인코딩된 TLS 패턴
+    r"\x16\x03",            # 바이너리 TLS 시그니처
+]]
+
+# TLS 관련 정상 요청 패턴 (화이트리스트)
+TLS_LEGITIMATE_PATTERNS = [re.compile(p, re.I) for p in [
+    r"^/\.well-known/",          # ACME/Let's Encrypt
+    r"^/\.git/",                 # Git 저장소
+    r"^/config\.",               # 설정 파일
+    r"^/ssl/",                   # SSL 인증서 디렉토리
+    r"^/certs?/",                # 인증서 디렉토리
+    r"^/security\.txt$",         # 보안 정책 파일
+    r"^/robots\.txt$",           # 로봇 파일
+    r"^/sitemap\.xml$",          # 사이트맵
+]]
+
+# 디렉터리 탐색 - 탐지율 향상
 DT_PATTERNS = [re.compile(p, re.I) for p in [
-    r"(\.\./)+", r"\.\.[\\/]", r"[\\/]\.\.\\/", r"%2e%2e[\\/]", r"%252e%252e[\\/]"]]
-SENSITIVE_FILES = ["etc/passwd", "etc/shadow", "etc/hosts", "proc/self", "wp-config.php",
-                   "config.php", ".env", "web.config", ".htaccess"]
+    r"(\.\./){2,}",              # 2번 이상 상위 디렉터리
+    r"\.\.[\\/].*\.\.[\\/]",     # 다중 traversal
+    r"%2e%2e[\\/]",              # URL 인코딩
+    r"%252e%252e[\\/]",          # 이중 인코딩
+    r"%c0%ae%c0%ae[\\/]",        # 유니코드 우회
+]]
 
-# Code / PHP injection
-CODE_INJECTION_PATTERNS = [re.compile(p, re.I) for p in [
-    r"<\?php", r"(?:system|exec|passthru|shell_exec)\(", r"\beval\s*\(",
-    r"file_get_contents\(", r"include\s*\(.*\)", r"require\s*\(.*\)"]]
+SENSITIVE_FILES = [
+    "etc/passwd", "etc/shadow", "etc/hosts", "etc/group", "etc/fstab",
+    "proc/self/environ", "proc/version", "proc/cmdline",
+    "wp-config.php", "config.php", ".env", "web.config", ".htaccess", "wp-config.inc",
+    "boot.ini", "win.ini", "system32/config/sam", "windows/system32",
+    "application.properties", "database.yml", "secrets.yml"
+]
 
-# XSS
+# 명령어 삽입 - 탐지율 향상을 위한 확장
+COMMAND_INJECTION_PATTERNS = [re.compile(p, re.I) for p in [
+    # 고위험 명령어 구분자 (가중치 높음)
+    r"[;&|`\$]\s*(rm|cat|ls|pwd|whoami|id|wget|curl|nc|bash|sh|cmd|powershell)",
+    r"\|\||\&&",
+    r"\$\([^)]*\)",
+    r"`[^`]+`",
+    
+    # 명령어 주입 파라미터 (확장)
+    r"(cmd|command|exec|shell|system|run)=",
+    r"(bash|sh|zsh|fish)[\s=]",
+    
+    # Linux/Unix 명령어 (단독 실행)
+    r"\b(rm|cat|ls|pwd|whoami|id|uname|ps|netstat|ifconfig|ping|wget|curl|nc|ncat|telnet)\s+",
+    r"\b(chmod|chown|mount|umount|kill|killall|top|htop|tail|head|grep|awk|sed)\s+",
+    
+    # Windows 명령어 (단독 실행)  
+    r"\b(cmd|powershell|dir|type|copy|move|del|rd|md|attrib|tasklist|taskkill)\s+",
+    r"\b(systeminfo|ipconfig|net|sc|reg|wmic|certutil)\s+",
+    
+    # 환경변수 및 리다이렉션
+    r"\$\{[A-Z_][A-Z0-9_]*\}",
+    r"%[A-Z_][A-Z0-9_]*%",
+    r">\s*[/\\]",
+    r"<\s*[/\\]",
+    
+    # PHP/웹 코드 실행 (command_injection으로 분류)
+    r"<\?php",
+    r"(?:system|exec|passthru|shell_exec|popen)\s*\(",
+    r"\beval\s*\(",
+    r"base64_decode\s*\(",
+]]
+
+# XSS - 확장된 패턴
 XSS_PATTERNS = [re.compile(p, re.I) for p in [
-    r"<script", r"<svg", r"<img", r"<iframe", r"javascript:", r"onerror=", r"onload=", r"onclick=",
-    r"onfocus=", r"alert\s*\(", r"eval\s*\("]]
+    r"<script", r"<svg", r"<img", r"<iframe", r"<object", r"<embed",
+    r"javascript:", r"data:text/html", r"vbscript:", r"expression\s*\(",
+    r"on\w+\s*=", r"alert\s*\(", r"eval\s*\(", r"document\.",
+    r"window\.", r"location\.", r"top\.", r"parent\.", r"frames\.",
+    r"innerHTML", r"outerHTML", r"document\.write"
+]]
 
-# SQL injection
+# SQL 인젝션 - 탐지율 향상
 SQLI_HIGH = [re.compile(p, re.I) for p in [
-    r"'.*--", r"'.*#", r"'.*=", r"1=1", r"'=\'", r"union\s+select", r"drop\s+table",
-    r"delete\s+from", r"update\s+.*\s+set", r"exec\s+xp_", r"into\s+outfile", r"load_file",
-    r"sleep\s*\(", r"benchmark\s*\(", r"concat\s*\(", r"group_concat\s*\(", r"having\s+\d+=\d+"
+    # 고전적 SQL 인젝션
+    r"'.*--",
+    r"'.*#", 
+    r"'\s*or\s*'",
+    r"'\s*or\s*1\s*=\s*1",
+    r"1\s*=\s*1",
+    r"'=\'",
+    
+    # UNION 기반
+    r"union\s+select",
+    r"union\s+all\s+select",
+    
+    # 구조 조작
+    r"drop\s+table",
+    r"delete\s+from",
+    r"update\s+.*\s+set",
+    r"insert\s+into",
+    r"truncate\s+table",
+    
+    # 함수 기반 인젝션
+    r"sleep\s*\(",
+    r"benchmark\s*\(",
+    r"waitfor\s+delay",
+    r"pg_sleep\s*\(",
+    
+    # 정보 수집
+    r"information_schema",
+    r"sys\.",
+    r"master\.",
+    r"msdb\.",
+    
+    # 파일 조작
+    r"into\s+outfile",
+    r"load_file\s*\(",
+    r"load\s+data",
 ]]
-SQLI_LOW = [re.compile(p, re.I) for p in [r"select\s+.*\s+from", r"'", r'\"', r"--", r";" ]]
-SQL_KEYWORDS = ["select", "from", "where", "group by", "order by", "having", "join"]
 
-# SSRF/RFI - 내부 접근 시도 탐지 패턴
+SQLI_LOW = [re.compile(p, re.I) for p in [
+    r"select\s+.*\s+from",
+    r"'\s*and\s*",
+    r"'\s*or\s*",
+    r"--",
+    r";.*select",
+    r"\bor\b.*\d\s*=\s*\d",
+    r"\band\b.*\d\s*=\s*\d",
+    r"order\s+by\s+\d+",
+    r"group\s+by\s+\d+",
+]]
+
+SQL_KEYWORDS = ["select", "from", "where", "group by", "order by", "having", "join", "union"]
+
+# SSRF/RFI - 대폭 확장된 패턴
 SSRF_PATTERNS = [re.compile(p, re.I) for p in [
-    r"(url|proxy|redirect|path|file|src|target|uri)=.*(?:file:|https?://(?:169\.254\.169\.254|localhost|127\.0\.0\.1|0\.0\.0\.0|%3A%2F%2F))",
-    r"metadata",
-    r"169\.254\.169\.254",
-    r"localhost",
-    r"127\.0\.0\.1"
+    # 내부 IP 대역
+    r"(?:file|https?|ftp|gopher|dict|ldap|sftp)://(?:169\.254\.169\.254|localhost|127\.0\.0\.1|0\.0\.0\.0|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+)",
+    # URL 인코딩된 내부 IP
+    r"(?:file|https?|ftp|gopher|dict|ldap|sftp)://.*(?:%31%36%39%2e%32%35%34%2e%31%36%39%2e%32%35%34|%31%32%37%2e%30%2e%30%2e%31)",
+    # 메타데이터 서비스
+    r"metadata", r"169\.254\.169\.254", r"metadata\.google\.internal",
+    r"169\.254\.169\.254/latest/meta-data", r"instance-data/latest/meta-data",
+    # 로컬 접근
+    r"localhost", r"127\.0\.0\.1", r"0\.0\.0\.0", r"0x7f000001", r"2130706433",
+    # 프로토콜 혼용
+    r"file://", r"dict://", r"gopher://", r"ldap://", r"sftp://",
+    # 파라미터 기반 SSRF
+    r"(url|proxy|redirect|path|file|src|target|uri|link|goto|redir|forward|fetch|load|include)=.*(?:file:|https?://)",
+    # RFI 패턴
+    r"(include|require|page|template|view|content)=.*(?:https?://|ftp://)",
+    # 클라우드 메타데이터
+    r"metadata\.amazonaws\.com", r"metadata\.azure\.com", r"metadata\.gce\.internal"
 ]]
 
-# 정적 리소스 화이트리스트
+# 정적 리소스 화이트리스트 - 확장
 STATIC_PATTERNS = [re.compile(p) for p in [
-    r"^/static/.*\.(js|css|png|jpg|gif|svg|woff|ttf)$",
-    r"^/assets/.*\.(js|css|png|jpg|gif|svg|woff|ttf)$",
-    r"^/dist/.*\.(js|css|png|jpg|gif|svg|woff|ttf)$",
-    r"^/build/.*\.(js|css|png|jpg|gif|svg|woff|ttf)$",
-    r"^/.*\.(js|css|png|jpg|gif|ico|svg|woff|ttf)$"]]
+    r"^/static/.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map)(\?.*)?$",
+    r"^/assets/.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map)(\?.*)?$",
+    r"^/dist/.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map)(\?.*)?$",
+    r"^/build/.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map)(\?.*)?$",
+    r"^/.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|xml|txt|robots\.txt|sitemap\.xml)(\?.*)?$",
+    r"^/favicon\.ico$", r"^/robots\.txt$", r"^/sitemap\.xml$"
+]]
+
+# 화이트리스트 패턴 - 정상 동작 보호
+WHITELIST_PATTERNS = {
+    'health_check': [re.compile(p, re.I) for p in [
+        r"^/(health|healthz|ping|status|ready|live|metrics|actuator)/?$",
+        r"^/api/(health|status|version|info)/?$",
+        r"^/_health/?$", r"^/monitoring/.*"
+    ]],
+    
+    'admin_tools': [re.compile(p, re.I) for p in [
+        r"^/(admin|dashboard|panel|console|manager)/?",
+        r"^/wp-admin/.*", r"^/phpmyadmin/.*", r"^/adminer/.*"
+    ]],
+    
+    'api_endpoints': [re.compile(p, re.I) for p in [
+        r"^/api/v\d+/.*", r"^/rest/.*", r"^/graphql/?$",
+        r"^/webhook/.*", r"^/callback/.*"
+    ]],
+    
+    'search_endpoints': [re.compile(p, re.I) for p in [
+        r"^/(search|find|query|autocomplete)/?",
+        r"^/api/(search|find|query)/?",
+        r"/search\?", r"/find\?"
+    ]],
+    
+    'legitimate_ua': [re.compile(p, re.I) for p in [
+        r"kube-probe", r"prometheus", r"grafana", r"datadog", r"newrelic",
+        r"pingdom", r"uptime", r"nagios", r"zabbix", r"elasticsearch",
+        r"logstash", r"beats", r"fluentd", r"google-cloud", r"aws-load-balancer",
+        r"mozilla.*firefox", r"mozilla.*chrome", r"mozilla.*safari", r"mozilla.*edge"
+    ]]
+}
 
 # 헬퍼 함수: 정규표현식 리스트에 대해 문자열 검색
 def _any_match(text: str, patterns: list[re.Pattern]) -> bool:
     return any(p.search(text) for p in patterns)
 
-# 전처리 유틸
+def _is_whitelisted(url: str, user_agent: str, method: str) -> tuple[bool, str]:
+    """화이트리스트 검사 - (is_whitelisted, reason)"""
+    path, _, query = url.lower().partition("?")
+    ua_lower = user_agent.lower()
+    
+    # 헬스체크 엔드포인트
+    if _any_match(path, WHITELIST_PATTERNS['health_check']):
+        if _any_match(ua_lower, WHITELIST_PATTERNS['legitimate_ua']) or method == "HEAD":
+            return True, "health_check"
+    
+    # 정적 자원
+    if _any_match(path, STATIC_PATTERNS):
+        # 쿼리에 명백한 공격 패턴이 없으면 허용
+        if not (_any_match(query, SQLI_HIGH) or _any_match(query, XSS_PATTERNS) or 
+                _any_match(query, COMMAND_INJECTION_PATTERNS)):
+            return True, "static_resource"
+    
+    # 검색 엔드포인트에서 SQL 키워드는 정상
+    if _any_match(path, WHITELIST_PATTERNS['search_endpoints']):
+        return True, "search_endpoint"
+    
+    # API 엔드포인트 - 정상적인 브라우저/도구 요청
+    if _any_match(path, WHITELIST_PATTERNS['api_endpoints']):
+        if _any_match(ua_lower, WHITELIST_PATTERNS['legitimate_ua']):
+            return True, "api_endpoint"
+    
+    return False, ""
+
+def _rule_adjust(label: str | None, score: float, row: pd.Series) -> tuple[str | None, float, bool]:
+    """Return (label, score, override_attack) - 탐지 균형 개선"""
+    url: str = row.url.lower()
+    method: str = row.method.upper()
+    user_agent: str = row.user_agent.lower()
+    status_code: int = row.status_code
+
+    path, _, query = url.partition("?")
+
+    # 화이트리스트 검사 먼저 수행
+    is_whitelisted, whitelist_reason = _is_whitelisted(url, user_agent, method)
+    if is_whitelisted:
+        # 화이트리스트에 있더라도 명백한 고위험 패턴은 탐지
+        if _any_match(url, SQLI_HIGH + COMMAND_INJECTION_PATTERNS[:3]):
+            logger.warning(f"화이트리스트 우회 시도 탐지: {whitelist_reason} - {url[:100]}")
+        else:
+            return None, min(score, 0.3), False
+
+    # 1) 고신뢰 SQL 인젝션 - 최우선 (탐지율 향상)
+    if _any_match(url, SQLI_HIGH):
+        return "sql_injection", max(score, 0.95), True
+
+    # 2) 명령어 삽입 - 우선순위 상승 (탐지율 향상)
+    if _any_match(url, COMMAND_INJECTION_PATTERNS):
+        # 헬스체크나 모니터링 도구는 예외
+        if not _any_match(user_agent, WHITELIST_PATTERNS['legitimate_ua']):
+            return "command_injection", max(score, 0.90), True
+
+    # 3) 디렉터리 탐색 - 우선순위 상승 (탐지율 향상)
+    dt_hit = _any_match(url, DT_PATTERNS) or any(f in url for f in SENSITIVE_FILES)
+    if dt_hit:
+        # 명령어 삽입과 결합된 경우 command_injection으로
+        has_cmd = _any_match(url, COMMAND_INJECTION_PATTERNS[:5])
+        if has_cmd:
+            return "command_injection", max(score, 0.95), True
+        else:
+            return "directory_traversal", max(score, 0.85), True
+
+    # 4) TLS 프로브 - 더 엄격한 조건 (과탐지 방지)
+    # 정상 TLS 관련 요청은 제외
+    if not _any_match(path, TLS_LEGITIMATE_PATTERNS):
+        if (_any_match(url, TLS_PROBE_PATTERNS) or 
+            (method in {"BADTLS", "UNKNOWN", "CONNECT"} and "\\x16\\x03" in url) or
+            (status_code in [400, 404, 502] and "\\x16\\x03" in url)):
+            return "tls_probe", max(score, 0.85), True
+
+    # 5) XSS patterns
+    if _any_match(url, XSS_PATTERNS):
+        return "xss", max(score, 0.80), True
+
+    # 6) SSRF/RFI 탐지
+    if _any_match(url, SSRF_PATTERNS):
+        return "ssrf_rfi", max(score, 0.80), True
+
+    # 7) 저신뢰 SQLi - 탐지율 향상
+    if _any_match(url, SQLI_LOW):
+        # 검색 컨텍스트에서는 더 엄격하게 판단
+        is_search_ctx = _any_match(path, WHITELIST_PATTERNS['search_endpoints'])
+        if is_search_ctx:
+            # 검색에서도 위험한 패턴이 있으면 탐지
+            dangerous_patterns = ["'", "\"", "--", "#", "union", "drop", "delete", " or ", " and "]
+            if any(dangerous in url for dangerous in dangerous_patterns):
+                return "sql_injection", max(score, 0.75), True
+            return None, min(score, 0.4), False
+        else:
+            return "sql_injection", max(score, 0.80), True
+
+    # 8) SQLMap 사용자 에이전트
+    if 'sqlmap' in user_agent:
+        if not re.match(r"^/(products|items|goods)/\d+$", path):
+            return "sql_injection", max(score, 0.85), True
+
+    # 9) 정상 요청 패턴 추가 보호
+    if method == "POST" and re.match(r"^/(login|signin|auth|api/login)", path):
+        if _any_match(user_agent, WHITELIST_PATTERNS['legitimate_ua']):
+            return None, min(score, 0.4), False
+
+    # 10) 관리자 도구 접근 (정상적인 경우)
+    if _any_match(path, WHITELIST_PATTERNS['admin_tools']):
+        if (_any_match(user_agent, WHITELIST_PATTERNS['legitimate_ua']) and 
+            status_code in [200, 301, 302, 404]):
+            # 명백한 공격 패턴이 없으면 허용
+            if not (_any_match(url, SQLI_HIGH) or _any_match(url, COMMAND_INJECTION_PATTERNS[:5])):
+                return None, min(score, 0.5), False
+
+    return label, score, False
+
+def _infer_attack_type_from_url(url: str) -> str:
+    """URL 기반 공격 유형 추론 (6개 유형만, 우선순위 조정)"""
+    # SQL Injection 패턴 (우선순위 1)
+    if _any_match(url, SQLI_LOW):
+        return "sql_injection"
+    
+    # Command Injection 패턴 (우선순위 2)
+    elif _any_match(url, COMMAND_INJECTION_PATTERNS):
+        return "command_injection"
+    
+    # Directory Traversal 패턴 (우선순위 3)
+    elif _any_match(url, DT_PATTERNS):
+        return "directory_traversal"
+    
+    # XSS 패턴 (우선순위 4)
+    elif _any_match(url, XSS_PATTERNS):
+        return "xss"
+    
+    # SSRF/RFI 패턴 (우선순위 5)
+    elif _any_match(url, SSRF_PATTERNS):
+        return "ssrf_rfi"
+    
+    # TLS Probe 패턴 (우선순위 6)
+    elif _any_match(url, TLS_PROBE_PATTERNS):
+        return "tls_probe"
+    
+    else:
+        return "unknown"
+
 def _prep_df(logs: List[RawLog]) -> pd.DataFrame:
+    """전처리 함수"""
     df = pd.DataFrame([l.dict() for l in logs])
     df["url"] = df["url"].apply(preprocess_url)
     df["method"] = df["method"].fillna("GET")
@@ -80,169 +372,90 @@ def _prep_df(logs: List[RawLog]) -> pd.DataFrame:
         df["content_length"] = 0
     return df
 
+# ========== 메인 예측 함수 (통합 모델 사용) ==========
 
-def _load_meta(ver: str) -> dict:
-    meta_path = Path(MODEL_DIR) / f"model_v{ver}" / "meta.json"
-    if not meta_path.exists():
-        logger.error(f"메타 파일을 찾을 수 없습니다: {meta_path}")
-        # 캐시 초기화 시도
-        clear_bundle_cache()
-        # 최신 버전 다시 확인
-        ver = _latest_version()
-        meta_path = Path(MODEL_DIR) / f"model_v{ver}" / "meta.json"
-        if not meta_path.exists():
-            raise FileNotFoundError(f"메타 파일을 찾을 수 없습니다: {meta_path}")
-    
-    return json.loads(meta_path.read_text())
-
-
-# 규칙 기반 후처리: 모델 예측값을 룰 기반으로 보정
-def _rule_adjust(label: str | None, score: float, row: pd.Series) -> tuple[str | None, float, bool]:
-    """Return (label, score, override_attack)"""
-    url: str = row.url.lower()
-    method: str = row.method.upper()
-    user_agent: str = row.user_agent.lower()
-
-    path, _, query = url.partition("?")
-
-    # 헬스 체크 요청 무시 처리 (kube-probe, prometheus 등)
-    health_paths = ["/healthz", "/health", "/ping", "/status", "/ready", "/live"]
-    health_uas = ["kube-probe", "prometheus", "grafana", "datadog", "newrelic"]
-    if any(h in path for h in health_paths) and (any(h in user_agent for h in health_uas) or method == "HEAD"):
-        dangerous_cmd = any(k in query for k in ["rm", "cat", "|", ";", "bash", "wget", "curl", "nc"])
-        if "cmd=" in query and not dangerous_cmd:
-            return None, 0.3, False
-
-    # 1) 고신뢰 SQL 인젝션 - 항상 우선 적용
-    if _any_match(url, SQLI_HIGH):
-        return "sql_injection", max(score, 0.9), True
-
-
-    # 2) 검색 컨텍스트 내 SQL 키워드 허용 (오탐 방지)
-    is_search_ctx = any(tag in path for tag in ["/search", "/find"]) or any(k in query for k in ["q=", "query=", "keyword=", "term="])
-
-    if is_search_ctx:
-        q_param = re.search(r"q=([^&]+)", query)
-        if q_param:
-            q_value = q_param.group(1)
-            if any(kw in q_value for kw in SQL_KEYWORDS) and not _any_match(q_value, SQLI_HIGH):
-                return None, 0.1, True
-        
-        # 기존 검사도 유지
-        if any(kw in url for kw in SQL_KEYWORDS) and not _any_match(url, SQLI_HIGH):
-
-            risky_chars = ["'", "\"", "--", "#", ";", " union ", " or "]
-            if not any(rc in url for rc in risky_chars):
-                return None, 0.3, True
-
-    # 3) 디렉터리 탐색 + 명령어 삽입 조합 우선 적용
-    has_cmd_sep = any(sep in url for sep in [";", "|", "&&", "`", "$", "$("]) or "cmd=" in url
-    dt_hit = _any_match(url, DT_PATTERNS) or any(f in url for f in SENSITIVE_FILES)
-    if has_cmd_sep and dt_hit:
-        return "command_injection", max(score, 0.85), True
-    if dt_hit:
-        return "directory_traversal", max(score, 0.85), True
-
-    # 4) 코드 삽입 시도
-    if _any_match(url, CODE_INJECTION_PATTERNS):
-        return "code_injection", max(score, 0.85), True
-
-    # 5) 명령어 삽입 (헬스체크 제외)
-    if not _any_match(user_agent, [re.compile(r"kube-probe")]) and has_cmd_sep:
-        return "command_injection", max(score, 0.8), True
-
-    # 6) XSS patterns
-    if _any_match(url, XSS_PATTERNS):
-        return "xss", max(score, 0.85), True
-
-    # 7) 저신뢰 SQLi 또는 sqlmap 도구 탐지
-    if _any_match(url, SQLI_LOW) or ('sqlmap' in user_agent and query):
-        return "sql_injection", max(score, 0.85), True
-
-    if 'sqlmap' in user_agent and not _any_match(url, SQLI_HIGH + SQLI_LOW):
-        
-        if re.match(r"^/(products|items)/\d+$", path):
-            return None, min(score, 0.4), False
-        return "sql_injection", 0.65, True
-
-    # 8) TLS 시도 (비정상 요청)
-    if method in {"BADTLS", "UNKNOWN"} and "\\x16\\x03" in url:
-        return "tls_probe", max(score, 0.99), True
-
-    # 9) SSRF / RFI
-    if _any_match(url, SSRF_PATTERNS):
-        return "ssrf_rfi", max(score, 0.8), True
-
-    # 10) 정적 자원 요청은 무시 (공격 쿼리 포함 안된 경우에만)
-    if any(pat.match(path) for pat in STATIC_PATTERNS):
-        if not _any_match(query, XSS_PATTERNS + SQLI_HIGH + SQLI_LOW):
-            return None, 0.3, False
-        
-    # 11) 로그인 요청은 브라우저 UA 기반 화이트리스트 적용
-    if method == "POST" and re.match(r"^/(login|signin|auth|api/login)", path):
-        if re.search(r"mozilla|chrome|safari|firefox|edge", user_agent, re.I):
-            risky_sql = ["'", "\"", "--", "#", ";", " union ", " select "]
-            if not any(r in url for r in risky_sql):
-                return None, 0.3, False
-
-    return label, score, False
-
-
-# Main
 def predict_logs(logs: List[RawLog], version: str | None = None) -> List[PredictResult]:
     if not logs:
         return []
 
     try:
+        # 모델 존재 여부 확인
+        if not has_trained_model():
+            logger.warning("학습된 모델이 없습니다. 모든 요청을 안전으로 처리합니다.")
+            return [PredictResult(is_attack=False, attack_score=0.0, attack_type=None) for _ in logs]
+
         version = version or _latest_version()
-        bin_clf, vec, enc_m, enc_a = load_bundle(version)
-        pattern_cols = _load_meta(version)["pattern_cols"]
+        if version is None:
+            logger.warning("사용 가능한 모델 버전이 없습니다.")
+            return [PredictResult(is_attack=False, attack_score=0.0, attack_type=None) for _ in logs]
+            
+        # 통합 번들 로드
+        bundle = load_bundle(version)
+        if bundle is None:
+            logger.warning("모델 로드에 실패했습니다. 안전 모드로 처리합니다.")
+            return [PredictResult(is_attack=False, attack_score=0.0, attack_type=None) for _ in logs]
 
         df = _prep_df(logs)
 
-        # ---------- Stage‑1 (binary) ----------
-        X_txt = vec.transform(df["url"])
-        m = df["method"].apply(enc_m.transform).values
-        a = df["user_agent"].apply(enc_a.transform).values
+        # ---------- 피처 추출 ----------
+        # 1) 텍스트 피처
+        X_txt = bundle.vectorizer.transform(df["url"])
+
+        # 2) 메타 피처 (통합 인코더 사용)
+        m_idx, a_idx = bundle.encoder.transform_method_agent(
+            df["method"].tolist(),
+            df["user_agent"].tolist()
+        )
+        
         s = df["status_code"].values
         c = df["content_length"].values
+        X_meta = sparse.csr_matrix(np.stack([m_idx, a_idx, s, c], 1).astype("float32"))
 
-        X_meta = sparse.csr_matrix(np.stack([s, c, m, a], 1).astype("float32"))
-        X_ptrn = sparse.csr_matrix(extract_url_features(df)[pattern_cols].values.astype("float32"))
+        # 3) 패턴 피처
+        try:
+            pattern_cols = bundle.meta.get("pattern_cols", [])
+            if pattern_cols:
+                X_ptrn = sparse.csr_matrix(extract_url_features(df)[pattern_cols].values.astype("float32"))
+            else:
+                X_ptrn = sparse.csr_matrix(extract_url_features(df).values.astype("float32"))
+        except Exception as e:
+            logger.warning(f"패턴 피처 추출 실패: {e}")
+            X_ptrn = sparse.csr_matrix((len(df), 0))
+
+        # 4) 모든 피처 결합
         X_bin = sparse.hstack([X_txt, X_meta, X_ptrn]).tocsr()
 
-        p_attack = bin_clf.predict_proba(X_bin)[:, 1]
+        # ---------- Stage-1 (binary) ----------
+        p_attack = bundle.binary_classifier.predict_proba(X_bin)[:, 1]
         is_atk_bin = p_attack >= BIN_THRESH
 
-        # ---------- Stage‑2 (type) ----------
-        t_dir = Path(MODEL_DIR) / f"model_v{version}"
-        type_available = (t_dir / "xgb_type_clf.pkl").exists()
+        # ---------- Stage-2 (type) ----------
+        labels = np.array([None] * len(df))
+        type_scores = np.zeros(len(df))
 
-        if type_available:
+        if bundle.type_classifier is not None:
             try:
-                t_clf = joblib.load(t_dir / "xgb_type_clf.pkl")
-                le = joblib.load(t_dir / "label_encoder.pkl")
-                X_meta_type = sparse.csr_matrix(np.stack([s, m, a], 1).astype("float32"))
-                X_t = sparse.hstack([X_txt, X_ptrn, X_meta_type])
-
-                p_all = t_clf.predict_proba(X_t)
-                idx = p_all.argmax(axis=1)
-                labels = le.inverse_transform(idx)
-                type_scores = p_all[np.arange(len(df)), idx]
-                labels = np.where(labels == "normal", None, labels)
-            except ValueError as e:
-                logger.error(f"Type clf failed: {e}")
-                labels = np.array([None] * len(df))
-                type_scores = np.zeros(len(df))
+                # 공격으로 예측된 데이터에 대해서만 유형 분류 수행
+                attack_indices = np.where(is_atk_bin)[0]
+                if len(attack_indices) > 0:
+                    X_type = X_bin[attack_indices]
+                    p_all = bundle.type_classifier.predict_proba(X_type)
+                    idx = p_all.argmax(axis=1)
+                    
+                    # 인코더를 통해 라벨 복원
+                    predicted_labels = bundle.encoder.inverse_transform_attack_types(idx)
+                    predicted_scores = p_all[np.arange(len(attack_indices)), idx]
+                    
+                    # 결과를 원래 인덱스에 매핑
+                    for i, (orig_idx, label, score) in enumerate(zip(attack_indices, predicted_labels, predicted_scores)):
+                        if label != "unknown":
+                            labels[orig_idx] = label
+                            type_scores[orig_idx] = score
+                            
             except Exception as e:
-                logger.error(f"Type clf 예측 중 오류: {e}")
-                labels = np.array([None] * len(df))
-                type_scores = np.zeros(len(df))
-        else:
-            labels = np.array([None] * len(df))
-            type_scores = np.zeros(len(df))
+                logger.error(f"유형 분류 예측 중 오류: {e}")
 
-        # ---------- Final merge ----------
+        # ---------- 규칙 기반 후처리 및 최종 결과 ----------
         results: List[PredictResult] = []
         for i, row in df.iterrows():
             is_attack = bool(is_atk_bin[i])
@@ -252,7 +465,9 @@ def predict_logs(logs: List[RawLog], version: str | None = None) -> List[Predict
             label = labels[i]
             score = float(type_scores[i]) if is_attack else 0.0
 
+            # 규칙 기반 조정
             label, score, override = _rule_adjust(label, score, row)
+            
             if override:
                 # 규칙 기반 오버라이드가 항상 우선
                 is_attack = label is not None
@@ -260,7 +475,8 @@ def predict_logs(logs: List[RawLog], version: str | None = None) -> List[Predict
                 attack_score = score
             elif is_attack and label:
                 # 오버라이드가 없을 때만 기존 로직
-                if score < TYPE_THRESHOLDS.get(label, 0.5):
+                threshold = TYPE_THRESHOLDS.get(label, 0.5)
+                if score < threshold:
                     is_attack = False
                     attack_score = score
                 else:
@@ -269,36 +485,17 @@ def predict_logs(logs: List[RawLog], version: str | None = None) -> List[Predict
 
             # 유형이 여전히 없는 경우 휴리스틱 기반 추론
             if is_attack and attack_type is None:
-                u = row.url.lower()
-                if _any_match(u, DT_PATTERNS):
-                    attack_type = "directory_traversal"
-                elif any(s in u for s in [";", "|", "cmd="]):
-                    attack_type = "command_injection"
-                elif _any_match(u, XSS_PATTERNS):
-                    attack_type = "xss"
-                elif _any_match(u, SQLI_LOW):
-                    attack_type = "sql_injection"
-                else:
-                    attack_type = "ssrf_rfi"
+                attack_type = _infer_attack_type_from_url(row.url.lower())
 
-            # 결과
             results.append(PredictResult(
                 is_attack=is_attack,
                 attack_score=attack_score,
                 attack_type=attack_type
             ))
 
-        logger.info(f"[PREDICT] {len(results)} logs → v{version}")
+        logger.info(f"[PREDICT] {len(results)} logs → v{version} (균형 개선 모델)")
         return results
         
-    except FileNotFoundError as e:
-        logger.error(f"모델 파일을 찾을 수 없습니다: {e}")
-        # 캐시 초기화 시도
-        clear_bundle_cache()
-        # 기본 안전 응답 (모든 로그를 비공격으로 처리)
-        return [PredictResult(is_attack=False, attack_score=0.0, attack_type=None) for _ in logs]
-    
     except Exception as e:
         logger.error(f"예측 중 오류 발생: {e}")
-        # 오류 발생 시 안전한 기본값 반환
         return [PredictResult(is_attack=False, attack_score=0.0, attack_type=None) for _ in logs]
