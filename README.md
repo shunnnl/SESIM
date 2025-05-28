@@ -65,7 +65,7 @@ GPT 같은 AI를 도입하고 싶지만,
 ![그라파나.gif](./readme/그라파나.gif)
 
 #### <API사용량, 요금 페이지>
-![API사용량.gif](./readme/API사용량.gif)
+![AP사용량.gif](./readme/AP사용량.gif)
 
 <br>
 
