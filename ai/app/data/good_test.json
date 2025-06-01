@@ -1,0 +1,166 @@
+{
+  "logs": [
+    {
+      "client_ip": "192.168.1.10",
+      "method": "GET",
+      "url": "/search?q=' UNION SELECT version()-- ",
+      "status_code": 200,
+      "user_agent": "sqlmap/1.6.12",
+      "referrer": "https://example.com",
+      "logged_at": "2025-01-01T10:00:00Z",
+      "is_attack": true,
+      "attack_type": "sql_injection"
+    },
+    {
+      "client_ip": "10.0.0.50",
+      "method": "POST",
+      "url": "/login?username=admin'--&password=pass",
+      "status_code": 302,
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:01:00Z",
+      "is_attack": true,
+      "attack_type": "sql_injection"
+    },
+    {
+      "client_ip": "172.16.0.20",
+      "method": "GET",
+      "url": "/admin?cmd=whoami",
+      "status_code": 500,
+      "user_agent": "Nikto/2.1.6",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:02:00Z",
+      "is_attack": true,
+      "attack_type": "command_injection"
+    },
+    {
+      "client_ip": "172.16.0.21",
+      "method": "POST",
+      "url": "/exec?command=cat /etc/passwd",
+      "status_code": 403,
+      "user_agent": "curl/7.68.0",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:03:00Z",
+      "is_attack": true,
+      "attack_type": "command_injection"
+    },
+    {
+      "client_ip": "192.168.2.33",
+      "method": "GET",
+      "url": "/logs?file=../../../../etc/passwd",
+      "status_code": 404,
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64)",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:04:00Z",
+      "is_attack": true,
+      "attack_type": "directory_traversal"
+    },
+    {
+      "client_ip": "192.168.2.34",
+      "method": "POST",
+      "url": "/download?path=..%2f..%2fwin.ini",
+      "status_code": 403,
+      "user_agent": "Burp Suite Professional",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:05:00Z",
+      "is_attack": true,
+      "attack_type": "directory_traversal"
+    },
+    {
+      "client_ip": "10.1.1.11",
+      "method": "GET",
+      "url": "/comment?msg=<script>alert(1)</script>",
+      "status_code": 200,
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:06:00Z",
+      "is_attack": true,
+      "attack_type": "xss"
+    },
+    {
+      "client_ip": "10.1.1.12",
+      "method": "POST",
+      "url": "/review?text=<svg/onload=confirm(1)>",
+      "status_code": 200,
+      "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:07:00Z",
+      "is_attack": true,
+      "attack_type": "xss"
+    },
+    {
+      "client_ip": "203.0.113.5",
+      "method": "GET",
+      "url": "/api/proxy?target=http://169.254.169.254/latest/meta-data/",
+      "status_code": 500,
+      "user_agent": "curl/7.68.0",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:08:00Z",
+      "is_attack": true,
+      "attack_type": "ssrf_rfi"
+    },
+    {
+      "client_ip": "203.0.113.6",
+      "method": "POST",
+      "url": "/fetch?url=file:///etc/shadow",
+      "status_code": 403,
+      "user_agent": "Python-urllib/3.9",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:09:00Z",
+      "is_attack": true,
+      "attack_type": "ssrf_rfi"
+    },
+    {
+      "client_ip": "198.51.100.1",
+      "method": "GET",
+      "url": "/c99.php?cmd=ls",
+      "status_code": 200,
+      "user_agent": "wget/1.21",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:10:00Z",
+      "is_attack": true,
+      "attack_type": "webshell"
+    },
+    {
+      "client_ip": "198.51.100.2",
+      "method": "POST",
+      "url": "/upload.php?eval=system($_GET['cmd'])",
+      "status_code": 500,
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      "referrer": "",
+      "logged_at": "2025-01-01T10:11:00Z",
+      "is_attack": true,
+      "attack_type": "webshell"
+    },
+    {
+      "client_ip": "192.168.10.10",
+      "method": "GET",
+      "url": "/",
+      "status_code": 200,
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      "referrer": "https://example.com",
+      "logged_at": "2025-01-01T09:00:00Z",
+      "is_attack": false
+    },
+    {
+      "client_ip": "192.168.10.11",
+      "method": "GET",
+      "url": "/static/css/main.css",
+      "status_code": 200,
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64)",
+      "referrer": "https://example.com",
+      "logged_at": "2025-01-01T09:05:00Z",
+      "is_attack": false
+    },
+    {
+      "client_ip": "192.168.10.12",
+      "method": "HEAD",
+      "url": "/healthz",
+      "status_code": 200,
+      "user_agent": "kube-probe/1.23",
+      "referrer": "",
+      "logged_at": "2025-01-01T09:10:00Z",
+      "is_attack": false
+    }
+  ]
+}

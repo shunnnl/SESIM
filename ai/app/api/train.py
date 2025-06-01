@@ -1,11 +1,11 @@
-import pandas as pd, hashlib, json, logging
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import pandas as pd, hashlib, json, logging
 
-from fastapi import APIRouter, HTTPException, UploadFile, File
 from app.dto.response import TrainResponse
-from app.services.trainer import robust_incremental_training, _read_history
 from app.core.config import MODEL_DIR, TRAINING_HISTORY_DIR
+from app.services.trainer import robust_incremental_training
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from app.core.registry import (
     get_next_model_version,
     get_available_model_versions,
