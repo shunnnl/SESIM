@@ -1,15 +1,11 @@
 from typing import Optional
 from app.dto.response import SchemaResponse
-from fastapi import APIRouter, HTTPException, Query
-from sqlalchemy import Table, Column, Integer, String, Boolean, Float, DateTime, MetaData, CHAR
+from fastapi import APIRouter, HTTPException
+from sqlalchemy import Table, Column, String, Boolean, Float, DateTime, MetaData, CHAR
 
 router = APIRouter(tags=["schema"])
 
 def create_ai_result_table():
-    """
-    AI 예측 결과 테이블 구조를 반환합니다.
-    이 테이블은 DB에 직접 생성되지는 않고, /schema API 응답 용도로 사용됩니다.
-    """
 
     metadata = MetaData()
     

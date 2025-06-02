@@ -6,6 +6,7 @@ class PredictResult(BaseModel):
     attack_score: float = Field(..., description="공격일 확률 (0.0 ~ 1.0)")
     attack_type: Optional[str] = None
 
+
 class PredictResponse(BaseModel):
     results: List[PredictResult]
 
