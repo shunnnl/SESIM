@@ -17,7 +17,7 @@ DATA_DIR.mkdir(exist_ok=True)
 # 1. 버전 · 임계값
 # ─────────────────────────────────────────────
 MODEL_VERSION = "1.0.0"
-BIN_THRESH    = 0.55
+BIN_THRESH    = 0.52
 
 TYPE_THRESHOLDS: dict[str, float] = {
     "sql_injection"     : 0.35,
