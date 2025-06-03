@@ -17,14 +17,14 @@ DATA_DIR.mkdir(exist_ok=True)
 # 1. 버전 · 임계값
 # ─────────────────────────────────────────────
 MODEL_VERSION = "1.0.0"
-BIN_THRESH    = 0.57
+BIN_THRESH    = 0.52
 
 TYPE_THRESHOLDS: dict[str, float] = {
     "sql_injection"     : 0.35,
     "command_injection" : 0.25,
-    "directory_traversal": 0.40,
-    "xss"               : 0.45, 
-    "ssrf_rfi"          : 0.40, 
+    "directory_traversal": 0.30,
+    "xss"               : 0.30, 
+    "ssrf_rfi"          : 0.30, 
     "webshell"          : 0.15,  
 }
 
