@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "trained_at": "2025-05-15T17:26:57Z",
+  "n_samples": 15600,
+  "positive_rate": 0.5,
+  "pattern_cols": [
+    "has_sql_union",
+    "has_or_true",
+    "has_script_tag",
+    "has_svg_tag",
+    "has_onload",
+    "has_cmd_sep",
+    "has_cmd_binary",
+    "has_cmd_param",
+    "has_php_eval",
+    "has_php_exec",
+    "has_tls_probe",
+    "has_dir_trav",
+    "has_dir_trav_enc",
+    "has_sensitive_file",
+    "has_null_byte",
+    "NiktoUA",
+    "url_len"
+  ],
+  "type_classes": [
+    "command_injection",
+    "directory_traversal",
+    "sql_injection",
+    "ssrf_rfi",
+    "tls_probe",
+    "xss"
+  ]
+}
