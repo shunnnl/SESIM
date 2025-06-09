@@ -1,0 +1,50 @@
+@import "./fonts.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@layer base {
+    html {
+        font-family: "Pretendard", system-ui, sans-serif;
+    }
+}
+
+@layer components {
+    .container-padding {
+        padding-left: clamp(0px, 10vw, 178px);
+        padding-right: clamp(0px, 10vw, 178px);
+        max-width: 1564px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* 1000px까지만 그라데이션, 그 아래는 #04101D */
+.bg-gradient-1000 {
+    background: linear-gradient(to bottom, #000000 0%, #04101D 100%);
+    min-height: 1000px;
+    width: 100%;
+}
+
+.bg-04101D {
+    background: #04101D;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(180, 180, 180, 0.5); 
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
